@@ -1,4 +1,3 @@
-# src/models.py
 """
 Canonical data contracts for the reconciliation engine.
 
@@ -17,7 +16,6 @@ from datetime import datetime, date
 from enum import Enum
 from typing import Optional, Annotated, Any, Literal
 from pydantic import BaseModel, Field, BeforeValidator
-
 
 # =======================================================================
 # SHARED MONEY VALIDATOR
@@ -51,9 +49,7 @@ def to_decimal(value: Any) -> Decimal:
     except (InvalidOperation, ValueError) as e:
         raise ValueError(f"Cannot convert {value!r} to Decimal: {e}")
 
-
 Money = Annotated[Decimal, BeforeValidator(to_decimal)]
-
 
 # =======================================================================
 # ENUMS
@@ -69,7 +65,6 @@ class DecisionStatus(str, Enum):
     AMBIGUOUS = "AMBIGUOUS"
     HUMAN_REVIEW = "HUMAN_REVIEW"
     UNMATCHED = "UNMATCHED"
-
 
 class ExceptionCode(str, Enum):
     NONE = "NONE"
@@ -147,9 +142,16 @@ class InvoiceRecord(BaseModel):
 # tax validation, and decisioning never see a source-specific field
 # name again after this point.
 # =======================================================================
-
 class NormalizedRecord(BaseModel):
-    txn_id: str
+    txn_id: Optional[str] = None  # None means "not yet resolved" --
+                                   # bank records may reach this stage
+                                   # without a linked txn_id; matching
+                                   # resolves it downstream via
+                                   # UTR/amount/date signals. Never use
+                                   # a sentinel string here -- it would
+                                   # look like a real identifier and
+                                   # could silently pass an equality
+                                   # check against it.
     source: Literal["pg", "bank", "invoice"]
     utr: Optional[str] = None
     amount: Money
@@ -161,7 +163,6 @@ class NormalizedRecord(BaseModel):
                                                               # to the
                                                               # original
                                                               # source record
-
 
 # =======================================================================
 # DECISION CONTRACT
