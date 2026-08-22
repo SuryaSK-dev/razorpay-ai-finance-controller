@@ -1,0 +1,443 @@
+[
+  {
+    "txn_id": "TXN_00001",
+    "expected_status": "MATCHED",
+    "expected_exception_code": "NONE",
+    "category": "exact_match",
+    "notes": "Clean match across all three sources; no discrepancies."
+  },
+  {
+    "txn_id": "TXN_00002",
+    "expected_status": "MATCHED",
+    "expected_exception_code": "NONE",
+    "category": "exact_match",
+    "notes": "Clean match across all three sources; no discrepancies."
+  },
+  {
+    "txn_id": "TXN_00003",
+    "expected_status": "MATCHED",
+    "expected_exception_code": "NONE",
+    "category": "exact_match",
+    "notes": "Clean match across all three sources; no discrepancies."
+  },
+  {
+    "txn_id": "TXN_00004",
+    "expected_status": "MATCHED",
+    "expected_exception_code": "NONE",
+    "category": "exact_match",
+    "notes": "Clean match across all three sources; no discrepancies."
+  },
+  {
+    "txn_id": "TXN_00005",
+    "expected_status": "MATCHED",
+    "expected_exception_code": "NONE",
+    "category": "exact_match",
+    "notes": "Clean match across all three sources; TDS applied (merchant crossed INR 500000 threshold)."
+  },
+  {
+    "txn_id": "TXN_00006",
+    "expected_status": "MATCHED",
+    "expected_exception_code": "NONE",
+    "category": "exact_match",
+    "notes": "Clean match across all three sources; no discrepancies."
+  },
+  {
+    "txn_id": "TXN_00007",
+    "expected_status": "MATCHED",
+    "expected_exception_code": "NONE",
+    "category": "exact_match",
+    "notes": "Clean match across all three sources; TDS applied (merchant crossed INR 500000 threshold)."
+  },
+  {
+    "txn_id": "TXN_00008",
+    "expected_status": "MATCHED",
+    "expected_exception_code": "NONE",
+    "category": "exact_match",
+    "notes": "Clean match across all three sources; TDS applied (merchant crossed INR 500000 threshold)."
+  },
+  {
+    "txn_id": "TXN_00009",
+    "expected_status": "MATCHED",
+    "expected_exception_code": "NONE",
+    "category": "exact_match",
+    "notes": "Clean match across all three sources; no discrepancies."
+  },
+  {
+    "txn_id": "TXN_00010",
+    "expected_status": "MATCHED",
+    "expected_exception_code": "NONE",
+    "category": "exact_match",
+    "notes": "Clean match across all three sources; no discrepancies."
+  },
+  {
+    "txn_id": "TXN_00011",
+    "expected_status": "MATCHED",
+    "expected_exception_code": "NONE",
+    "category": "exact_match",
+    "notes": "Clean match across all three sources; no discrepancies."
+  },
+  {
+    "txn_id": "TXN_00012",
+    "expected_status": "MATCHED",
+    "expected_exception_code": "NONE",
+    "category": "exact_match",
+    "notes": "Clean match across all three sources; no discrepancies."
+  },
+  {
+    "txn_id": "TXN_00013",
+    "expected_status": "MATCHED",
+    "expected_exception_code": "NONE",
+    "category": "exact_match",
+    "notes": "Clean match across all three sources; TDS applied (merchant crossed INR 500000 threshold)."
+  },
+  {
+    "txn_id": "TXN_00014",
+    "expected_status": "MATCHED",
+    "expected_exception_code": "NONE",
+    "category": "exact_match",
+    "notes": "Clean match across all three sources; TDS applied (merchant crossed INR 500000 threshold)."
+  },
+  {
+    "txn_id": "TXN_00015",
+    "expected_status": "MATCHED",
+    "expected_exception_code": "NONE",
+    "category": "exact_match",
+    "notes": "Clean match across all three sources; no discrepancies."
+  },
+  {
+    "txn_id": "TXN_00016",
+    "expected_status": "MATCHED",
+    "expected_exception_code": "NONE",
+    "category": "exact_match",
+    "notes": "Clean match across all three sources; TDS applied (merchant crossed INR 500000 threshold)."
+  },
+  {
+    "txn_id": "TXN_00017",
+    "expected_status": "MATCHED",
+    "expected_exception_code": "NONE",
+    "category": "exact_match",
+    "notes": "Clean match across all three sources; no discrepancies."
+  },
+  {
+    "txn_id": "TXN_00018",
+    "expected_status": "MATCHED",
+    "expected_exception_code": "NONE",
+    "category": "exact_match",
+    "notes": "Clean match across all three sources; no discrepancies."
+  },
+  {
+    "txn_id": "TXN_00019",
+    "expected_status": "MATCHED",
+    "expected_exception_code": "NONE",
+    "category": "timing_difference",
+    "notes": "T+2 settlement lag with exact amounts; normal, not an exception."
+  },
+  {
+    "txn_id": "TXN_00020",
+    "expected_status": "MATCHED",
+    "expected_exception_code": "NONE",
+    "category": "timing_difference",
+    "notes": "T+2 settlement lag with exact amounts; normal, not an exception."
+  },
+  {
+    "txn_id": "TXN_00021",
+    "expected_status": "MATCHED",
+    "expected_exception_code": "NONE",
+    "category": "timing_difference",
+    "notes": "T+3 settlement lag with exact amounts; normal, not an exception."
+  },
+  {
+    "txn_id": "TXN_00022",
+    "expected_status": "MATCHED",
+    "expected_exception_code": "NONE",
+    "category": "timing_difference",
+    "notes": "T+3 settlement lag with exact amounts; normal, not an exception."
+  },
+  {
+    "txn_id": "TXN_00023",
+    "expected_status": "MATCHED",
+    "expected_exception_code": "NONE",
+    "category": "timing_difference",
+    "notes": "T+3 settlement lag with exact amounts; normal, not an exception."
+  },
+  {
+    "txn_id": "TXN_00024",
+    "expected_status": "MATCHED",
+    "expected_exception_code": "NONE",
+    "category": "timing_difference",
+    "notes": "T+2 settlement lag with exact amounts; normal, not an exception."
+  },
+  {
+    "txn_id": "TXN_00025",
+    "expected_status": "MATCHED",
+    "expected_exception_code": "NONE",
+    "category": "reference_mismatch_fuzzy",
+    "notes": "UTR digit corrupted on bank side; recoverable via amount+date-gated fuzzy match."
+  },
+  {
+    "txn_id": "TXN_00026",
+    "expected_status": "MATCHED",
+    "expected_exception_code": "NONE",
+    "category": "reference_mismatch_fuzzy",
+    "notes": "UTR digit corrupted on bank side; recoverable via amount+date-gated fuzzy match."
+  },
+  {
+    "txn_id": "TXN_00027",
+    "expected_status": "MATCHED",
+    "expected_exception_code": "NONE",
+    "category": "reference_mismatch_fuzzy",
+    "notes": "UTR digit corrupted on bank side; recoverable via amount+date-gated fuzzy match."
+  },
+  {
+    "txn_id": "TXN_00028",
+    "expected_status": "MATCHED",
+    "expected_exception_code": "NONE",
+    "category": "reference_mismatch_fuzzy",
+    "notes": "UTR digit corrupted on bank side; recoverable via amount+date-gated fuzzy match."
+  },
+  {
+    "txn_id": "TXN_00029",
+    "expected_status": "MATCHED",
+    "expected_exception_code": "NONE",
+    "category": "reference_mismatch_fuzzy",
+    "notes": "UTR digit corrupted on bank side; recoverable via amount+date-gated fuzzy match."
+  },
+  {
+    "txn_id": "TXN_00030",
+    "expected_status": "MATCHED",
+    "expected_exception_code": "NONE",
+    "category": "reference_mismatch_fuzzy",
+    "notes": "UTR digit corrupted on bank side; recoverable via amount+date-gated fuzzy match."
+  },
+  {
+    "txn_id": "TXN_00031",
+    "expected_status": "HUMAN_REVIEW",
+    "expected_exception_code": "AMOUNT_MISMATCH",
+    "category": "amount_fee_discrepancy",
+    "notes": "Bank-credited amount is short by INR 20.00; genuine discrepancy, not rounding noise."
+  },
+  {
+    "txn_id": "TXN_00032",
+    "expected_status": "HUMAN_REVIEW",
+    "expected_exception_code": "AMOUNT_MISMATCH",
+    "category": "amount_fee_discrepancy",
+    "notes": "Bank-credited amount is short by INR 5.00; genuine discrepancy, not rounding noise."
+  },
+  {
+    "txn_id": "TXN_00033",
+    "expected_status": "HUMAN_REVIEW",
+    "expected_exception_code": "AMOUNT_MISMATCH",
+    "category": "amount_fee_discrepancy",
+    "notes": "Bank-credited amount is short by INR 5.00; genuine discrepancy, not rounding noise."
+  },
+  {
+    "txn_id": "TXN_00034",
+    "expected_status": "HUMAN_REVIEW",
+    "expected_exception_code": "AMOUNT_MISMATCH",
+    "category": "amount_fee_discrepancy",
+    "notes": "Bank-credited amount is short by INR 20.00; genuine discrepancy, not rounding noise."
+  },
+  {
+    "txn_id": "TXN_00035",
+    "expected_status": "HUMAN_REVIEW",
+    "expected_exception_code": "AMOUNT_MISMATCH",
+    "category": "amount_fee_discrepancy",
+    "notes": "Bank-credited amount is short by INR 0.75; genuine discrepancy, not rounding noise."
+  },
+  {
+    "txn_id": "TXN_00036",
+    "expected_status": "HUMAN_REVIEW",
+    "expected_exception_code": "AMOUNT_MISMATCH",
+    "category": "amount_fee_discrepancy",
+    "notes": "Bank-credited amount is short by INR 20.00; genuine discrepancy, not rounding noise."
+  },
+  {
+    "txn_id": "TXN_00037",
+    "expected_status": "HUMAN_REVIEW",
+    "expected_exception_code": "AMOUNT_MISMATCH",
+    "category": "amount_fee_discrepancy",
+    "notes": "Bank-credited amount is short by INR 12.50; genuine discrepancy, not rounding noise."
+  },
+  {
+    "txn_id": "TXN_00038",
+    "expected_status": "HUMAN_REVIEW",
+    "expected_exception_code": "AMOUNT_MISMATCH",
+    "category": "amount_fee_discrepancy",
+    "notes": "Bank-credited amount is short by INR 20.00; genuine discrepancy, not rounding noise."
+  },
+  {
+    "txn_id": "TXN_00039",
+    "expected_status": "TAX_MISMATCH",
+    "expected_exception_code": "ERR_GST_MISMATCH",
+    "category": "tax_mismatch",
+    "notes": "Claimed GST on fee reflects a 12% slab instead of the correct 18%."
+  },
+  {
+    "txn_id": "TXN_00040",
+    "expected_status": "TAX_MISMATCH",
+    "expected_exception_code": "ERR_TDS_VARIANCE",
+    "category": "tax_mismatch",
+    "notes": "Invoice uses stale 1% Section 393 TDS rate instead of current 0.1%."
+  },
+  {
+    "txn_id": "TXN_00041",
+    "expected_status": "TAX_MISMATCH",
+    "expected_exception_code": "ERR_TDS_VARIANCE",
+    "category": "tax_mismatch",
+    "notes": "Invoice uses stale 1% Section 393 TDS rate instead of current 0.1%."
+  },
+  {
+    "txn_id": "TXN_00042",
+    "expected_status": "TAX_MISMATCH",
+    "expected_exception_code": "ERR_GST_MISMATCH",
+    "category": "tax_mismatch",
+    "notes": "Claimed GST on fee reflects a 12% slab instead of the correct 18%."
+  },
+  {
+    "txn_id": "TXN_00043",
+    "expected_status": "TAX_MISMATCH",
+    "expected_exception_code": "ERR_TDS_VARIANCE",
+    "category": "tax_mismatch",
+    "notes": "Invoice uses stale 1% Section 393 TDS rate instead of current 0.1%."
+  },
+  {
+    "txn_id": "TXN_00044",
+    "expected_status": "TAX_MISMATCH",
+    "expected_exception_code": "ERR_TDS_VARIANCE",
+    "category": "tax_mismatch",
+    "notes": "Invoice uses stale 1% Section 393 TDS rate instead of current 0.1%."
+  },
+  {
+    "txn_id": "TXN_00045",
+    "expected_status": "TAX_MISMATCH",
+    "expected_exception_code": "ERR_TDS_VARIANCE",
+    "category": "tax_mismatch",
+    "notes": "Invoice uses stale 1% Section 393 TDS rate instead of current 0.1%."
+  },
+  {
+    "txn_id": "TXN_00046",
+    "expected_status": "PARTIAL_MATCH",
+    "expected_exception_code": "MISSING_IN_INVOICE",
+    "category": "missing_in_source",
+    "notes": "PG and bank agree; invoice not generated, so tax cannot be verified."
+  },
+  {
+    "txn_id": "TXN_00047",
+    "expected_status": "UNMATCHED",
+    "expected_exception_code": "MISSING_IN_BANK",
+    "category": "missing_in_source",
+    "notes": "PG and invoice agree; settlement not yet reflected in the bank feed."
+  },
+  {
+    "txn_id": "TXN_00048",
+    "expected_status": "PARTIAL_MATCH",
+    "expected_exception_code": "MISSING_IN_INVOICE",
+    "category": "missing_in_source",
+    "notes": "PG and bank agree; invoice not generated, so tax cannot be verified."
+  },
+  {
+    "txn_id": "TXN_00049",
+    "expected_status": "PARTIAL_MATCH",
+    "expected_exception_code": "MISSING_IN_INVOICE",
+    "category": "missing_in_source",
+    "notes": "PG and bank agree; invoice not generated, so tax cannot be verified."
+  },
+  {
+    "txn_id": "TXN_00050",
+    "expected_status": "PARTIAL_MATCH",
+    "expected_exception_code": "MISSING_IN_INVOICE",
+    "category": "missing_in_source",
+    "notes": "PG and bank agree; invoice not generated, so tax cannot be verified."
+  },
+  {
+    "txn_id": "TXN_00051",
+    "expected_status": "AMBIGUOUS",
+    "expected_exception_code": "DUPLICATE_DETECTED",
+    "category": "duplicate",
+    "notes": "Same transaction credited twice in the bank feed; duplicate row injected at batch assembly."
+  },
+  {
+    "txn_id": "TXN_00052",
+    "expected_status": "AMBIGUOUS",
+    "expected_exception_code": "DUPLICATE_DETECTED",
+    "category": "duplicate",
+    "notes": "Same transaction credited twice in the bank feed; duplicate row injected at batch assembly."
+  },
+  {
+    "txn_id": "TXN_00053",
+    "expected_status": "AMBIGUOUS",
+    "expected_exception_code": "DUPLICATE_DETECTED",
+    "category": "duplicate",
+    "notes": "Same transaction credited twice in the bank feed; duplicate row injected at batch assembly."
+  },
+  {
+    "txn_id": "TXN_00054",
+    "expected_status": "AMBIGUOUS",
+    "expected_exception_code": "AMBIGUOUS_MATCH",
+    "category": "ambiguous",
+    "notes": "A sibling transaction shares the same amount and date; genuinely ambiguous without a stronger signal."
+  },
+  {
+    "txn_id": "TXN_00055",
+    "expected_status": "MATCHED",
+    "expected_exception_code": "NONE",
+    "category": "ambiguous",
+    "notes": "Sibling of an ambiguous pair; same amount and date as its counterpart."
+  },
+  {
+    "txn_id": "TXN_00056",
+    "expected_status": "AMBIGUOUS",
+    "expected_exception_code": "AMBIGUOUS_MATCH",
+    "category": "ambiguous",
+    "notes": "A sibling transaction shares the same amount and date; genuinely ambiguous without a stronger signal."
+  },
+  {
+    "txn_id": "TXN_00057",
+    "expected_status": "MATCHED",
+    "expected_exception_code": "NONE",
+    "category": "ambiguous",
+    "notes": "Sibling of an ambiguous pair; same amount and date as its counterpart."
+  },
+  {
+    "txn_id": "TXN_00058",
+    "expected_status": "AMBIGUOUS",
+    "expected_exception_code": "AMBIGUOUS_MATCH",
+    "category": "ambiguous",
+    "notes": "A sibling transaction shares the same amount and date; genuinely ambiguous without a stronger signal."
+  },
+  {
+    "txn_id": "TXN_00059",
+    "expected_status": "MATCHED",
+    "expected_exception_code": "NONE",
+    "category": "ambiguous",
+    "notes": "Sibling of an ambiguous pair; same amount and date as its counterpart."
+  },
+  {
+    "txn_id": "TXN_00060",
+    "expected_status": "UNMATCHED",
+    "expected_exception_code": "CORRUPTED_RECORD",
+    "category": "corrupted",
+    "notes": "PG record has a malformed gross_amount field; must fail validation gracefully."
+  },
+  {
+    "txn_id": "TXN_00061",
+    "expected_status": "UNMATCHED",
+    "expected_exception_code": "CORRUPTED_RECORD",
+    "category": "corrupted",
+    "notes": "PG record has a malformed gross_amount field; must fail validation gracefully."
+  },
+  {
+    "txn_id": "TXN_00062",
+    "expected_status": "UNMATCHED",
+    "expected_exception_code": "HUMAN_REVIEW_REQUIRED",
+    "category": "unresolvable",
+    "notes": "Amount, date, and UTR all diverge simultaneously; no defensible automated resolution."
+  },
+  {
+    "txn_id": "TXN_00063",
+    "expected_status": "UNMATCHED",
+    "expected_exception_code": "HUMAN_REVIEW_REQUIRED",
+    "category": "unresolvable",
+    "notes": "Amount, date, and UTR all diverge simultaneously; no defensible automated resolution."
+  }
+]

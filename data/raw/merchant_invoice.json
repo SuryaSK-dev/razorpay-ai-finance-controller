@@ -1,0 +1,592 @@
+[
+  {
+    "invoice_id": "INV_TXN_00027",
+    "txn_id": "TXN_00027",
+    "irn": "000000000000000000000000000000000000000000000000001fb94103ce9999",
+    "gstin": "29AAAAA0010A1Z5",
+    "invoice_amount": "23.60",
+    "claimed_gst": "3.60",
+    "claimed_tds": "0.00",
+    "period": "2026-08"
+  },
+  {
+    "invoice_id": "INV_TXN_00054",
+    "txn_id": "TXN_00054",
+    "irn": "0000000000000000000000000000000000000000000000000020f00de519d59f",
+    "gstin": "29AAAAA0015A1Z5",
+    "invoice_amount": "295.00",
+    "claimed_gst": "45.00",
+    "claimed_tds": "0.00",
+    "period": "2026-08"
+  },
+  {
+    "invoice_id": "INV_TXN_00004",
+    "txn_id": "TXN_00004",
+    "irn": "0000000000000000000000000000000000000000000000000013adbc3a8c7b98",
+    "gstin": "29AAAAA0003A1Z5",
+    "invoice_amount": "75.52",
+    "claimed_gst": "11.52",
+    "claimed_tds": "0.00",
+    "period": "2026-08"
+  },
+  {
+    "invoice_id": "INV_TXN_00015",
+    "txn_id": "TXN_00015",
+    "irn": "00000000000000000000000000000000000000000000000000194574dbe7b9f3",
+    "gstin": "29AAAAA0015A1Z5",
+    "invoice_amount": "59.00",
+    "claimed_gst": "9.00",
+    "claimed_tds": "0.00",
+    "period": "2026-08"
+  },
+  {
+    "invoice_id": "INV_TXN_00028",
+    "txn_id": "TXN_00028",
+    "irn": "0000000000000000000000000000000000000000000000000011ed1af36eb8f2",
+    "gstin": "29AAAAA0005A1Z5",
+    "invoice_amount": "75.52",
+    "claimed_gst": "11.52",
+    "claimed_tds": "0.00",
+    "period": "2026-08"
+  },
+  {
+    "invoice_id": "INV_TXN_00006",
+    "txn_id": "TXN_00006",
+    "irn": "0000000000000000000000000000000000000000000000000019a7cc9f590906",
+    "gstin": "29AAAAA0006A1Z5",
+    "invoice_amount": "23.60",
+    "claimed_gst": "3.60",
+    "claimed_tds": "0.00",
+    "period": "2026-08"
+  },
+  {
+    "invoice_id": "INV_TXN_00030",
+    "txn_id": "TXN_00030",
+    "irn": "0000000000000000000000000000000000000000000000000016d4d0c134fbd0",
+    "gstin": "29AAAAA0003A1Z5",
+    "invoice_amount": "23.60",
+    "claimed_gst": "3.60",
+    "claimed_tds": "1.00",
+    "period": "2026-08"
+  },
+  {
+    "invoice_id": "INV_TXN_00021",
+    "txn_id": "TXN_00021",
+    "irn": "000000000000000000000000000000000000000000000000001cd8e2b5b38260",
+    "gstin": "29AAAAA0014A1Z5",
+    "invoice_amount": "295.00",
+    "claimed_gst": "45.00",
+    "claimed_tds": "0.00",
+    "period": "2026-08"
+  },
+  {
+    "invoice_id": "INV_TXN_00008",
+    "txn_id": "TXN_00008",
+    "irn": "00000000000000000000000000000000000000000000000000195ba18779048b",
+    "gstin": "29AAAAA0003A1Z5",
+    "invoice_amount": "127.44",
+    "claimed_gst": "19.44",
+    "claimed_tds": "5.40",
+    "period": "2026-08"
+  },
+  {
+    "invoice_id": "INV_TXN_00003",
+    "txn_id": "TXN_00003",
+    "irn": "000000000000000000000000000000000000000000000000000ee8d8d49937a4",
+    "gstin": "29AAAAA0005A1Z5",
+    "invoice_amount": "295.00",
+    "claimed_gst": "45.00",
+    "claimed_tds": "0.00",
+    "period": "2026-08"
+  },
+  {
+    "invoice_id": "INV_TXN_00034",
+    "txn_id": "TXN_00034",
+    "irn": "0000000000000000000000000000000000000000000000000006bd8be2902075",
+    "gstin": "29AAAAA0009A1Z5",
+    "invoice_amount": "23.60",
+    "claimed_gst": "3.60",
+    "claimed_tds": "0.00",
+    "period": "2026-08"
+  },
+  {
+    "invoice_id": "INV_TXN_00039",
+    "txn_id": "TXN_00039",
+    "irn": "000000000000000000000000000000000000000000000000001299b2f6800cae",
+    "gstin": "29AAAAA0002A1Z5",
+    "invoice_amount": "75.52",
+    "claimed_gst": "7.68",
+    "claimed_tds": "3.20",
+    "period": "2026-08"
+  },
+  {
+    "invoice_id": "INV_TXN_00055",
+    "txn_id": "TXN_00055",
+    "irn": "000000000000000000000000000000000000000000000000002145f76ed2c2b7",
+    "gstin": "29AAAAA0009A1Z5",
+    "invoice_amount": "23.60",
+    "claimed_gst": "3.60",
+    "claimed_tds": "0.00",
+    "period": "2026-08"
+  },
+  {
+    "invoice_id": "INV_TXN_00052",
+    "txn_id": "TXN_00052",
+    "irn": "0000000000000000000000000000000000000000000000000017c03a56648934",
+    "gstin": "29AAAAA0012A1Z5",
+    "invoice_amount": "75.52",
+    "claimed_gst": "11.52",
+    "claimed_tds": "0.00",
+    "period": "2026-08"
+  },
+  {
+    "invoice_id": "INV_TXN_00016",
+    "txn_id": "TXN_00016",
+    "irn": "00000000000000000000000000000000000000000000000000134a3f450ed922",
+    "gstin": "29AAAAA0003A1Z5",
+    "invoice_amount": "23.60",
+    "claimed_gst": "3.60",
+    "claimed_tds": "1.00",
+    "period": "2026-08"
+  },
+  {
+    "invoice_id": "INV_TXN_00007",
+    "txn_id": "TXN_00007",
+    "irn": "00000000000000000000000000000000000000000000000000161dc06a1be63f",
+    "gstin": "29AAAAA0003A1Z5",
+    "invoice_amount": "21.00",
+    "claimed_gst": "3.20",
+    "claimed_tds": "0.89",
+    "period": "2026-08"
+  },
+  {
+    "invoice_id": "INV_TXN_00053",
+    "txn_id": "TXN_00053",
+    "irn": "000000000000000000000000000000000000000000000000000a71cd02bbd1bb",
+    "gstin": "29AAAAA0004A1Z5",
+    "invoice_amount": "75.52",
+    "claimed_gst": "11.52",
+    "claimed_tds": "0.00",
+    "period": "2026-08"
+  },
+  {
+    "invoice_id": "INV_TXN_00012",
+    "txn_id": "TXN_00012",
+    "irn": "00000000000000000000000000000000000000000000000000226edbcb3ec184",
+    "gstin": "29AAAAA0015A1Z5",
+    "invoice_amount": "59.00",
+    "claimed_gst": "9.00",
+    "claimed_tds": "0.00",
+    "period": "2026-08"
+  },
+  {
+    "invoice_id": "INV_TXN_00032",
+    "txn_id": "TXN_00032",
+    "irn": "0000000000000000000000000000000000000000000000000008b085d558272b",
+    "gstin": "29AAAAA0002A1Z5",
+    "invoice_amount": "295.00",
+    "claimed_gst": "45.00",
+    "claimed_tds": "12.50",
+    "period": "2026-08"
+  },
+  {
+    "invoice_id": "INV_TXN_00001",
+    "txn_id": "TXN_00001",
+    "irn": "0000000000000000000000000000000000000000000000000009bff8934ff110",
+    "gstin": "29AAAAA0002A1Z5",
+    "invoice_amount": "75.52",
+    "claimed_gst": "11.52",
+    "claimed_tds": "0.00",
+    "period": "2026-08"
+  },
+  {
+    "invoice_id": "INV_TXN_00033",
+    "txn_id": "TXN_00033",
+    "irn": "0000000000000000000000000000000000000000000000000008597da852930b",
+    "gstin": "29AAAAA0003A1Z5",
+    "invoice_amount": "127.44",
+    "claimed_gst": "19.44",
+    "claimed_tds": "5.40",
+    "period": "2026-08"
+  },
+  {
+    "invoice_id": "INV_TXN_00047",
+    "txn_id": "TXN_00047",
+    "irn": "000000000000000000000000000000000000000000000000001077584e8bc447",
+    "gstin": "29AAAAA0004A1Z5",
+    "invoice_amount": "21.00",
+    "claimed_gst": "3.20",
+    "claimed_tds": "0.00",
+    "period": "2026-08"
+  },
+  {
+    "invoice_id": "INV_TXN_00060",
+    "txn_id": "TXN_00060",
+    "irn": "000000000000000000000000000000000000000000000000001a10adb0efce6b",
+    "gstin": "29AAAAA0008A1Z5",
+    "invoice_amount": "75.52",
+    "claimed_gst": "11.52",
+    "claimed_tds": "0.00",
+    "period": "2026-08"
+  },
+  {
+    "invoice_id": "INV_TXN_00037",
+    "txn_id": "TXN_00037",
+    "irn": "00000000000000000000000000000000000000000000000000165f0ef8112d58",
+    "gstin": "29AAAAA0009A1Z5",
+    "invoice_amount": "23.60",
+    "claimed_gst": "3.60",
+    "claimed_tds": "0.00",
+    "period": "2026-08"
+  },
+  {
+    "invoice_id": "INV_TXN_00020",
+    "txn_id": "TXN_00020",
+    "irn": "000000000000000000000000000000000000000000000000001fe71b23c4b69a",
+    "gstin": "29AAAAA0009A1Z5",
+    "invoice_amount": "75.52",
+    "claimed_gst": "11.52",
+    "claimed_tds": "0.00",
+    "period": "2026-08"
+  },
+  {
+    "invoice_id": "INV_TXN_00057",
+    "txn_id": "TXN_00057",
+    "irn": "0000000000000000000000000000000000000000000000000019621f90b0e318",
+    "gstin": "29AAAAA0009A1Z5",
+    "invoice_amount": "127.44",
+    "claimed_gst": "19.44",
+    "claimed_tds": "0.00",
+    "period": "2026-08"
+  },
+  {
+    "invoice_id": "INV_TXN_00018",
+    "txn_id": "TXN_00018",
+    "irn": "00000000000000000000000000000000000000000000000000201ce4cf00c667",
+    "gstin": "29AAAAA0012A1Z5",
+    "invoice_amount": "23.60",
+    "claimed_gst": "3.60",
+    "claimed_tds": "0.00",
+    "period": "2026-08"
+  },
+  {
+    "invoice_id": "INV_TXN_00041",
+    "txn_id": "TXN_00041",
+    "irn": "00000000000000000000000000000000000000000000000000049df5d1593dc3",
+    "gstin": "29AAAAA0010A1Z5",
+    "invoice_amount": "23.60",
+    "claimed_gst": "3.60",
+    "claimed_tds": "10.00",
+    "period": "2026-08"
+  },
+  {
+    "invoice_id": "INV_TXN_00044",
+    "txn_id": "TXN_00044",
+    "irn": "0000000000000000000000000000000000000000000000000015309293130dc6",
+    "gstin": "29AAAAA0011A1Z5",
+    "invoice_amount": "21.00",
+    "claimed_gst": "3.20",
+    "claimed_tds": "8.90",
+    "period": "2026-08"
+  },
+  {
+    "invoice_id": "INV_TXN_00038",
+    "txn_id": "TXN_00038",
+    "irn": "000000000000000000000000000000000000000000000000001f5463abc7137b",
+    "gstin": "29AAAAA0008A1Z5",
+    "invoice_amount": "21.00",
+    "claimed_gst": "3.20",
+    "claimed_tds": "0.00",
+    "period": "2026-08"
+  },
+  {
+    "invoice_id": "INV_TXN_00045",
+    "txn_id": "TXN_00045",
+    "irn": "0000000000000000000000000000000000000000000000000005e540d6acb801",
+    "gstin": "29AAAAA0001A1Z5",
+    "invoice_amount": "75.52",
+    "claimed_gst": "11.52",
+    "claimed_tds": "32.00",
+    "period": "2026-08"
+  },
+  {
+    "invoice_id": "INV_TXN_00042",
+    "txn_id": "TXN_00042",
+    "irn": "00000000000000000000000000000000000000000000000000056fee1cdd3e63",
+    "gstin": "29AAAAA0002A1Z5",
+    "invoice_amount": "59.00",
+    "claimed_gst": "6.00",
+    "claimed_tds": "2.50",
+    "period": "2026-08"
+  },
+  {
+    "invoice_id": "INV_TXN_00010",
+    "txn_id": "TXN_00010",
+    "irn": "000000000000000000000000000000000000000000000000001d36a7617f2084",
+    "gstin": "29AAAAA0002A1Z5",
+    "invoice_amount": "23.60",
+    "claimed_gst": "3.60",
+    "claimed_tds": "0.00",
+    "period": "2026-08"
+  },
+  {
+    "invoice_id": "INV_TXN_00029",
+    "txn_id": "TXN_00029",
+    "irn": "00000000000000000000000000000000000000000000000000047df416d69a3f",
+    "gstin": "29AAAAA0005A1Z5",
+    "invoice_amount": "75.52",
+    "claimed_gst": "11.52",
+    "claimed_tds": "0.00",
+    "period": "2026-08"
+  },
+  {
+    "invoice_id": "INV_TXN_00063",
+    "txn_id": "TXN_00063",
+    "irn": "00000000000000000000000000000000000000000000000000179d64cc96d2c6",
+    "gstin": "29AAAAA0012A1Z5",
+    "invoice_amount": "21.00",
+    "claimed_gst": "3.20",
+    "claimed_tds": "0.00",
+    "period": "2026-08"
+  },
+  {
+    "invoice_id": "INV_TXN_00025",
+    "txn_id": "TXN_00025",
+    "irn": "00000000000000000000000000000000000000000000000000079072ef9b0431",
+    "gstin": "29AAAAA0012A1Z5",
+    "invoice_amount": "59.00",
+    "claimed_gst": "9.00",
+    "claimed_tds": "0.00",
+    "period": "2026-08"
+  },
+  {
+    "invoice_id": "INV_TXN_00058",
+    "txn_id": "TXN_00058",
+    "irn": "0000000000000000000000000000000000000000000000000011a346743934f6",
+    "gstin": "29AAAAA0010A1Z5",
+    "invoice_amount": "21.00",
+    "claimed_gst": "3.20",
+    "claimed_tds": "0.00",
+    "period": "2026-08"
+  },
+  {
+    "invoice_id": "INV_TXN_00040",
+    "txn_id": "TXN_00040",
+    "irn": "0000000000000000000000000000000000000000000000000015a50005fbaeec",
+    "gstin": "29AAAAA0001A1Z5",
+    "invoice_amount": "127.44",
+    "claimed_gst": "19.44",
+    "claimed_tds": "54.00",
+    "period": "2026-08"
+  },
+  {
+    "invoice_id": "INV_TXN_00043",
+    "txn_id": "TXN_00043",
+    "irn": "0000000000000000000000000000000000000000000000000014f0033b56b191",
+    "gstin": "29AAAAA0004A1Z5",
+    "invoice_amount": "59.00",
+    "claimed_gst": "9.00",
+    "claimed_tds": "25.00",
+    "period": "2026-08"
+  },
+  {
+    "invoice_id": "INV_TXN_00036",
+    "txn_id": "TXN_00036",
+    "irn": "0000000000000000000000000000000000000000000000000018961025d9c8f1",
+    "gstin": "29AAAAA0001A1Z5",
+    "invoice_amount": "23.60",
+    "claimed_gst": "3.60",
+    "claimed_tds": "1.00",
+    "period": "2026-08"
+  },
+  {
+    "invoice_id": "INV_TXN_00031",
+    "txn_id": "TXN_00031",
+    "irn": "000000000000000000000000000000000000000000000000000da47a5e79cee7",
+    "gstin": "29AAAAA0008A1Z5",
+    "invoice_amount": "59.00",
+    "claimed_gst": "9.00",
+    "claimed_tds": "0.00",
+    "period": "2026-08"
+  },
+  {
+    "invoice_id": "INV_TXN_00017",
+    "txn_id": "TXN_00017",
+    "irn": "0000000000000000000000000000000000000000000000000018c388699a454c",
+    "gstin": "29AAAAA0006A1Z5",
+    "invoice_amount": "295.00",
+    "claimed_gst": "45.00",
+    "claimed_tds": "0.00",
+    "period": "2026-08"
+  },
+  {
+    "invoice_id": "INV_TXN_00011",
+    "txn_id": "TXN_00011",
+    "irn": "000000000000000000000000000000000000000000000000001422e913cbd718",
+    "gstin": "29AAAAA0013A1Z5",
+    "invoice_amount": "295.00",
+    "claimed_gst": "45.00",
+    "claimed_tds": "0.00",
+    "period": "2026-08"
+  },
+  {
+    "invoice_id": "INV_TXN_00051",
+    "txn_id": "TXN_00051",
+    "irn": "000000000000000000000000000000000000000000000000001414d3a63572f6",
+    "gstin": "29AAAAA0005A1Z5",
+    "invoice_amount": "295.00",
+    "claimed_gst": "45.00",
+    "claimed_tds": "0.00",
+    "period": "2026-08"
+  },
+  {
+    "invoice_id": "INV_TXN_00062",
+    "txn_id": "TXN_00062",
+    "irn": "00000000000000000000000000000000000000000000000000076e21493a1077",
+    "gstin": "29AAAAA0012A1Z5",
+    "invoice_amount": "21.00",
+    "claimed_gst": "3.20",
+    "claimed_tds": "0.00",
+    "period": "2026-08"
+  },
+  {
+    "invoice_id": "INV_TXN_00026",
+    "txn_id": "TXN_00026",
+    "irn": "000000000000000000000000000000000000000000000000001d20c901f3005c",
+    "gstin": "29AAAAA0012A1Z5",
+    "invoice_amount": "75.52",
+    "claimed_gst": "11.52",
+    "claimed_tds": "0.00",
+    "period": "2026-08"
+  },
+  {
+    "invoice_id": "INV_TXN_00061",
+    "txn_id": "TXN_00061",
+    "irn": "0000000000000000000000000000000000000000000000000010c2858815393e",
+    "gstin": "29AAAAA0002A1Z5",
+    "invoice_amount": "75.52",
+    "claimed_gst": "11.52",
+    "claimed_tds": "3.20",
+    "period": "2026-08"
+  },
+  {
+    "invoice_id": "INV_TXN_00035",
+    "txn_id": "TXN_00035",
+    "irn": "00000000000000000000000000000000000000000000000000089efe00a6f0a1",
+    "gstin": "29AAAAA0003A1Z5",
+    "invoice_amount": "295.00",
+    "claimed_gst": "45.00",
+    "claimed_tds": "12.50",
+    "period": "2026-08"
+  },
+  {
+    "invoice_id": "INV_TXN_00013",
+    "txn_id": "TXN_00013",
+    "irn": "0000000000000000000000000000000000000000000000000003f6b1f7a87bb0",
+    "gstin": "29AAAAA0001A1Z5",
+    "invoice_amount": "127.44",
+    "claimed_gst": "19.44",
+    "claimed_tds": "5.40",
+    "period": "2026-08"
+  },
+  {
+    "invoice_id": "INV_TXN_00019",
+    "txn_id": "TXN_00019",
+    "irn": "0000000000000000000000000000000000000000000000000014bd95cb365f5c",
+    "gstin": "29AAAAA0002A1Z5",
+    "invoice_amount": "59.00",
+    "claimed_gst": "9.00",
+    "claimed_tds": "2.50",
+    "period": "2026-08"
+  },
+  {
+    "invoice_id": "INV_TXN_00014",
+    "txn_id": "TXN_00014",
+    "irn": "000000000000000000000000000000000000000000000000001d1f8aa364e246",
+    "gstin": "29AAAAA0001A1Z5",
+    "invoice_amount": "23.60",
+    "claimed_gst": "3.60",
+    "claimed_tds": "1.00",
+    "period": "2026-08"
+  },
+  {
+    "invoice_id": "INV_TXN_00022",
+    "txn_id": "TXN_00022",
+    "irn": "00000000000000000000000000000000000000000000000000092ef6f95fe8e7",
+    "gstin": "29AAAAA0002A1Z5",
+    "invoice_amount": "59.00",
+    "claimed_gst": "9.00",
+    "claimed_tds": "2.50",
+    "period": "2026-08"
+  },
+  {
+    "invoice_id": "INV_TXN_00024",
+    "txn_id": "TXN_00024",
+    "irn": "0000000000000000000000000000000000000000000000000017a73fd6b63ef6",
+    "gstin": "29AAAAA0006A1Z5",
+    "invoice_amount": "23.60",
+    "claimed_gst": "3.60",
+    "claimed_tds": "0.00",
+    "period": "2026-08"
+  },
+  {
+    "invoice_id": "INV_TXN_00009",
+    "txn_id": "TXN_00009",
+    "irn": "000000000000000000000000000000000000000000000000001a40ca3d59d88c",
+    "gstin": "29AAAAA0010A1Z5",
+    "invoice_amount": "59.00",
+    "claimed_gst": "9.00",
+    "claimed_tds": "0.00",
+    "period": "2026-08"
+  },
+  {
+    "invoice_id": "INV_TXN_00023",
+    "txn_id": "TXN_00023",
+    "irn": "0000000000000000000000000000000000000000000000000010c6d89a94e011",
+    "gstin": "29AAAAA0003A1Z5",
+    "invoice_amount": "59.00",
+    "claimed_gst": "9.00",
+    "claimed_tds": "2.50",
+    "period": "2026-08"
+  },
+  {
+    "invoice_id": "INV_TXN_00059",
+    "txn_id": "TXN_00059",
+    "irn": "00000000000000000000000000000000000000000000000000189e7cb77f7bf5",
+    "gstin": "29AAAAA0010A1Z5",
+    "invoice_amount": "295.00",
+    "claimed_gst": "45.00",
+    "claimed_tds": "0.00",
+    "period": "2026-08"
+  },
+  {
+    "invoice_id": "INV_TXN_00056",
+    "txn_id": "TXN_00056",
+    "irn": "000000000000000000000000000000000000000000000000000d5c674442854d",
+    "gstin": "29AAAAA0013A1Z5",
+    "invoice_amount": "59.00",
+    "claimed_gst": "9.00",
+    "claimed_tds": "0.00",
+    "period": "2026-08"
+  },
+  {
+    "invoice_id": "INV_TXN_00005",
+    "txn_id": "TXN_00005",
+    "irn": "000000000000000000000000000000000000000000000000000e7b8f7b10bce0",
+    "gstin": "29AAAAA0003A1Z5",
+    "invoice_amount": "59.00",
+    "claimed_gst": "9.00",
+    "claimed_tds": "2.50",
+    "period": "2026-08"
+  },
+  {
+    "invoice_id": "INV_TXN_00002",
+    "txn_id": "TXN_00002",
+    "irn": "0000000000000000000000000000000000000000000000000011681c849063b1",
+    "gstin": "29AAAAA0005A1Z5",
+    "invoice_amount": "295.00",
+    "claimed_gst": "45.00",
+    "claimed_tds": "0.00",
+    "period": "2026-08"
+  }
+]
