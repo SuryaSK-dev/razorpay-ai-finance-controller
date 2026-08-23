@@ -43,19 +43,23 @@ TDS_ANNUAL_THRESHOLD = Decimal("500000")  # ₹5,00,000 (five lakh)
 
 # =======================================================================
 # MATCHING SCORE WEIGHTS
-# Sum to 100 when every signal agrees on a candidate pair. Weighted by
-# how strong a signal is as *evidence of the same transaction* — an
-# exact transaction ID is far harder to coincidentally collide than a
-# same-day date match, hence the weighting gap.
+# Explicit per-source constants rather than a shared dict split at
+# runtime (e.g. SCORE_TXN_ID_EXACT // 2) -- self-documenting, and a
+# future maintainer never has to mentally reconstruct why 40 became
+# 20. Sums to 100 when bank + invoice are both present and every
+# signal matches; a subset still scores meaningfully when only one
+# secondary source is present.
 # =======================================================================
 
-SCORE_WEIGHTS = {
-    "txn_id_exact": 40,
-    "amount_match": 30,
-    "date_within_window": 15,
-    "utr_match": 10,
-    "fee_match": 5,
-}
+SCORE_TXN_ID_BANK = 20        # exact txn_id match, PG <-> bank
+SCORE_TXN_ID_INVOICE = 20     # exact txn_id match, PG <-> invoice
+SCORE_AMOUNT_BANK = 15        # PG's derived net amount <-> bank credited amount
+SCORE_AMOUNT_INVOICE = 15     # PG's fee+GST <-> invoice amount
+SCORE_DATE_PROXIMITY = 15     # awarded proportionally by day-delta,
+                               # satisfied once by whichever secondary
+                               # source is present
+SCORE_UTR_EXACT = 10          # bank-only signal -- invoices carry no UTR
+SCORE_FEE_EXACT = 5           # PG fee <-> invoice fee consistency
 
 # =======================================================================
 # CONFIDENCE THRESHOLDS
@@ -69,7 +73,7 @@ SCORE_WEIGHTS = {
 CONFIDENCE_HIGH_THRESHOLD = 95     # >= 95: auto-eligible for match
 CONFIDENCE_MEDIUM_THRESHOLD = 85   # 85-94: eligible only if txn_id was exact
 CONFIDENCE_LOW_THRESHOLD = 70      # 70-84: too weak -> AMBIGUOUS
-                                               # < 70: no viable candidate -> UNMATCHED
+                                    # < 70: no viable candidate -> UNMATCHED
 
 # =======================================================================
 # TOLERANCES
@@ -80,8 +84,13 @@ CONFIDENCE_LOW_THRESHOLD = 70      # 70-84: too weak -> AMBIGUOUS
 
 AMOUNT_TOLERANCE = Decimal("0.01")   # ₹0.01 — rounding slack for money comparisons
 TAX_TOLERANCE = Decimal("0.01")      # ₹0.01 — rounding slack for tax math
-SETTLEMENT_WINDOW_DAYS = 3              # T+1 to T+3 is normal settlement lag,
-                                      # not a timing error to flag
+DATE_TOLERANCE_DAYS = 3              # T+1 to T+3 is normal settlement lag,
+                                      # not a timing error to flag.
+                                      # NOTE: this name (not
+                                      # SETTLEMENT_WINDOW_DAYS) is what
+                                      # matching/candidates.py and
+                                      # matching/scoring.py actually
+                                      # import -- keep this name stable.
 
 # =======================================================================
 # FUZZY MATCH GUARDRAILS
@@ -116,7 +125,7 @@ def money(value: Decimal) -> Decimal:
 
 
 # =======================================================================
-# EVALUATION DATASET CONFIGURATION
+# SYNTHETIC DATA GENERATION
 # =======================================================================
 
 RANDOM_SEED = 12345  # fixed for reproducibility -- log this value in
@@ -135,5 +144,4 @@ BATCH_DISTRIBUTION = {
     "corrupted": 2,
     "unresolvable": 2,
 }
-
 TOTAL_RECORDS = sum(BATCH_DISTRIBUTION.values())  # = 60

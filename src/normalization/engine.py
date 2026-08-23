@@ -93,13 +93,10 @@ def resolve_bank_txn_id(bank_ref: str, narration: Optional[str]) -> Optional[str
 
 def normalize_pg_record(record: PGSettlementRecord) -> NormalizedRecord:
     return NormalizedRecord(
-        txn_id=record.txn_id,
-        source="pg",
-        utr=record.utr,
-        amount=record.gross_amount,
+        txn_id=record.txn_id, source="pg", utr=record.utr,
+        amount=record.gross_amount, fee=record.pg_fee,   # NEW: fee
         date_utc=_to_utc(record.timestamp),
-        gst=record.gst_on_fee,
-        tds=record.tds_withheld,
+        gst=record.gst_on_fee, tds=record.tds_withheld,
         raw_ref=record.model_dump(mode="json"),
     )
 
@@ -127,17 +124,22 @@ def normalize_bank_record(record: BankStatementRecord) -> NormalizedRecord:
 
 def normalize_invoice_record(record: InvoiceRecord) -> NormalizedRecord:
     year, month = (int(part) for part in record.period.split("-"))
+    invoice_fee = record.invoice_amount - record.claimed_gst  # derived --
+                                        # our schema has no standalone
+                                        # invoice fee field; invoice_amount
+                                        # = fee + gst by construction in
+                                        # generate_data.py
     return NormalizedRecord(
         txn_id=record.txn_id,
         source="invoice",
         utr=None,
         amount=record.invoice_amount,
+        fee=invoice_fee,                # ADD THIS LINE
         date_utc=datetime(year, month, 1, tzinfo=timezone.utc),
         gst=record.claimed_gst,
         tds=record.claimed_tds,
         raw_ref=record.model_dump(mode="json"),
     )
-
 
 # =======================================================================
 # BATCH NORMALIZATION + REPORT

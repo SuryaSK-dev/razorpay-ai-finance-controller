@@ -142,6 +142,7 @@ class InvoiceRecord(BaseModel):
 # tax validation, and decisioning never see a source-specific field
 # name again after this point.
 # =======================================================================
+
 class NormalizedRecord(BaseModel):
     txn_id: Optional[str] = None  # None means "not yet resolved" --
                                    # bank records may reach this stage
@@ -155,6 +156,7 @@ class NormalizedRecord(BaseModel):
     source: Literal["pg", "bank", "invoice"]
     utr: Optional[str] = None
     amount: Money
+    fee: Optional[Money] = None
     date_utc: datetime
     gst: Optional[Money] = None
     tds: Optional[Money] = None
@@ -163,7 +165,6 @@ class NormalizedRecord(BaseModel):
                                                               # to the
                                                               # original
                                                               # source record
-
 # =======================================================================
 # DECISION CONTRACT
 # The single point-of-record for a transaction's final outcome.
