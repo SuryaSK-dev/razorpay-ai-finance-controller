@@ -1,3 +1,57 @@
+# FAILURE_LOG.md
+
+## Engineering Post-Mortems — AI Finance Controller (Track 04)
+
+This log documents every real defect discovered during development of the
+reconciliation engine, from initial data modeling through the decision
+engine. Each entry follows the same structure a payments-systems team would
+use internally: **what broke, where it lived in the system, why it happened,
+how it was found, how it was fixed, and what it proves about the
+architecture.**
+
+Nothing in this document is retrofitted. Every entry below was written at
+the point of discovery, against the actual failing output of the system —
+not reconstructed afterward to sound instructive.
+
+---
+
+## Index
+
+| # | Component | Severity | Category |
+|---|---|---|---|
+| 1 | `models.py` | Design-time (prevented, not observed) | Financial correctness |
+| 2 | `scripts/verify_data.py` | Medium | False-positive validation |
+| 3 | `src/normalization/engine.py` | Low | Type-safety gap |
+| 4 | `src/matching/candidates.py` | High | Dead code / structural risk |
+| 5 | `tests/test_matching.py` | Medium | Test validity |
+| 6 | `src/matching/scoring.py` | High | Missing decision state |
+| 7 | `src/tax/seller_ledger.py` | Critical | Silent financial miscalculation |
+
+---
+
+## 1. Float/Decimal Precision Risk — Prevented by Design, Not Discovered by Debugging
+
+**Where:** `src/models.py`, `to_decimal()` validator, applied via the shared `Money` type to every monetary field across `PGSettlementRecord`, `BankStatementRecord`, `InvoiceRecord`, and `NormalizedRecord`.
+
+**The risk:** Standard Python float arithmetic is provably unsafe for currency — `0.1 + 0.2 != 0.3` in IEEE 754 binary floating point. In a reconciliation system, this class of error is not cosmetic; it silently corrupts amount comparisons, causing legitimate matches to be rejected or, worse, incorrect matches to be silently accepted within a coincidentally-passing tolerance window.
+
+**Strategic approach:** Rather than discover this as a runtime bug, the schema layer was designed to make it structurally impossible. `to_decimal()` explicitly rejects `float` and `bool` (a `bool` is a subclass of `int` in Python and can silently coerce into a nonsensical Decimal if not excluded) at the Pydantic validation boundary, before any value can reach business logic.
+
+**Why this belongs in the log:** A defect prevented by architecture is worth documenting as deliberately as one found by testing — it demonstrates the difference between debugging financial software and designing it so an entire bug class cannot occur. This is the single design decision every other fix in this log depends on; every downstream calculation in Phases 3–4 inherits its correctness from this boundary holding.
+
+---
+
+## 2. False-Positive Referential Integrity Failures in the Dataset Validator
+
+**Where:** `scripts/verify_data.py`, `CHECK 4: Referential integrity`.
+
+**What broke:** The validator indexed bank records by UTR to confirm every ground-truth transaction was present in its expected sources. Two synthetic anomaly categories — `reference_mismatch_fuzzy` and `unresolvable` — deliberately corrupt or null the bank-side UTR as their entire test premise. The validator correctly found no UTR match for these records and reported them as **missing from the bank source**, when they were actually present, linked only by a different key (`bank_ref`).
+
+**FAILURES:**
+TXN_00025 (reference_mismatch_fuzzy): expected present in all 3 sources, got bank=False
+TXN_00026 (reference_mismatch_fuzzy): expected present in all 3 sources, got bank=False
+... (8 total)
+
 
 **Root cause:** Conflating "not found by this lookup key" with "absent from the source." UTR is deliberately unreliable in exactly the categories under test, so indexing by UTR alone was the wrong join key for a general-purpose integrity check.
 
