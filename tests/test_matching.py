@@ -225,17 +225,20 @@ def test_stale_tax_rate_breaks_fee_consistency_not_amount_match():
 def test_ambiguous_candidates_resolved_deterministically_and_repeatably():
     """Two equally plausible bank candidates -- selection must be
     deterministic (same winner every run), not dependent on list
-    order, and the loser must be preserved as a rejected candidate."""
+    order, and the loser must be preserved as a rejected candidate.
+
+    Tie-break now uses the typed `utr` field (not raw_ref bank_ref),
+    so the fixtures must differ on utr to actually exercise the
+    final tiebreaker step."""
     pg = make_normalized("TXN_010", "pg", amount="500.00",
                           date_utc=datetime(2026, 8, 15, tzinfo=timezone.utc))
     bank_a = make_normalized("TXN_010", "bank", amount="500.00",
-                              date_utc=datetime(2026, 8, 15, tzinfo=timezone.utc),
-                              raw_ref={"bank_ref": "BANKREF_B_LATER"})
+                              utr="UTR_B_LATER",
+                              date_utc=datetime(2026, 8, 15, tzinfo=timezone.utc))
     bank_b = make_normalized("TXN_010", "bank", amount="500.00",
-                              date_utc=datetime(2026, 8, 15, tzinfo=timezone.utc),
-                              raw_ref={"bank_ref": "BANKREF_A_EARLIER"})
+                              utr="UTR_A_EARLIER",
+                              date_utc=datetime(2026, 8, 15, tzinfo=timezone.utc))
 
-    index = CandidateIndex([bank_a, bank_b], [])
     normalized_pool = [pg, bank_a, bank_b]
 
     results_run_1 = run_matching(normalized_pool)
@@ -249,14 +252,12 @@ def test_ambiguous_candidates_resolved_deterministically_and_repeatably():
     assert len(r1.rejected_bank_candidates) == 1
 
     # same run twice -> same winner both times (determinism check)
-    winner_ref_1 = r1.bank_record.raw_ref.get("bank_ref")
-    winner_ref_2 = r2.bank_record.raw_ref.get("bank_ref")
-    assert winner_ref_1 == winner_ref_2
+    winner_utr_1 = r1.bank_record.utr
+    winner_utr_2 = r2.bank_record.utr
+    assert winner_utr_1 == winner_utr_2
 
-    # lexicographic tiebreak means "BANKREF_A_EARLIER" wins over
-    # "BANKREF_B_LATER" when date and amount deltas are tied
-    assert winner_ref_1 == "BANKREF_A_EARLIER"
-
+    # lexicographic tiebreak on utr: "UTR_A_EARLIER" < "UTR_B_LATER"
+    assert winner_utr_1 == "UTR_A_EARLIER"
 
 def test_ambiguous_result_never_auto_matchable():
     """Even if the chosen candidate's raw score would qualify as

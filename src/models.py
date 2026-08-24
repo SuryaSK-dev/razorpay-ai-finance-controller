@@ -1,3 +1,4 @@
+# src/models.py
 """
 Canonical data contracts for the reconciliation engine.
 
@@ -107,6 +108,19 @@ class PGSettlementRecord(BaseModel):
     tds_withheld: Money = Field(default=Decimal("0"))
     net_payout: Money
     merchant_gstin: Optional[str] = None
+    merchant_ytd_gross_opening: Money = Field(default=Decimal("0"))
+    # Each merchant's cumulative gross transaction value PRIOR to this
+    # batch -- i.e. their running total from real prior-period
+    # settlement history. This is what makes the TDS Section 393
+    # threshold (INR 5,00,000 annual) evaluable at all: the threshold
+    # is a property of a seller's YEAR, not any single transaction or
+    # any single batch, and no downstream consumer can correctly
+    # reconstruct "has this merchant crossed the threshold" without
+    # knowing their starting point. A real production system would
+    # source this from an actual merchant ledger; here it is generated
+    # explicitly so the synthetic data is self-consistent and every
+    # TDS decision is independently verifiable, not just internally
+    # consistent with the generator's own private state.
     utr: Optional[str] = None          # intentionally optional — some
                                         # synthetic records omit it
     timestamp: datetime
@@ -164,7 +178,21 @@ class NormalizedRecord(BaseModel):
                                                               # back-pointer
                                                               # to the
                                                               # original
-                                                              # source record
+                                                              # source record.
+                                                              # This is also
+                                                              # how
+                                                              # seller_ledger.py
+                                                              # reads
+                                                              # merchant_ytd_gross_opening
+                                                              # -- via
+                                                              # raw_ref, since
+                                                              # that field
+                                                              # is PG-source
+                                                              # -specific and
+                                                              # not part of the
+                                                              # universal
+                                                              # canonical schema.
+
 # =======================================================================
 # DECISION CONTRACT
 # The single point-of-record for a transaction's final outcome.

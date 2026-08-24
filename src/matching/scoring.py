@@ -6,11 +6,16 @@ together deliberately: both are small, tightly coupled, and both are
 driven entirely by config.py constants.
 
 Scoring reads ONLY from NormalizedRecord's canonical fields -- never
-from raw_ref. raw_ref exists purely for audit traceability back to
-the original source record; depending on it for scoring logic would
-silently couple this module to generator-specific field names, and
-break the moment any other data source produced a normalized record
-without those exact keys.
+from raw_ref.
+
+Confidence classification uses normalized_score, not the raw
+total_score. A transaction with only one secondary source present
+(e.g. invoice but no bank) can never reach 100 raw points even when
+every available signal matches perfectly -- normalizing against the
+maximum ACHIEVABLE score given which sources exist is what makes
+PARTIAL_MATCH reachable at all, instead of every partial-source
+transaction silently collapsing into NO_MATCH regardless of how well
+it actually matches.
 """
 
 from __future__ import annotations
@@ -35,7 +40,11 @@ from src.config import (
     CONFIDENCE_LOW_THRESHOLD,
 )
 
-SCORER_VERSION = "v1"  # bump if scoring logic changes meaningfully
+SCORER_VERSION = "v2"  # bumped: v1 classified confidence against raw
+                        # total_score, which made PARTIAL_MATCH
+                        # unreachable for any transaction missing a
+                        # secondary source. v2 classifies against
+                        # normalized_score instead.
 
 
 class ConfidenceTier(str, Enum):
@@ -51,6 +60,7 @@ class MatchScore:
     back to a specific canonical-field comparison -- this becomes the
     audit evidence attached to the eventual MatchDecision."""
     total_score: int
+    normalized_score: int
     txn_id_matched_bank: bool
     txn_id_matched_invoice: bool
     amount_matched_bank: bool
@@ -67,22 +77,29 @@ class MatchScore:
 
 def _proportional_date_score(delta_days: int, max_points: int = SCORE_DATE_PROXIMITY,
                               window: int = DATE_TOLERANCE_DAYS) -> int:
-    """0 days apart is stronger evidence than 3 days apart, even
-    though both fall within the tolerance window -- award points
-    proportionally rather than treating the whole window as binary."""
     if delta_days > window:
         return 0
     return max_points - delta_days
 
 
+def _max_achievable_score(bank_present: bool, invoice_present: bool) -> int:
+    """The ceiling a candidate could reach given which secondary
+    sources actually exist. Confidence must be judged against this
+    ceiling, not a fixed 100 that silently assumes all three sources
+    are always available."""
+    max_score = 0
+    if bank_present:
+        max_score += SCORE_TXN_ID_BANK + SCORE_AMOUNT_BANK + SCORE_UTR_EXACT
+    if invoice_present:
+        max_score += SCORE_TXN_ID_INVOICE + SCORE_AMOUNT_INVOICE + SCORE_FEE_EXACT
+    if bank_present or invoice_present:
+        max_score += SCORE_DATE_PROXIMITY
+    return max_score
+
+
 def score_candidate(pg_record: NormalizedRecord,
                      bank_record: Optional[NormalizedRecord],
                      invoice_record: Optional[NormalizedRecord]) -> MatchScore:
-    """
-    Scores a PG record against its (possibly partial) bank and
-    invoice candidates, using ONLY canonical NormalizedRecord fields
-    (amount, gst, tds, fee -- never raw_ref).
-    """
     signals: dict = {}
     score = 0
 
@@ -92,7 +109,6 @@ def score_candidate(pg_record: NormalizedRecord,
     signals["missing_bank"] = not bank_present
     signals["missing_invoice"] = not invoice_present
 
-    # ---- txn_id: explicit per-source weights, no runtime division ----
     txn_id_matched_bank = False
     txn_id_matched_invoice = False
 
@@ -113,10 +129,6 @@ def score_candidate(pg_record: NormalizedRecord,
                                       "matched": txn_id_matched_invoice,
                                       "points_awarded": SCORE_TXN_ID_INVOICE if txn_id_matched_invoice else 0}
 
-    # ---- amount: canonical fields only ----
-    # Bank amount is the NET payout. PG's canonical `amount` is gross,
-    # so we derive PG's expected net as gross - fee - gst - tds, all
-    # from canonical fields on the PG NormalizedRecord itself.
     amount_matched_bank = False
     if bank_present:
         pg_fee = pg_record.fee if pg_record.fee is not None else Decimal("0")
@@ -133,9 +145,6 @@ def score_candidate(pg_record: NormalizedRecord,
                                    "delta": str(delta), "matched": amount_matched_bank,
                                    "points_awarded": SCORE_AMOUNT_BANK if amount_matched_bank else 0}
 
-    # Invoice amount represents fee+GST (per our schema's
-    # invoice_amount = fee + gst) -- compare against PG's own
-    # canonical fee + gst, not PG's gross amount.
     amount_matched_invoice = False
     if invoice_present:
         pg_fee = pg_record.fee if pg_record.fee is not None else Decimal("0")
@@ -151,7 +160,6 @@ def score_candidate(pg_record: NormalizedRecord,
                                       "delta": str(delta), "matched": amount_matched_invoice,
                                       "points_awarded": SCORE_AMOUNT_INVOICE if amount_matched_invoice else 0}
 
-    # ---- date proximity: proportional, satisfied once by either source ----
     date_matched_bank = False
     date_matched_invoice = False
     date_points_awarded = 0
@@ -175,7 +183,6 @@ def score_candidate(pg_record: NormalizedRecord,
     score += date_points_awarded
     signals["date_points_awarded"] = date_points_awarded
 
-    # ---- UTR: bank-only signal ----
     utr_matched = False
     if bank_present:
         utr_matched = bool(pg_record.utr) and pg_record.utr == bank_record.utr
@@ -184,8 +191,6 @@ def score_candidate(pg_record: NormalizedRecord,
         signals["utr"] = {"pg": pg_record.utr, "bank": bank_record.utr, "matched": utr_matched,
                            "points_awarded": SCORE_UTR_EXACT if utr_matched else 0}
 
-    # ---- fee consistency: PG fee vs invoice fee -- the actually
-    # correct comparison, not bank_charges (an unrelated concept) ----
     fee_consistent = False
     if invoice_present:
         pg_fee = pg_record.fee if pg_record.fee is not None else Decimal("0")
@@ -199,17 +204,18 @@ def score_candidate(pg_record: NormalizedRecord,
                                            "delta": str(delta), "matched": fee_consistent,
                                            "points_awarded": SCORE_FEE_EXACT if fee_consistent else 0}
 
-    # Fail loudly, not silently, if scoring logic ever produces an
-    # out-of-range total -- a cap would hide a real bug in the weight
-    # configuration; an assertion surfaces it immediately in testing.
     assert 0 <= score <= 100, (
         f"Score {score} out of valid range [0,100] for txn_id="
         f"{pg_record.txn_id} -- check config.py score weights sum "
         f"to 100 and no double-counting occurred. Signals: {signals}"
     )
 
+    max_achievable = _max_achievable_score(bank_present, invoice_present)
+    normalized_score = round((score / max_achievable) * 100) if max_achievable > 0 else 0
+
     return MatchScore(
         total_score=score,
+        normalized_score=normalized_score,
         txn_id_matched_bank=txn_id_matched_bank,
         txn_id_matched_invoice=txn_id_matched_invoice,
         amount_matched_bank=amount_matched_bank,
@@ -225,7 +231,8 @@ def score_candidate(pg_record: NormalizedRecord,
 
 
 def classify_confidence(match_score: MatchScore) -> ConfidenceTier:
-    score = match_score.total_score
+    score = match_score.normalized_score  # classify against normalized,
+                                            # not raw total_score
 
     if score >= CONFIDENCE_HIGH_THRESHOLD:
         return ConfidenceTier.HIGH

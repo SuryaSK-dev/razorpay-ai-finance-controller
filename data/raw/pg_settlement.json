@@ -10,6 +10,7 @@
     "tds_withheld": "0.00",
     "net_payout": "869.00",
     "merchant_gstin": "29AAAAA0004A1Z5",
+    "merchant_ytd_gross_opening": "4280.00",
     "payment_method": "NETBANKING",
     "utr": "UTR555946517",
     "timestamp": "2026-08-10T09:00:00+00:00"
@@ -25,6 +26,7 @@
     "tds_withheld": "5.40",
     "net_payout": "5267.16",
     "merchant_gstin": "29AAAAA0001A1Z5",
+    "merchant_ytd_gross_opening": "495000.00",
     "payment_method": "UPI",
     "utr": "UTR467184137",
     "timestamp": "2026-08-13T17:00:00+00:00"
@@ -40,6 +42,7 @@
     "tds_withheld": "0.00",
     "net_payout": "976.40",
     "merchant_gstin": "29AAAAA0006A1Z5",
+    "merchant_ytd_gross_opening": "0.00",
     "payment_method": "UPI",
     "utr": "UTR464554432",
     "timestamp": "2026-08-06T14:00:00+00:00"
@@ -55,6 +58,7 @@
     "tds_withheld": "2.50",
     "net_payout": "2438.50",
     "merchant_gstin": "29AAAAA0003A1Z5",
+    "merchant_ytd_gross_opening": "498200.00",
     "payment_method": "UPI",
     "utr": "UTR871985091",
     "timestamp": "2026-08-05T06:00:00+00:00"
@@ -70,6 +74,7 @@
     "tds_withheld": "0.00",
     "net_payout": "976.40",
     "merchant_gstin": "29AAAAA0009A1Z5",
+    "merchant_ytd_gross_opening": "4200.00",
     "payment_method": "NETBANKING",
     "utr": "UTR262781261",
     "timestamp": "2026-08-17T16:00:00+00:00"
@@ -85,6 +90,7 @@
     "tds_withheld": "5.40",
     "net_payout": "5267.16",
     "merchant_gstin": "29AAAAA0003A1Z5",
+    "merchant_ytd_gross_opening": "511490.00",
     "payment_method": "CARD",
     "utr": "UTR457376073",
     "timestamp": "2026-08-13T07:00:00+00:00"
@@ -100,6 +106,7 @@
     "tds_withheld": "2.50",
     "net_payout": "2438.50",
     "merchant_gstin": "29AAAAA0002A1Z5",
+    "merchant_ytd_gross_opening": "499200.00",
     "payment_method": "UPI",
     "utr": "UTR275602993",
     "timestamp": "2026-08-19T06:00:00+00:00"
@@ -115,6 +122,7 @@
     "tds_withheld": "0.00",
     "net_payout": "869.00",
     "merchant_gstin": "29AAAAA0010A1Z5",
+    "merchant_ytd_gross_opening": "4500.00",
     "payment_method": "NETBANKING",
     "utr": "UTR787643653",
     "timestamp": "2026-08-16T20:00:00+00:00"
@@ -130,6 +138,7 @@
     "tds_withheld": "0.89",
     "net_payout": "868.11",
     "merchant_gstin": "29AAAAA0003A1Z5",
+    "merchant_ytd_gross_opening": "500700.00",
     "payment_method": "NETBANKING",
     "utr": "UTR107165407",
     "timestamp": "2026-08-07T00:00:00+00:00"
@@ -145,6 +154,7 @@
     "tds_withheld": "2.50",
     "net_payout": "2438.50",
     "merchant_gstin": "29AAAAA0002A1Z5",
+    "merchant_ytd_gross_opening": "519900.00",
     "payment_method": "CARD",
     "utr": "UTR203568473",
     "timestamp": "2026-08-02T16:00:00+00:00"
@@ -160,6 +170,7 @@
     "tds_withheld": "0.00",
     "net_payout": "3124.48",
     "merchant_gstin": "29AAAAA0012A1Z5",
+    "merchant_ytd_gross_opening": "6700.00",
     "payment_method": "CARD",
     "utr": "UTR125506754",
     "timestamp": "2026-08-12T08:00:00+00:00"
@@ -175,6 +186,7 @@
     "tds_withheld": "0.00",
     "net_payout": "976.40",
     "merchant_gstin": "29AAAAA0009A1Z5",
+    "merchant_ytd_gross_opening": "3200.00",
     "payment_method": "CARD",
     "utr": "UTR521054312",
     "timestamp": "2026-08-14T10:00:00+00:00"
@@ -190,6 +202,7 @@
     "tds_withheld": "12.50",
     "net_payout": "12192.50",
     "merchant_gstin": "29AAAAA0003A1Z5",
+    "merchant_ytd_gross_opening": "516890.00",
     "payment_method": "NETBANKING",
     "utr": "UTR378264943",
     "timestamp": "2026-08-15T06:00:00+00:00"
@@ -205,6 +218,7 @@
     "tds_withheld": "0.00",
     "net_payout": "2441.00",
     "merchant_gstin": "29AAAAA0008A1Z5",
+    "merchant_ytd_gross_opening": "0.00",
     "payment_method": "UPI",
     "utr": "UTR474875253",
     "timestamp": "2026-08-11T08:00:00+00:00"
@@ -220,6 +234,7 @@
     "tds_withheld": "0.00",
     "net_payout": "869.00",
     "merchant_gstin": "29AAAAA0011A1Z5",
+    "merchant_ytd_gross_opening": "890.00",
     "payment_method": "NETBANKING",
     "utr": "UTR216443999",
     "timestamp": "2026-08-08T16:00:00+00:00"
@@ -235,6 +250,7 @@
     "tds_withheld": "0.00",
     "net_payout": "3124.48",
     "merchant_gstin": "29AAAAA0003A1Z5",
+    "merchant_ytd_gross_opening": "495000.00",
     "payment_method": "NETBANKING",
     "utr": "UTR670202811",
     "timestamp": "2026-08-04T02:00:00+00:00"
@@ -250,6 +266,7 @@
     "tds_withheld": "2.50",
     "net_payout": "2438.50",
     "merchant_gstin": "29AAAAA0002A1Z5",
+    "merchant_ytd_gross_opening": "501700.00",
     "payment_method": "UPI",
     "utr": "UTR297913261",
     "timestamp": "2026-08-02T07:00:00+00:00"
@@ -265,6 +282,7 @@
     "tds_withheld": "0.00",
     "net_payout": "976.40",
     "merchant_gstin": "29AAAAA0010A1Z5",
+    "merchant_ytd_gross_opening": "2500.00",
     "payment_method": "UPI",
     "utr": "UTR914784628",
     "timestamp": "2026-08-07T20:00:00+00:00"
@@ -280,6 +298,7 @@
     "tds_withheld": "0.00",
     "net_payout": "2441.00",
     "merchant_gstin": "29AAAAA0004A1Z5",
+    "merchant_ytd_gross_opening": "0.00",
     "payment_method": "UPI",
     "utr": "UTR900094518",
     "timestamp": "2026-08-03T10:00:00+00:00"
@@ -295,6 +314,7 @@
     "tds_withheld": "0.00",
     "net_payout": "5272.56",
     "merchant_gstin": "29AAAAA0009A1Z5",
+    "merchant_ytd_gross_opening": "7200.00",
     "payment_method": "CARD",
     "utr": "UTR325608584",
     "timestamp": "2026-08-15T10:00:00+00:00"
@@ -310,6 +330,7 @@
     "tds_withheld": "5.40",
     "net_payout": "5267.16",
     "merchant_gstin": "29AAAAA0001A1Z5",
+    "merchant_ytd_gross_opening": "502400.00",
     "payment_method": "CARD",
     "utr": "UTR518198728",
     "timestamp": "2026-08-20T10:00:00+00:00"
@@ -325,6 +346,7 @@
     "tds_withheld": "0.00",
     "net_payout": "976.40",
     "merchant_gstin": "29AAAAA0009A1Z5",
+    "merchant_ytd_gross_opening": "6200.00",
     "payment_method": "NETBANKING",
     "utr": "UTR262494774",
     "timestamp": "2026-08-14T08:00:00+00:00"
@@ -340,6 +362,7 @@
     "tds_withheld": "0.00",
     "net_payout": "12205.00",
     "merchant_gstin": "29AAAAA0006A1Z5",
+    "merchant_ytd_gross_opening": "1000.00",
     "payment_method": "UPI",
     "utr": "UTR690353756",
     "timestamp": "2026-08-17T13:00:00+00:00"
@@ -355,6 +378,7 @@
     "tds_withheld": "1.00",
     "net_payout": "975.40",
     "merchant_gstin": "29AAAAA0001A1Z5",
+    "merchant_ytd_gross_opening": "501400.00",
     "payment_method": "UPI",
     "utr": "UTR666511274",
     "timestamp": "2026-08-16T03:00:00+00:00"
@@ -370,6 +394,7 @@
     "tds_withheld": "0.00",
     "net_payout": "869.00",
     "merchant_gstin": "29AAAAA0004A1Z5",
+    "merchant_ytd_gross_opening": "3390.00",
     "payment_method": "UPI",
     "utr": "UTR835416391",
     "timestamp": "2026-08-09T15:00:00+00:00"
@@ -385,6 +410,7 @@
     "tds_withheld": "0.00",
     "net_payout": "976.40",
     "merchant_gstin": "29AAAAA0009A1Z5",
+    "merchant_ytd_gross_opening": "5200.00",
     "payment_method": "NETBANKING",
     "utr": "UTR384813472",
     "timestamp": "2026-08-06T03:00:00+00:00"
@@ -400,6 +426,7 @@
     "tds_withheld": "1.00",
     "net_payout": "975.40",
     "merchant_gstin": "29AAAAA0001A1Z5",
+    "merchant_ytd_gross_opening": "500400.00",
     "payment_method": "UPI",
     "utr": "UTR577937265",
     "timestamp": "2026-08-14T22:00:00+00:00"
@@ -415,6 +442,7 @@
     "tds_withheld": "5.40",
     "net_payout": "5267.16",
     "merchant_gstin": "29AAAAA0003A1Z5",
+    "merchant_ytd_gross_opening": "501590.00",
     "payment_method": "CARD",
     "utr": "UTR800659821",
     "timestamp": "2026-08-08T03:00:00+00:00"
@@ -430,6 +458,7 @@
     "tds_withheld": "0.00",
     "net_payout": "2441.00",
     "merchant_gstin": "29AAAAA0015A1Z5",
+    "merchant_ytd_gross_opening": "0.00",
     "payment_method": "CARD",
     "utr": "UTR276242142",
     "timestamp": "2026-08-12T01:00:00+00:00"
@@ -445,6 +474,7 @@
     "tds_withheld": "0.00",
     "net_payout": "2441.00",
     "merchant_gstin": "29AAAAA0013A1Z5",
+    "merchant_ytd_gross_opening": "12500.00",
     "payment_method": "UPI",
     "utr": "UTR328910784",
     "timestamp": "2026-08-15T10:00:00+00:00"
@@ -460,6 +490,7 @@
     "tds_withheld": "0.00",
     "net_payout": "2441.00",
     "merchant_gstin": "29AAAAA0015A1Z5",
+    "merchant_ytd_gross_opening": "2500.00",
     "payment_method": "NETBANKING",
     "utr": "UTR929364510",
     "timestamp": "2026-08-15T00:00:00+00:00"
@@ -475,6 +506,7 @@
     "tds_withheld": "0.00",
     "net_payout": "869.00",
     "merchant_gstin": "29AAAAA0012A1Z5",
+    "merchant_ytd_gross_opening": "10790.00",
     "payment_method": "UPI",
     "utr": "UTR766447461",
     "timestamp": "2026-08-20T07:00:00+00:00"
@@ -490,6 +522,7 @@
     "tds_withheld": "0.00",
     "net_payout": "3124.48",
     "merchant_gstin": "29AAAAA0005A1Z5",
+    "merchant_ytd_gross_opening": "28200.00",
     "payment_method": "UPI",
     "utr": "UTR615831407",
     "timestamp": "2026-08-09T15:00:00+00:00"
@@ -505,6 +538,7 @@
     "tds_withheld": "0.00",
     "net_payout": "12205.00",
     "merchant_gstin": "29AAAAA0010A1Z5",
+    "merchant_ytd_gross_opening": "5390.00",
     "payment_method": "CARD",
     "utr": "UTR639097378",
     "timestamp": "2026-08-16T20:00:00+00:00"
@@ -520,6 +554,7 @@
     "tds_withheld": "0.00",
     "net_payout": "869.00",
     "merchant_gstin": "29AAAAA0008A1Z5",
+    "merchant_ytd_gross_opening": "2500.00",
     "payment_method": "CARD",
     "utr": "UTR126381074",
     "timestamp": "2026-08-18T14:00:00+00:00"
@@ -535,6 +570,7 @@
     "tds_withheld": "0.00",
     "net_payout": "3124.48",
     "merchant_gstin": "29AAAAA0008A1Z5",
+    "merchant_ytd_gross_opening": "3390.00",
     "payment_method": "UPI",
     "utr": "UTR796780730",
     "timestamp": "2026-08-17T15:00:00+00:00"
@@ -550,6 +586,7 @@
     "tds_withheld": "0.00",
     "net_payout": "976.40",
     "merchant_gstin": "29AAAAA0006A1Z5",
+    "merchant_ytd_gross_opening": "13500.00",
     "payment_method": "CARD",
     "utr": "UTR791209908",
     "timestamp": "2026-08-04T02:00:00+00:00"
@@ -565,6 +602,7 @@
     "tds_withheld": "0.00",
     "net_payout": "2441.00",
     "merchant_gstin": "29AAAAA0010A1Z5",
+    "merchant_ytd_gross_opening": "0.00",
     "payment_method": "UPI",
     "utr": "UTR502655738",
     "timestamp": "2026-08-09T23:00:00+00:00"
@@ -580,6 +618,7 @@
     "tds_withheld": "12.50",
     "net_payout": "12192.50",
     "merchant_gstin": "29AAAAA0002A1Z5",
+    "merchant_ytd_gross_opening": "504200.00",
     "payment_method": "UPI",
     "utr": "UTR495572438",
     "timestamp": "2026-08-12T09:00:00+00:00"
@@ -595,6 +634,7 @@
     "tds_withheld": "0.00",
     "net_payout": "3124.48",
     "merchant_gstin": "29AAAAA0012A1Z5",
+    "merchant_ytd_gross_opening": "3500.00",
     "payment_method": "CARD",
     "utr": "UTR379104326",
     "timestamp": "2026-08-06T01:00:00+00:00"
@@ -610,6 +650,7 @@
     "tds_withheld": "0.00",
     "net_payout": "869.00",
     "merchant_gstin": "29AAAAA0004A1Z5",
+    "merchant_ytd_gross_opening": "2500.00",
     "payment_method": "NETBANKING",
     "utr": "UTR888331419",
     "timestamp": "2026-08-07T11:00:00+00:00"
@@ -625,6 +666,7 @@
     "tds_withheld": "0.00",
     "net_payout": "12205.00",
     "merchant_gstin": "29AAAAA0005A1Z5",
+    "merchant_ytd_gross_opening": "0.00",
     "payment_method": "CARD",
     "utr": "UTR273610978",
     "timestamp": "2026-08-02T13:00:00+00:00"
@@ -640,6 +682,7 @@
     "tds_withheld": "1.00",
     "net_payout": "975.40",
     "merchant_gstin": "29AAAAA0003A1Z5",
+    "merchant_ytd_gross_opening": "510490.00",
     "payment_method": "UPI",
     "utr": "UTR771735535",
     "timestamp": "2026-08-10T21:00:00+00:00"
@@ -655,6 +698,7 @@
     "tds_withheld": "0.00",
     "net_payout": "12205.00",
     "merchant_gstin": "29AAAAA0005A1Z5",
+    "merchant_ytd_gross_opening": "31400.00",
     "payment_method": "UPI",
     "utr": "UTR934672680",
     "timestamp": "2026-08-11T20:00:00+00:00"
@@ -670,6 +714,7 @@
     "tds_withheld": "3.20",
     "net_payout": "3121.28",
     "merchant_gstin": "29AAAAA0001A1Z5",
+    "merchant_ytd_gross_opening": "507800.00",
     "payment_method": "UPI",
     "utr": "UTR589036921",
     "timestamp": "2026-08-05T23:00:00+00:00"
@@ -685,6 +730,7 @@
     "tds_withheld": "1.00",
     "net_payout": "975.40",
     "merchant_gstin": "29AAAAA0003A1Z5",
+    "merchant_ytd_gross_opening": "506990.00",
     "payment_method": "UPI",
     "utr": "UTR767705360",
     "timestamp": "2026-08-16T15:00:00+00:00"
@@ -700,6 +746,7 @@
     "tds_withheld": "0.00",
     "net_payout": "869.00",
     "merchant_gstin": "29AAAAA0012A1Z5",
+    "merchant_ytd_gross_opening": "9900.00",
     "payment_method": "CARD",
     "utr": "UTR199534136",
     "timestamp": "2026-08-19T15:00:00+00:00"
@@ -715,6 +762,7 @@
     "tds_withheld": "0.00",
     "net_payout": "12205.00",
     "merchant_gstin": "29AAAAA0005A1Z5",
+    "merchant_ytd_gross_opening": "12500.00",
     "payment_method": "NETBANKING",
     "utr": "UTR287199970",
     "timestamp": "2026-08-03T20:00:00+00:00"
@@ -730,6 +778,7 @@
     "tds_withheld": "0.00",
     "net_payout": "3124.48",
     "merchant_gstin": "29AAAAA0005A1Z5",
+    "merchant_ytd_gross_opening": "25000.00",
     "payment_method": "CARD",
     "utr": "UTR836481039",
     "timestamp": "2026-08-08T14:00:00+00:00"
@@ -745,6 +794,7 @@
     "tds_withheld": "0.00",
     "net_payout": "3124.48",
     "merchant_gstin": "29AAAAA0004A1Z5",
+    "merchant_ytd_gross_opening": "5170.00",
     "payment_method": "NETBANKING",
     "utr": "UTR130197839",
     "timestamp": "2026-08-13T09:00:00+00:00"
@@ -760,6 +810,7 @@
     "tds_withheld": "3.20",
     "net_payout": "3121.28",
     "merchant_gstin": "29AAAAA0002A1Z5",
+    "merchant_ytd_gross_opening": "516700.00",
     "payment_method": "NETBANKING",
     "utr": "UTR806552748",
     "timestamp": "2026-08-19T17:00:00+00:00"
@@ -775,6 +826,7 @@
     "tds_withheld": "0.00",
     "net_payout": "976.40",
     "merchant_gstin": "29AAAAA0010A1Z5",
+    "merchant_ytd_gross_opening": "3500.00",
     "payment_method": "UPI",
     "utr": "UTR227450142",
     "timestamp": "2026-08-01T15:00:00+00:00"
@@ -790,6 +842,7 @@
     "tds_withheld": "0.00",
     "net_payout": "12205.00",
     "merchant_gstin": "29AAAAA0014A1Z5",
+    "merchant_ytd_gross_opening": "0.00",
     "payment_method": "NETBANKING",
     "utr": "UTR383767074",
     "timestamp": "2026-08-01T03:00:00+00:00"
@@ -805,6 +858,7 @@
     "tds_withheld": "0.00",
     "net_payout": "3124.48",
     "merchant_gstin": "29AAAAA0009A1Z5",
+    "merchant_ytd_gross_opening": "0.00",
     "payment_method": "UPI",
     "utr": "UTR257347812",
     "timestamp": "2026-08-20T00:00:00+00:00"
@@ -820,6 +874,7 @@
     "tds_withheld": "3.20",
     "net_payout": "3121.28",
     "merchant_gstin": "29AAAAA0002A1Z5",
+    "merchant_ytd_gross_opening": "522400.00",
     "payment_method": "NETBANKING",
     "utr": "UTR385999112",
     "timestamp": "2026-08-18T03:00:00+00:00"
@@ -835,6 +890,7 @@
     "tds_withheld": "0.00",
     "net_payout": "2441.00",
     "merchant_gstin": "29AAAAA0012A1Z5",
+    "merchant_ytd_gross_opening": "1000.00",
     "payment_method": "CARD",
     "utr": "UTR350439841",
     "timestamp": "2026-08-05T16:00:00+00:00"
@@ -850,6 +906,7 @@
     "tds_withheld": "0.00",
     "net_payout": "976.40",
     "merchant_gstin": "29AAAAA0002A1Z5",
+    "merchant_ytd_gross_opening": "498200.00",
     "payment_method": "CARD",
     "utr": "UTR228636726",
     "timestamp": "2026-08-10T07:00:00+00:00"
@@ -865,6 +922,7 @@
     "tds_withheld": "0.00",
     "net_payout": "976.40",
     "merchant_gstin": "29AAAAA0012A1Z5",
+    "merchant_ytd_gross_opening": "0.00",
     "payment_method": "UPI",
     "utr": "UTR260695646",
     "timestamp": "2026-08-18T17:00:00+00:00"
@@ -880,6 +938,7 @@
     "tds_withheld": "0.00",
     "net_payout": "869.00",
     "merchant_gstin": "29AAAAA0011A1Z5",
+    "merchant_ytd_gross_opening": "0.00",
     "payment_method": "NETBANKING",
     "utr": "UTR323841641",
     "timestamp": "2026-08-04T05:00:00+00:00"
@@ -895,6 +954,7 @@
     "tds_withheld": "0.00",
     "net_payout": "12205.00",
     "merchant_gstin": "29AAAAA0015A1Z5",
+    "merchant_ytd_gross_opening": "5000.00",
     "payment_method": "UPI",
     "utr": "UTR347439911",
     "timestamp": "2026-08-14T08:00:00+00:00"
@@ -910,6 +970,7 @@
     "tds_withheld": "0.00",
     "net_payout": "12205.00",
     "merchant_gstin": "29AAAAA0013A1Z5",
+    "merchant_ytd_gross_opening": "0.00",
     "payment_method": "CARD",
     "utr": "UTR299531684",
     "timestamp": "2026-08-11T21:00:00+00:00"
@@ -925,6 +986,7 @@
     "tds_withheld": "2.50",
     "net_payout": "2438.50",
     "merchant_gstin": "29AAAAA0003A1Z5",
+    "merchant_ytd_gross_opening": "507990.00",
     "payment_method": "NETBANKING",
     "utr": "UTR830074512",
     "timestamp": "2026-08-03T18:00:00+00:00"
@@ -940,6 +1002,7 @@
     "tds_withheld": "0.00",
     "net_payout": "3124.48",
     "merchant_gstin": "29AAAAA0002A1Z5",
+    "merchant_ytd_gross_opening": "495000.00",
     "payment_method": "CARD",
     "utr": "UTR980655899",
     "timestamp": "2026-08-01T00:00:00+00:00"

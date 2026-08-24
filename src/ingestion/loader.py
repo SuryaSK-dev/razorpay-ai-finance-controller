@@ -30,11 +30,18 @@ class IngestionError:
     """A record that failed validation. Carries enough evidence to
     later classify it as a CORRUPTED_RECORD exception -- the raw
     payload, the batch index, and the exact validation failure, not
-    just 'it broke'."""
+    just 'it broke'.
+
+    error_code is a stable, aggregatable identifier -- distinct from
+    error_message, which is Pydantic's free-text explanation and
+    varies by field and reason. A dashboard or log aggregator groups
+    by error_code ("12 SCHEMA_VALIDATION_FAILED this run"), not by
+    parsing prose strings."""
     source: str            # "pg" | "bank" | "invoice"
-    index: int             # position within the source file, for fast lookup
+    index: int              # position within the source file, for fast lookup
     raw_record: dict[str, Any]
     error_message: str
+    error_code: str = "SCHEMA_VALIDATION_FAILED"
 
 
 @dataclass
@@ -93,6 +100,7 @@ def load_json_records(path: Path, model_cls: Type[T], source_name: str) -> Inges
                 index=idx,
                 raw_record=raw,
                 error_message=str(exc),
+                error_code="SCHEMA_VALIDATION_FAILED",
             ))
 
     return result

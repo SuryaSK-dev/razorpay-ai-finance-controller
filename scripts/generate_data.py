@@ -86,13 +86,14 @@ NARRATION_METHODS = ["UPI", "NEFT", "IMPS"]
 # MERCHANT POOL
 # Merchants 1-3 are seeded just under the TDS annual threshold
 # (INR 495,000 of 500,000) so that a handful of their transactions in
-# this batch will genuinely cross into TDS-applicable territory. Without
-# this seed, an average batch of ~60 low-value transactions across 15
-# merchants never gets anywhere near the threshold, and the "TDS applies
-# above INR 5L" branch of the tax logic is present in code but never
-# actually exercised by the generated data -- a real gap, not just a
-# theoretical one, since it means the dataset can't prove the threshold
-# logic works, only that it exists.
+# this batch will genuinely cross into TDS-applicable territory. This
+# starting figure represents each merchant's REAL prior-period
+# cumulative gross -- i.e. what a real merchant ledger would already
+# show before this batch's transactions occur. It is now written
+# explicitly into each PG record as merchant_ytd_gross_opening, so
+# that any downstream consumer (the seller ledger in tax validation)
+# can independently reconstruct the correct threshold decision without
+# needing access to this generator's private in-memory state.
 # =======================================================================
 
 MERCHANTS = [
@@ -135,6 +136,17 @@ def build_clean_transaction(merchant, txn_id, date_offset_days):
     fee = money(gross * Decimal("0.02"))
     gst = money(fee * GST_RATE_ON_FEE)
 
+    opening_gross = merchant["annual_gross_so_far"]  # captured BEFORE
+                                                        # this transaction
+                                                        # is applied --
+                                                        # this is the
+                                                        # merchant's true
+                                                        # starting point,
+                                                        # written into
+                                                        # the record so
+                                                        # it's real data,
+                                                        # not private
+                                                        # generator state
     merchant["annual_gross_so_far"] += gross
     tds = (money(gross * TDS_RATE_SECTION_393)
            if merchant["annual_gross_so_far"] > TDS_ANNUAL_THRESHOLD
@@ -158,6 +170,7 @@ def build_clean_transaction(merchant, txn_id, date_offset_days):
         "tds_withheld": str(tds),
         "net_payout": str(net),
         "merchant_gstin": merchant["gstin"],
+        "merchant_ytd_gross_opening": str(opening_gross),
         "payment_method": payment_method,
         "utr": utr,
         "timestamp": ts.isoformat(),

@@ -21,9 +21,6 @@ from src.matching.scoring import score_candidate, classify_confidence, MatchScor
 
 MATCHER_VERSION = "v1"  # bump if candidate selection or scoring logic changes meaningfully
 
-# Priority order used to rank match_type strength when tie-breaking
-_MATCH_TYPE_PRIORITY = {"exact_utr": 0, "exact_txn": 1, "amount_date": 2, "fuzzy": 3, "none": 4}
-
 
 @dataclass
 class MatchResult:
@@ -68,14 +65,13 @@ def _select_best_bank_candidate(
     """
     Deterministic selection among multiple bank candidates -- never
     picks by arbitrary list position. Tie-break order:
-      1. Strength of the tier that found them (already uniform within
-         one CandidateSet, since all candidates come from the same
-         search tier -- this matters when extending the search logic
-         later)
-      2. Lowest date delta from the PG record
-      3. Lowest amount delta from the PG record
-      4. Lexicographically smallest bank_ref (final deterministic
-         tiebreaker -- guarantees a stable choice across reruns)
+      1. Lowest date delta from the PG record
+      2. Lowest amount delta from the PG record
+      3. The record's own typed `utr` field (final deterministic
+         tiebreaker). Deliberately NOT an optional raw_ref dict
+         lookup -- utr is a real schema field on every
+         NormalizedRecord, so this never silently falls back to an
+         empty string for reasons unrelated to the actual tie.
     """
     if not candidates:
         return None, [], "no candidates found"
@@ -86,15 +82,15 @@ def _select_best_bank_candidate(
     def sort_key(bank_record: NormalizedRecord):
         date_delta = abs((bank_record.date_utc.date() - pg_record.date_utc.date()).days)
         amount_delta = abs(pg_record.amount - bank_record.amount)
-        bank_ref = str(bank_record.raw_ref.get("bank_ref") or "")
-        return (date_delta, amount_delta, bank_ref)
+        utr_key = bank_record.utr or ""
+        return (date_delta, amount_delta, utr_key)
 
     ranked = sorted(candidates, key=sort_key)
     winner = ranked[0]
     rejected = ranked[1:]
     reason = (
         f"selected from {len(candidates)} candidates via {match_type} tier; "
-        f"tie-broken by lowest date delta, then amount delta, then bank_ref"
+        f"tie-broken by lowest date delta, then amount delta, then utr"
     )
     return winner, rejected, reason
 
@@ -105,7 +101,8 @@ def _select_best_invoice_candidate(
     """Invoices only ever arrive via exact_txn match in our schema,
     so multiple candidates here would mean a genuine duplicate
     invoice for the same txn_id -- tie-break by lowest amount delta,
-    then invoice_id, for the same reproducibility guarantee as bank."""
+    then the record's own typed txn_id (stable, always present on a
+    matched invoice candidate -- never an optional raw_ref lookup)."""
     if not candidates:
         return None, [], "no candidates found"
 
@@ -114,15 +111,15 @@ def _select_best_invoice_candidate(
 
     def sort_key(invoice_record: NormalizedRecord):
         amount_delta = abs(pg_record.amount - invoice_record.amount)
-        invoice_id = str(invoice_record.raw_ref.get("invoice_id") or "")
-        return (amount_delta, invoice_id)
+        txn_key = invoice_record.txn_id or ""
+        return (amount_delta, txn_key)
 
     ranked = sorted(candidates, key=sort_key)
     winner = ranked[0]
     rejected = ranked[1:]
     reason = (
         f"selected from {len(candidates)} candidates via {match_type} tier; "
-        f"tie-broken by lowest amount delta, then invoice_id"
+        f"tie-broken by lowest amount delta, then txn_id"
     )
     return winner, rejected, reason
 
