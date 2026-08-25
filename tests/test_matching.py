@@ -82,6 +82,7 @@ def test_exact_utr_match_found():
     assert match_type == "exact_utr"
     assert evidence["utr"] == "UTR123"
 
+
 def test_fuzzy_fallback_recovers_corrupted_utr():
     """Fuzzy tier specifically: bank has NO resolved txn_id (simulating
     a real bank feed with no structured bank_ref) AND a corrupted UTR
@@ -103,6 +104,7 @@ def test_fuzzy_fallback_recovers_corrupted_utr():
     assert match_type == "fuzzy"
     assert evidence["candidate_count"] == 1
 
+
 def test_fuzzy_never_fires_without_amount_date_agreement():
     """Guardrail check: even with identical narration text, fuzzy
     must NOT fire if amount disagrees. Bank has NO resolved txn_id
@@ -123,6 +125,33 @@ def test_fuzzy_never_fires_without_amount_date_agreement():
     candidates, match_type, evidence = find_bank_candidates(pg, index)
     assert len(candidates) == 0
     assert match_type == "none"
+
+
+def test_fuzzy_guard_compares_expected_net_not_raw_gross():
+    """Regression test for the gross-vs-net comparison bug: the fuzzy
+    tier's amount guard must compare the PG record's EXPECTED NET
+    (gross - fee - gst - tds) against the bank's net amount, not raw
+    gross against net -- otherwise every genuine candidate is
+    rejected before fuzzy scoring runs."""
+    pg = make_normalized(
+        None, "pg", utr="UTR123456789", amount="1000.00",
+        fee="20.00", gst="3.60", tds="0.00",
+        raw_ref={"utr": "UTR123456789"},
+    )
+    bank = make_normalized(
+        None, "bank", utr="UTR123456780",  # corrupted last digit
+        amount="976.40",  # NET, correctly = 1000 - 20 - 3.60
+        raw_ref={"narration": "NEFT CR UTR123456789 MERCH_001"},
+    )
+    index = CandidateIndex([bank], [])
+
+    candidates, match_type, evidence = find_bank_candidates(pg, index)
+    assert len(candidates) == 1, (
+        "Expected the genuine candidate to pass the amount guard using "
+        "expected net, not be rejected by comparing raw gross to net"
+    )
+    assert match_type == "fuzzy"
+
 
 def test_invoice_candidate_exact_txn_only():
     pg = make_normalized("TXN_004", "pg", amount="700.00")
@@ -231,13 +260,13 @@ def test_ambiguous_candidates_resolved_deterministically_and_repeatably():
     so the fixtures must differ on utr to actually exercise the
     final tiebreaker step."""
     pg = make_normalized("TXN_010", "pg", amount="500.00",
-                          date_utc=datetime(2026, 8, 15, tzinfo=timezone.utc))
+                         date_utc=datetime(2026, 8, 15, tzinfo=timezone.utc))
     bank_a = make_normalized("TXN_010", "bank", amount="500.00",
-                              utr="UTR_B_LATER",
-                              date_utc=datetime(2026, 8, 15, tzinfo=timezone.utc))
+                             utr="UTR_B_LATER",
+                             date_utc=datetime(2026, 8, 15, tzinfo=timezone.utc))
     bank_b = make_normalized("TXN_010", "bank", amount="500.00",
-                              utr="UTR_A_EARLIER",
-                              date_utc=datetime(2026, 8, 15, tzinfo=timezone.utc))
+                             utr="UTR_A_EARLIER",
+                             date_utc=datetime(2026, 8, 15, tzinfo=timezone.utc))
 
     normalized_pool = [pg, bank_a, bank_b]
 
@@ -259,15 +288,16 @@ def test_ambiguous_candidates_resolved_deterministically_and_repeatably():
     # lexicographic tiebreak on utr: "UTR_A_EARLIER" < "UTR_B_LATER"
     assert winner_utr_1 == "UTR_A_EARLIER"
 
+
 def test_ambiguous_result_never_auto_matchable():
     """Even if the chosen candidate's raw score would qualify as
     HIGH, genuine ambiguity must demote confidence to LOW."""
     pg = make_normalized("TXN_011", "pg", utr="UTR1", amount="500.00", fee="10.00", gst="1.80",
-                          raw_ref={"net_payout": "488.20", "pg_fee": "10.00", "gst_on_fee": "1.80"})
+                         raw_ref={"net_payout": "488.20", "pg_fee": "10.00", "gst_on_fee": "1.80"})
     bank_a = make_normalized("TXN_011", "bank", utr="UTR1", amount="488.20",
-                              raw_ref={"bank_charges": "0.00", "bank_ref": "BANKREF_A"})
+                             raw_ref={"bank_charges": "0.00", "bank_ref": "BANKREF_A"})
     bank_b = make_normalized("TXN_011", "bank", utr="UTR1", amount="488.20",
-                              raw_ref={"bank_charges": "0.00", "bank_ref": "BANKREF_B"})
+                             raw_ref={"bank_charges": "0.00", "bank_ref": "BANKREF_B"})
 
     results = run_matching([pg, bank_a, bank_b])
     r = results[0]
@@ -324,6 +354,7 @@ def test_reference_mismatch_category_recovered_via_alternate_signal():
         "should exercise this."
     )
 
+
 def test_missing_in_source_category_produces_no_candidate_not_crash():
     batch = load_batch(RAW_DIR)
     normalized = normalize_batch(batch)
@@ -355,6 +386,7 @@ if __name__ == "__main__":
     test_exact_utr_match_found()
     test_fuzzy_fallback_recovers_corrupted_utr()
     test_fuzzy_never_fires_without_amount_date_agreement()
+    test_fuzzy_guard_compares_expected_net_not_raw_gross()
     test_invoice_candidate_exact_txn_only()
     test_missing_source_returns_empty_not_error()
 

@@ -109,6 +109,7 @@ def find_bank_candidates(
             "reason": "exact UTR match found in bank index",
         }
 
+
     if pg_record.txn_id and pg_record.txn_id in index.bank_by_txn:
         matches = index.bank_by_txn[pg_record.txn_id]
         return matches, "exact_txn", {
@@ -116,14 +117,23 @@ def find_bank_candidates(
             "candidate_count": len(matches),
             "reason": "exact resolved txn_id match found in bank index",
         }
+    # Bank records carry NET amount, but pg_record.amount is GROSS --
+    # compute PG's expected net (gross - fee - gst - tds) before
+    # comparing, mirroring scoring.py's approach. Comparing raw gross
+    # to raw net directly (the previous bug) silently rejected every
+    # genuine candidate before fuzzy scoring ever ran.
+    pg_fee = pg_record.fee if pg_record.fee is not None else Decimal("0")
+    pg_gst = pg_record.gst if pg_record.gst is not None else Decimal("0")
+    pg_tds = pg_record.tds if pg_record.tds is not None else Decimal("0")
+    pg_expected_net = pg_record.amount - pg_fee - pg_gst - pg_tds
 
     guarded_candidates = []
     fuzzy_scores_checked = []
     for b in index.bank_pool:
-        amount_ok = _within_amount_tolerance(pg_record.amount, b.amount)
+        amount_ok = _within_amount_tolerance(pg_expected_net, b.amount)
         date_ok = _within_date_window(pg_record.date_utc.date(), b.date_utc.date())
         if not (amount_ok and date_ok):
-            continue  # fuzzy is irrelevant unless the anchor signals already agree
+            continue
 
         pg_ref = str(pg_record.raw_ref.get("utr") or "")
         bank_narration = str(b.raw_ref.get("narration") or "")

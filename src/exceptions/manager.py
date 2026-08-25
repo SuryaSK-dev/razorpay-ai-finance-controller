@@ -1,135 +1,124 @@
 # src/exceptions/manager.py
 """
-Converts MatchResult + TaxVerification into a final MatchDecision,
-with a specific, evidenced ExceptionCode whenever the record isn't a
-clean match. This is the single point of accountability: every
-transaction gets exactly one final status, never left ambiguous by
-omission.
+Converts MatchResult + TaxVerification into a final MatchDecision by
+consulting the explicit DECISION_TABLE in decision_table.py. This
+module's job is building the DecisionContext (the fact set) and
+translating the winning rule into a MatchDecision with COMPLETE
+evidence -- including every violated condition, not just the single
+condition that determined the final status.
 """
 
 from __future__ import annotations
 from decimal import Decimal
 from typing import Optional
 
-from src.models import MatchDecision, DecisionStatus, ExceptionCode
+from src.models import MatchDecision, ExceptionCode
 from src.matching.engine import MatchResult
-from src.matching.scoring import ConfidenceTier, is_auto_matchable
+from src.matching.scoring import is_auto_matchable
 from src.tax.validator import verify_tax
 from src.tax.seller_ledger import build_seller_annual_gross
+from src.exceptions.decision_table import DecisionContext, evaluate
 
 
-def decide(match_result: MatchResult,
-           seller_annual_gross: Optional[Decimal] = None) -> MatchDecision:
-    """
-    Central decision logic. Order of checks matters: we only verify
-    tax if the underlying match is credible enough to bother -- an
-    UNMATCHED record has no tax claim worth checking yet.
-    """
-    # ---- Case 1: genuinely no candidate found at all ----
-    if match_result.bank_record is None and match_result.invoice_record is None:
-        return MatchDecision(
-            txn_id=match_result.txn_id,
-            status=DecisionStatus.UNMATCHED,
-            confidence_score=match_result.score.total_score,
-            matched_sources=match_result.sources_present,
-            exception_code=ExceptionCode.MISSING_IN_BANK if match_result.bank_candidate_count == 0
-                            else ExceptionCode.AMBIGUOUS_MATCH,
-            reason_codes=[ExceptionCode.MISSING_IN_BANK, ExceptionCode.MISSING_IN_INVOICE],
-            evidence={"match_signals": match_result.score.signals,
-                      "selection_reason": match_result.selection_reason},
-        )
+def _build_context(match_result: MatchResult, seller_annual_gross: Optional[Decimal]) -> DecisionContext:
+    no_candidates_found = match_result.bank_record is None and match_result.invoice_record is None
+    is_ambiguous = match_result.is_ambiguous
+    low_confidence = not is_auto_matchable(match_result.confidence) and not is_ambiguous
 
-    # ---- Case 2: ambiguity flagged by the matching engine ----
-    if match_result.is_ambiguous:
-        return MatchDecision(
-            txn_id=match_result.txn_id,
-            status=DecisionStatus.AMBIGUOUS,
-            confidence_score=match_result.score.total_score,
-            matched_sources=match_result.sources_present,
-            exception_code=ExceptionCode.AMBIGUOUS_MATCH,
-            reason_codes=[ExceptionCode.AMBIGUOUS_MATCH],
-            evidence={
-                "bank_candidate_count": match_result.bank_candidate_count,
-                "invoice_candidate_count": match_result.invoice_candidate_count,
-                "rejected_bank_utrs": [r.utr for r in match_result.rejected_bank_candidates],
-                "selection_reason": match_result.selection_reason,
-            },
-        )
+    missing_bank = match_result.bank_record is None
+    missing_invoice = match_result.invoice_record is None
 
-    # ---- Case 3: not auto-matchable on confidence alone ----
-    if not is_auto_matchable(match_result.confidence):
-        exception_code = ExceptionCode.AMOUNT_MISMATCH if match_result.confidence == ConfidenceTier.LOW \
-            else ExceptionCode.REFERENCE_MISMATCH
-        return MatchDecision(
-            txn_id=match_result.txn_id,
-            status=DecisionStatus.HUMAN_REVIEW,
-            confidence_score=match_result.score.total_score,
-            matched_sources=match_result.sources_present,
-            exception_code=exception_code,
-            reason_codes=[exception_code],
-            evidence={"match_signals": match_result.score.signals,
-                      "confidence_tier": match_result.confidence.value},
-        )
+    gst_mismatch = False
+    tds_mismatch = False
+    tax_unverifiable = False
 
-    # ---- Case 4: credible match -- now verify tax ----
-    tax = verify_tax(match_result.pg_record, match_result.invoice_record, seller_annual_gross)
+    if not no_candidates_found and not is_ambiguous and not low_confidence:
+        tax = verify_tax(match_result.pg_record, match_result.invoice_record, seller_annual_gross)
+        if match_result.invoice_record is not None:
+            if seller_annual_gross is None:
+                tax_unverifiable = True
+            else:
+                # Evaluated INDEPENDENTLY -- a record can have both a
+                # GST problem AND a TDS problem simultaneously. Only
+                # the decision table's priority order picks which one
+                # determines `status`; both are captured in evidence
+                # regardless, via reason_codes below.
+                gst_mismatch = not tax.gst_verified
+                tds_mismatch = not tax.tds_verified
 
-    missing_sources = ("invoice" not in match_result.sources_present
-                        or "bank" not in match_result.sources_present)
+    fully_clean = (
+        not no_candidates_found and not is_ambiguous and not low_confidence
+        and not missing_bank and not missing_invoice
+        and not gst_mismatch and not tds_mismatch and not tax_unverifiable
+    )
 
-    if not tax.fully_verified and match_result.invoice_record is not None:
-        exception_code = ExceptionCode.ERR_GST_MISMATCH if not tax.gst_verified else ExceptionCode.ERR_TDS_VARIANCE
-        if (tax.tds_threshold_applicable is False
-                and match_result.pg_record.tds and match_result.pg_record.tds > 0):
-            exception_code = ExceptionCode.ERR_TDS_BELOW_THRESHOLD
-        return MatchDecision(
-            txn_id=match_result.txn_id,
-            status=DecisionStatus.TAX_MISMATCH,
-            confidence_score=match_result.score.total_score,
-            matched_sources=match_result.sources_present,
-            tax_verified=False,
-            exception_code=exception_code,
-            reason_codes=[exception_code],
-            evidence={"tax_signals": tax.signals},
-        )
+    return DecisionContext(
+        no_candidates_found=no_candidates_found,
+        is_ambiguous=is_ambiguous,
+        low_confidence=low_confidence,
+        missing_bank=missing_bank,
+        missing_invoice=missing_invoice,
+        gst_mismatch=gst_mismatch,
+        tds_mismatch=tds_mismatch,
+        tax_unverifiable=tax_unverifiable,
+        fully_clean=fully_clean,
+    )
 
-    # ---- Case 5: missing one secondary source, otherwise clean ----
-    if missing_sources:
-        exception_code = ExceptionCode.MISSING_IN_BANK if match_result.bank_record is None \
-            else ExceptionCode.MISSING_IN_INVOICE
-        return MatchDecision(
-            txn_id=match_result.txn_id,
-            status=DecisionStatus.PARTIAL_MATCH,
-            confidence_score=match_result.score.total_score,
-            matched_sources=match_result.sources_present,
-            tax_verified=tax.fully_verified if match_result.invoice_record else None,
-            exception_code=exception_code,
-            reason_codes=[exception_code],
-            evidence={"match_signals": match_result.score.signals, "tax_signals": tax.signals},
-        )
 
-    # ---- Case 6: fully matched, fully tax-verified ----
+def _all_violated_codes(context: DecisionContext) -> list[ExceptionCode]:
+    """Every violated condition present in this transaction, not just
+    the single code tied to the winning decision rule. A record with
+    BOTH a GST problem and a TDS problem should show both in evidence,
+    even though `status` and the primary `exception_code` reflect only
+    the highest-priority one."""
+    codes = []
+    if context.no_candidates_found:
+        codes.append(ExceptionCode.HUMAN_REVIEW_REQUIRED) 
+    if context.is_ambiguous:
+        codes.append(ExceptionCode.AMBIGUOUS_MATCH)
+    if context.gst_mismatch:
+        codes.append(ExceptionCode.ERR_GST_MISMATCH)
+    if context.tds_mismatch:
+        codes.append(ExceptionCode.ERR_TDS_VARIANCE)
+    if context.missing_bank:
+        codes.append(ExceptionCode.MISSING_IN_BANK)
+    if context.missing_invoice:
+        codes.append(ExceptionCode.MISSING_IN_INVOICE)
+    if context.tax_unverifiable:
+        codes.append(ExceptionCode.HUMAN_REVIEW_REQUIRED)
+    seen = set()
+    deduped = []
+    for c in codes:
+        if c not in seen:
+            seen.add(c)
+            deduped.append(c)
+    return deduped or [ExceptionCode.NONE]
+
+
+def decide(match_result: MatchResult, seller_annual_gross: Optional[Decimal] = None) -> MatchDecision:
+    context = _build_context(match_result, seller_annual_gross)
+    rule = evaluate(context)
+
     return MatchDecision(
         txn_id=match_result.txn_id,
-        status=DecisionStatus.MATCHED,
+        status=rule.status,
         confidence_score=match_result.score.total_score,
         matched_sources=match_result.sources_present,
-        tax_verified=True,
-        exception_code=ExceptionCode.NONE,
-        reason_codes=[],
-        evidence={"match_signals": match_result.score.signals, "tax_signals": tax.signals},
+        tax_verified=(not context.gst_mismatch and not context.tds_mismatch
+                      and not context.tax_unverifiable) if not context.no_candidates_found else None,
+        exception_code=rule.exception_code,
+        reason_codes=_all_violated_codes(context),
+        evidence={
+            "matched_rule": rule.name,
+            "context": context.__dict__,
+            "match_signals": match_result.score.signals,
+            "selection_reason": match_result.selection_reason,
+        },
     )
 
 
 def decide_batch(match_results: list[MatchResult]) -> list[MatchDecision]:
-    """
-    Entry point: run decide() across the whole batch, using a REAL
-    cumulative per-merchant gross ledger (built from the batch
-    itself) to correctly evaluate the TDS threshold for every
-    transaction -- not a stub, not an assumption.
-    """
     cumulative_gross_by_txn = build_seller_annual_gross(match_results)
-
     decisions = []
     for result in match_results:
         seller_gross = cumulative_gross_by_txn.get(result.txn_id)

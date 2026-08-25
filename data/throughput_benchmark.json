@@ -1,0 +1,42 @@
+[
+  {
+    "n_records": 60,
+    "load_time_s": 0.0474,
+    "normalize_time_s": 0.003,
+    "match_time_s": 0.0016,
+    "decide_time_s": 0.0019,
+    "total_time_s": 0.0539,
+    "records_per_second": 1113.9,
+    "decisions_produced": 60
+  },
+  {
+    "n_records": 300,
+    "load_time_s": 0.1014,
+    "normalize_time_s": 0.0163,
+    "match_time_s": 0.0068,
+    "decide_time_s": 0.0051,
+    "total_time_s": 0.1295,
+    "records_per_second": 2316.3,
+    "decisions_produced": 300
+  },
+  {
+    "n_records": 1000,
+    "load_time_s": 0.2745,
+    "normalize_time_s": 0.0447,
+    "match_time_s": 0.0327,
+    "decide_time_s": 0.0182,
+    "total_time_s": 0.3701,
+    "records_per_second": 2701.8,
+    "decisions_produced": 1000
+  },
+  {
+    "n_records": 5000,
+    "load_time_s": 0.2928,
+    "normalize_time_s": 0.1911,
+    "match_time_s": 0.1439,
+    "decide_time_s": 0.1333,
+    "total_time_s": 0.7612,
+    "records_per_second": 6568.6,
+    "decisions_produced": 5000
+  }
+]
