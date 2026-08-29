@@ -1,0 +1,152 @@
+{
+  "dataset_version": "5C.4-v1",
+  "description": "Held-out deterministic fact-pack benchmark for Phase 5C.4 explanation faithfulness evaluation",
+  "authority": "deterministic",
+  "model_role": "read_only_explanation",
+  "cases": [
+    {
+      "case_id": "E001",
+      "category": "gst_mismatch_review",
+      "facts": {
+        "status": "REVIEW",
+        "reason_codes": [
+          "ERR_GST_MISMATCH"
+        ],
+        "confidence_score": 94.0,
+        "evidence": [
+          "GST mismatch"
+        ],
+        "claimed_amount": "6.00",
+        "expected_amount": "9.00",
+        "claimed_tax": "6.00",
+        "expected_tax": "9.00"
+      }
+    },
+    {
+      "case_id": "E002",
+      "category": "exact_match",
+      "facts": {
+        "status": "MATCH",
+        "reason_codes": [],
+        "confidence_score": 99.0,
+        "evidence": [
+          "transaction reference matched"
+        ],
+        "claimed_amount": "1000.00",
+        "expected_amount": "1000.00",
+        "claimed_tax": "180.00",
+        "expected_tax": "180.00"
+      }
+    },
+    {
+      "case_id": "E003",
+      "category": "tds_variance_review",
+      "facts": {
+        "status": "REVIEW",
+        "reason_codes": [
+          "ERR_TDS_VARIANCE"
+        ],
+        "confidence_score": 91.0,
+        "evidence": [
+          "TDS variance"
+        ],
+        "claimed_amount": "5000.00",
+        "expected_amount": "5000.00",
+        "claimed_tax": "450.00",
+        "expected_tax": "500.00"
+      }
+    },
+    {
+      "case_id": "E004",
+      "category": "multiple_reconciliation_errors",
+      "facts": {
+        "status": "REVIEW",
+        "reason_codes": [
+          "ERR_GST_MISMATCH",
+          "ERR_TDS_VARIANCE"
+        ],
+        "confidence_score": 94.0,
+        "evidence": [
+          "GST mismatch",
+          "TDS variance"
+        ],
+        "claimed_amount": "10000.00",
+        "expected_amount": "10000.00",
+        "claimed_tax": "600.00",
+        "expected_tax": "900.00"
+      }
+    },
+    {
+      "case_id": "E005",
+      "category": "amount_mismatch_review",
+      "facts": {
+        "status": "REVIEW",
+        "reason_codes": [
+          "ERR_AMOUNT_MISMATCH"
+        ],
+        "confidence_score": 89.0,
+        "evidence": [
+          "amount mismatch"
+        ],
+        "claimed_amount": "9500.00",
+        "expected_amount": "10000.00",
+        "claimed_tax": null,
+        "expected_tax": null
+      }
+    },
+    {
+      "case_id": "E006",
+      "category": "no_exception_match",
+      "facts": {
+        "status": "MATCH",
+        "reason_codes": [],
+        "confidence_score": 100.0,
+        "evidence": [
+          "all deterministic reconciliation checks passed"
+        ],
+        "claimed_amount": "2500.00",
+        "expected_amount": "2500.00",
+        "claimed_tax": "450.00",
+        "expected_tax": "450.00"
+      }
+    },
+    {
+      "case_id": "E007",
+      "category": "tax_and_amount_review",
+      "facts": {
+        "status": "REVIEW",
+        "reason_codes": [
+          "ERR_AMOUNT_MISMATCH",
+          "ERR_GST_MISMATCH"
+        ],
+        "confidence_score": 87.0,
+        "evidence": [
+          "amount mismatch",
+          "GST mismatch"
+        ],
+        "claimed_amount": "12000.00",
+        "expected_amount": "12500.00",
+        "claimed_tax": "1080.00",
+        "expected_tax": "1125.00"
+      }
+    },
+    {
+      "case_id": "E008",
+      "category": "evidence_only_review",
+      "facts": {
+        "status": "REVIEW",
+        "reason_codes": [
+          "ERR_MISSING_EVIDENCE"
+        ],
+        "confidence_score": 72.0,
+        "evidence": [
+          "required reconciliation evidence missing"
+        ],
+        "claimed_amount": null,
+        "expected_amount": null,
+        "claimed_tax": null,
+        "expected_tax": null
+      }
+    }
+  ]
+}

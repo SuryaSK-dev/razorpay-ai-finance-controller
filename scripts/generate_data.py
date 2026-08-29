@@ -328,6 +328,76 @@ def build_unresolvable(merchant, txn_id, date_offset_days):
     gt["notes"] = "Amount, date, and UTR all diverge simultaneously; no defensible automated resolution."
     return pg, bank, invoice, gt
 
+def build_ambiguous_sibling(merchant, txn_id, counterpart_pg):
+    """
+    Build a sibling PG/bank/invoice triplet that intentionally shares
+    gross_amount and timestamp with its ambiguous counterpart -- that
+    collision is what creates genuine ambiguity -- while remaining
+    internally consistent on its own: fee/GST/TDS/net_payout/bank
+    credited_amount/invoice amounts are all derived from the SAME
+    gross_amount used for the collision, computed once, rather than
+    generated for an unrelated amount and overwritten afterward.
+    """
+    gross = Decimal(counterpart_pg["gross_amount"])
+    fee = money(gross * Decimal("0.02"))
+    gst = money(fee * GST_RATE_ON_FEE)
+
+    opening_gross = merchant["annual_gross_so_far"]
+    merchant["annual_gross_so_far"] += gross
+    tds = (money(gross * TDS_RATE_SECTION_393)
+           if merchant["annual_gross_so_far"] > TDS_ANNUAL_THRESHOLD
+           else Decimal("0.00"))
+
+    net = money(gross - fee - gst - tds)
+    ts = datetime.fromisoformat(counterpart_pg["timestamp"])
+    utr = f"UTR{rng.randint(100000000, 999999999)}"
+    payment_method = rng.choice(PAYMENT_METHODS)
+    narration_method = rng.choice(NARRATION_METHODS)
+
+    pg = {
+        "settlement_id": f"SET_{txn_id}",
+        "txn_id": txn_id,
+        "order_id": f"ORD_{txn_id}",
+        "merchant_id": merchant["id"],
+        "gross_amount": str(gross),
+        "pg_fee": str(fee),
+        "gst_on_fee": str(gst),
+        "tds_withheld": str(tds),
+        "net_payout": str(net),
+        "merchant_gstin": merchant["gstin"],
+        "merchant_ytd_gross_opening": str(opening_gross),
+        "payment_method": payment_method,
+        "utr": utr,
+        "timestamp": ts.isoformat(),
+    }
+    bank = {
+        "bank_ref": f"BANKREF_{txn_id}",
+        "utr": utr,
+        "credited_amount": str(net),
+        "value_date": (ts + timedelta(days=1)).date().isoformat(),
+        "narration": f"{narration_method} CR {utr} {merchant['id']}",
+        "bank_charges": "0.00",
+    }
+    invoice = {
+        "invoice_id": f"INV_{txn_id}",
+        "txn_id": txn_id,
+        "irn": f"{rng.randint(10**15, 10**16-1):064x}"[:64],
+        "gstin": merchant["gstin"],
+        "invoice_amount": str(money(fee + gst)),
+        "claimed_gst": str(gst),
+        "claimed_tds": str(tds),
+        "period": ts.strftime("%Y-%m"),
+    }
+    ground_truth = {
+        "txn_id": txn_id,
+        "expected_status": "AMBIGUOUS",
+        "expected_exception_code": "AMBIGUOUS_MATCH",
+        "category": "ambiguous",
+        "notes": ("Sibling of an ambiguous pair; same amount and date "
+                  "as its counterpart, internally consistent on its "
+                  "own financial fields."),
+    }
+    return pg, bank, invoice, ground_truth
 
 # =======================================================================
 # BATCH ASSEMBLY
@@ -388,13 +458,9 @@ def generate_batch():
             if category == "ambiguous" and pg is not None:
                 sibling_merchant = pick_merchant()
                 sibling_txn_id = next_txn_id(txn_counter)
-                s_pg, s_bank, s_invoice, s_gt = build_clean_transaction(
-                    sibling_merchant, sibling_txn_id, day_cursor
+                s_pg, s_bank, s_invoice, s_gt = build_ambiguous_sibling(
+                    sibling_merchant, sibling_txn_id, pg
                 )
-                s_pg["gross_amount"] = pg["gross_amount"]
-                s_pg["timestamp"] = pg["timestamp"]
-                s_gt["category"] = "ambiguous"
-                s_gt["notes"] = "Sibling of an ambiguous pair; same amount and date as its counterpart."
                 pg_records.append(s_pg)
                 bank_records.append(s_bank)
                 invoice_records.append(s_invoice)

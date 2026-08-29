@@ -379,10 +379,10 @@
   },
   {
     "txn_id": "TXN_00055",
-    "expected_status": "MATCHED",
-    "expected_exception_code": "NONE",
+    "expected_status": "AMBIGUOUS",
+    "expected_exception_code": "AMBIGUOUS_MATCH",
     "category": "ambiguous",
-    "notes": "Sibling of an ambiguous pair; same amount and date as its counterpart."
+    "notes": "Sibling of an ambiguous pair; same amount and date as its counterpart, internally consistent on its own financial fields."
   },
   {
     "txn_id": "TXN_00056",
@@ -393,10 +393,10 @@
   },
   {
     "txn_id": "TXN_00057",
-    "expected_status": "MATCHED",
-    "expected_exception_code": "NONE",
+    "expected_status": "AMBIGUOUS",
+    "expected_exception_code": "AMBIGUOUS_MATCH",
     "category": "ambiguous",
-    "notes": "Sibling of an ambiguous pair; same amount and date as its counterpart."
+    "notes": "Sibling of an ambiguous pair; same amount and date as its counterpart, internally consistent on its own financial fields."
   },
   {
     "txn_id": "TXN_00058",
@@ -407,10 +407,10 @@
   },
   {
     "txn_id": "TXN_00059",
-    "expected_status": "MATCHED",
-    "expected_exception_code": "NONE",
+    "expected_status": "AMBIGUOUS",
+    "expected_exception_code": "AMBIGUOUS_MATCH",
     "category": "ambiguous",
-    "notes": "Sibling of an ambiguous pair; same amount and date as its counterpart."
+    "notes": "Sibling of an ambiguous pair; same amount and date as its counterpart, internally consistent on its own financial fields."
   },
   {
     "txn_id": "TXN_00060",

@@ -11,3 +11,8 @@ __pycache__/
 
 # Build/package artifacts
 *.egg-info/
+
+# Environment / secrets
+.env
+.env.*
+!.env.example

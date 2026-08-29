@@ -1,0 +1,230 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.9, pytest-9.1.1, pluggy-1.6.0 -- C:\Users\USER\razorpay-ai-finance-controller\.venv\Scripts\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\USER\razorpay-ai-finance-controller
+plugins: anyio-4.14.2
+collecting ... collected 162 items
+
+tests/test_agent_contracts.py::test_valid_txn_id_constructs_successfully PASSED [  0%]
+tests/test_agent_contracts.py::test_none_proposal_is_valid PASSED        [  1%]
+tests/test_agent_contracts.py::test_malformed_txn_id_cannot_be_constructed PASSED [  1%]
+tests/test_agent_contracts.py::test_nonexistent_looking_but_schema_valid_id_still_constructs PASSED [  2%]
+tests/test_agent_contracts.py::test_explanation_too_short_rejected PASSED [  3%]
+tests/test_agent_contracts.py::test_explanation_reasonable_length_accepted PASSED [  3%]
+tests/test_agent_contracts.py::test_contracts_have_no_financial_authority_fields PASSED [  4%]
+tests/test_agent_contracts.py::test_frozen_contracts_cannot_be_mutated PASSED [  4%]
+tests/test_agent_contracts.py::test_confidence_hint_is_honestly_unspecified PASSED [  5%]
+tests/test_agent_guardrails.py::test_llm_failure_returns_unsuccessful_not_exception PASSED [  6%]
+tests/test_agent_guardrails.py::test_malformed_llm_output_rejected_not_used PASSED [  6%]
+tests/test_agent_guardrails.py::test_valid_llm_output_accepted PASSED    [  7%]
+tests/test_agent_guardrails.py::test_explanation_failure_has_working_fallback PASSED [  8%]
+tests/test_agent_guardrails.py::test_llm_never_used_directly_without_guardrail PASSED [  8%]
+tests/test_agent_guardrails.py::test_real_timeout_returns_before_slow_call_completes PASSED [  9%]
+tests/test_agent_invariants.py::test_decision_facts_unchanged_after_successful_llm_explanation PASSED [  9%]
+tests/test_agent_invariants.py::test_decision_facts_unchanged_after_failed_llm_explanation PASSED [ 10%]
+tests/test_agent_invariants.py::test_proposed_candidate_not_in_index_is_discarded PASSED [ 11%]
+tests/test_decision_table.py::test_every_combination_of_conditions_resolves_without_error PASSED [ 11%]
+tests/test_decision_table.py::test_no_candidates_always_wins_regardless_of_other_flags PASSED [ 12%]
+tests/test_decision_table.py::test_duplicate_wins_over_ambiguous_and_tax_state PASSED [ 12%]
+tests/test_decision_table.py::test_ambiguous_wins_over_tax_state PASSED  [ 13%]
+tests/test_decision_table.py::test_amount_mismatch_wins_over_tax_mismatch PASSED [ 14%]
+tests/test_decision_table.py::test_low_confidence_is_not_used_when_ambiguity_exists PASSED [ 14%]
+tests/test_decision_table.py::test_gst_mismatch_wins_over_tds_mismatch_when_both_true PASSED [ 15%]
+tests/test_decision_table.py::test_fully_clean_produces_matched PASSED   [ 16%]
+tests/test_decision_table.py::test_priorities_are_unique_and_form_a_dense_sequence PASSED [ 16%]
+tests/test_decision_table.py::test_reason_codes_captures_all_violations_not_just_winning_one PASSED [ 17%]
+tests/test_decision_table.py::test_reason_codes_include_amount_mismatch PASSED [ 17%]
+tests/test_decision_table.py::test_reason_codes_include_duplicate PASSED [ 18%]
+tests/test_decision_table.py::test_decide_end_to_end_with_simultaneous_gst_and_tds_mismatch PASSED [ 19%]
+tests/test_decision_table.py::test_no_transaction_in_real_batch_hits_catch_all PASSED [ 19%]
+tests/test_e2e_benchmark.py::test_metadata PASSED                        [ 20%]
+tests/test_e2e_benchmark.py::test_cases_exist PASSED                     [ 20%]
+tests/test_e2e_benchmark.py::test_case_ids_unique PASSED                 [ 21%]
+tests/test_e2e_benchmark.py::test_source_transaction_ids_unique PASSED   [ 22%]
+tests/test_e2e_benchmark.py::test_required_fields PASSED                 [ 22%]
+tests/test_e2e_benchmark.py::test_input_transaction_has_sources PASSED   [ 23%]
+tests/test_e2e_benchmark.py::test_deterministic_authority_is_structured PASSED [ 24%]
+tests/test_e2e_benchmark.py::test_reason_codes_are_structured PASSED     [ 24%]
+tests/test_e2e_benchmark.py::test_financial_facts_are_structured PASSED  [ 25%]
+tests/test_e2e_benchmark.py::test_narration_is_real_input PASSED         [ 25%]
+tests/test_e2e_benchmark.py::test_ai_has_no_authority_field PASSED       [ 26%]
+tests/test_e2e_benchmark.py::test_ground_truth_is_not_inside_ai_input PASSED [ 27%]
+tests/test_e2e_benchmark.py::test_no_financial_mutation_contract PASSED  [ 27%]
+tests/test_e2e_deterministic.py::test_benchmark_contract PASSED          [ 28%]
+tests/test_e2e_deterministic.py::test_result_metadata PASSED             [ 29%]
+tests/test_e2e_deterministic.py::test_exact_case_alignment PASSED        [ 29%]
+tests/test_e2e_deterministic.py::test_all_cases_executed_successfully PASSED [ 30%]
+tests/test_e2e_deterministic.py::test_every_case_contains_deterministic_decision PASSED [ 30%]
+tests/test_e2e_deterministic.py::test_no_gold_comparison_was_performed PASSED [ 31%]
+tests/test_e2e_deterministic.py::test_case_ids_are_unique PASSED         [ 32%]
+tests/test_e2e_gold_baseline.py::test_frozen_benchmark_exists PASSED     [ 32%]
+tests/test_e2e_gold_baseline.py::test_frozen_benchmark_is_deterministic PASSED [ 33%]
+tests/test_e2e_gold_baseline.py::test_verification_artifact_exists PASSED [ 33%]
+tests/test_e2e_gold_baseline.py::test_verification_stage PASSED          [ 34%]
+tests/test_e2e_gold_baseline.py::test_baseline_is_stable FAILED          [ 35%]
+tests/test_e2e_gold_baseline.py::test_no_baseline_divergence FAILED      [ 35%]
+tests/test_e2e_gold_baseline.py::test_all_cases_match FAILED             [ 36%]
+tests/test_e2e_gold_baseline.py::test_case_coverage_is_exact FAILED      [ 37%]
+tests/test_e2e_gold_baseline.py::test_ai_has_no_authority PASSED         [ 37%]
+tests/test_explanation_faithfulness_report.py::test_dataset_contract PASSED [ 38%]
+tests/test_explanation_faithfulness_report.py::test_generation_contract PASSED [ 38%]
+tests/test_explanation_faithfulness_report.py::test_semantic_contract PASSED [ 39%]
+tests/test_explanation_faithfulness_report.py::test_safety_critical_definition PASSED [ 40%]
+tests/test_explanation_faithfulness_report.py::test_quality_gap_is_not_safety_failure PASSED [ 40%]
+tests/test_explanation_faithfulness_report.py::test_fully_faithful_case PASSED [ 41%]
+tests/test_explanation_faithfulness_report.py::test_report_recomputes_safety_from_cases PASSED [ 41%]
+tests/test_explanation_faithfulness_report.py::test_case_alignment_mismatch_is_rejected PASSED [ 42%]
+tests/test_explanation_faithfulness_report.py::test_duplicate_semantic_cases_are_rejected PASSED [ 43%]
+tests/test_explanation_quality_scoring.py::test_reason_code_alias PASSED [ 43%]
+tests/test_explanation_quality_scoring.py::test_reason_code_literal PASSED [ 44%]
+tests/test_explanation_quality_scoring.py::test_unknown_reason_code_is_not_assumed PASSED [ 45%]
+tests/test_explanation_quality_scoring.py::test_evidence_alias PASSED    [ 45%]
+tests/test_explanation_quality_scoring.py::test_evidence_literal PASSED  [ 46%]
+tests/test_explanation_quality_scoring.py::test_unknown_evidence_is_not_assumed PASSED [ 46%]
+tests/test_explanation_quality_scoring.py::test_status_preserved PASSED  [ 47%]
+tests/test_explanation_quality_scoring.py::test_match_status_preserved PASSED [ 48%]
+tests/test_explanation_quality_scoring.py::test_supported_financial_values_are_not_flagged PASSED [ 48%]
+tests/test_explanation_quality_scoring.py::test_unsupported_financial_value_detected PASSED [ 49%]
+tests/test_explanation_quality_scoring.py::test_multiple_unsupported_financial_values_detected PASSED [ 50%]
+tests/test_explanation_quality_scoring.py::test_confidence_score_is_not_financial_amount PASSED [ 50%]
+tests/test_explanation_quality_scoring.py::test_faithful_paraphrase_passes PASSED [ 51%]
+tests/test_explanation_quality_scoring.py::test_exact_fact_explanation_passes PASSED [ 51%]
+tests/test_explanation_quality_scoring.py::test_status_contradiction_is_blocking PASSED [ 52%]
+tests/test_explanation_quality_scoring.py::test_invented_amount_is_blocking PASSED [ 53%]
+tests/test_explanation_quality_scoring.py::test_invented_tax_is_blocking PASSED [ 53%]
+tests/test_explanation_quality_scoring.py::test_missing_tax_is_not_created_when_not_provided PASSED [ 54%]
+tests/test_explanation_quality_scoring.py::test_null_financial_facts_do_not_create_requirements PASSED [ 54%]
+tests/test_explanation_quality_scoring.py::test_plausible_but_unsupported_amount_is_blocked PASSED [ 55%]
+tests/test_explanation_quality_scoring.py::test_confidence_does_not_become_financial_authority PASSED [ 56%]
+tests/test_explanation_semantics_eval.py::test_dataset_is_frozen PASSED  [ 56%]
+tests/test_explanation_semantics_eval.py::test_case_ids_are_unique PASSED [ 57%]
+tests/test_explanation_semantics_eval.py::test_real_run_matches_frozen_dataset PASSED [ 58%]
+tests/test_explanation_semantics_eval.py::test_real_run_is_5c43 PASSED   [ 58%]
+tests/test_explanation_semantics_eval.py::test_no_duplicate_captured_cases PASSED [ 59%]
+tests/test_explanation_validator.py::test_faithful_explanation_passes PASSED [ 59%]
+tests/test_explanation_validator.py::test_empty_explanation_fails PASSED [ 60%]
+tests/test_explanation_validator.py::test_missing_status_fails PASSED    [ 61%]
+tests/test_explanation_validator.py::test_missing_reason_code_fails PASSED [ 61%]
+tests/test_explanation_validator.py::test_missing_financial_fact_fails PASSED [ 62%]
+tests/test_explanation_validator.py::test_contradictory_status_fails PASSED [ 62%]
+tests/test_explanation_validator.py::test_facts_are_immutable PASSED     [ 63%]
+tests/test_explanation_validator.py::test_explanation_is_immutable PASSED [ 64%]
+tests/test_ingestion.py::test_load_batch_runs_without_crashing PASSED    [ 64%]
+tests/test_ingestion.py::test_corrupted_records_are_caught_not_crashed PASSED [ 65%]
+tests/test_ingestion.py::test_normalization_produces_utc_dates PASSED    [ 66%]
+tests/test_ingestion.py::test_all_valid_pg_records_normalize PASSED      [ 66%]
+tests/test_ingestion.py::test_bank_txn_id_resolution_report PASSED       [ 67%]
+tests/test_ingestion_unit.py::test_load_valid_pg_record PASSED           [ 67%]
+tests/test_ingestion_unit.py::test_rejects_corrupted_record_without_crashing PASSED [ 68%]
+tests/test_ingestion_unit.py::test_load_batch_integration PASSED         [ 69%]
+tests/test_ingestion_unit.py::test_bank_txn_id_resolved_via_narration_when_ref_absent PASSED [ 69%]
+tests/test_ingestion_unit.py::test_utc_normalization_naive_datetime PASSED [ 70%]
+tests/test_ingestion_unit.py::test_normalize_batch_produces_report_and_records PASSED [ 70%]
+tests/test_matching.py::test_exact_utr_match_found PASSED                [ 71%]
+tests/test_matching.py::test_fuzzy_fallback_recovers_corrupted_utr PASSED [ 72%]
+tests/test_matching.py::test_fuzzy_never_fires_without_amount_date_agreement PASSED [ 72%]
+tests/test_matching.py::test_fuzzy_guard_compares_expected_net_not_raw_gross PASSED [ 73%]
+tests/test_matching.py::test_invoice_candidate_exact_txn_only PASSED     [ 74%]
+tests/test_matching.py::test_missing_source_returns_empty_not_error PASSED [ 74%]
+tests/test_matching.py::test_perfect_match_scores_100 PASSED             [ 75%]
+tests/test_matching.py::test_missing_bank_still_scores_meaningfully PASSED [ 75%]
+tests/test_matching.py::test_score_never_exceeds_100 PASSED              [ 76%]
+tests/test_matching.py::test_stale_tax_rate_breaks_fee_consistency_not_amount_match PASSED [ 77%]
+tests/test_matching.py::test_ambiguous_candidates_resolved_deterministically_and_repeatably PASSED [ 77%]
+tests/test_matching.py::test_ambiguous_result_never_auto_matchable PASSED [ 78%]
+tests/test_matching.py::test_match_result_invariants_hold PASSED         [ 79%]
+tests/test_matching.py::test_full_pipeline_runs_against_generated_data PASSED [ 79%]
+tests/test_matching.py::test_reference_mismatch_category_recovered_via_alternate_signal PASSED [ 80%]
+tests/test_matching.py::test_missing_in_source_category_produces_no_candidate_not_crash PASSED [ 80%]
+tests/test_matching.py::test_no_result_has_out_of_range_score PASSED     [ 81%]
+tests/test_narration_baseline.py::test_existing_txn_underscore_pattern PASSED [ 82%]
+tests/test_narration_baseline.py::test_existing_txn_hyphen_pattern PASSED [ 82%]
+tests/test_narration_baseline.py::test_existing_pyt_pattern FAILED       [ 83%]
+tests/test_narration_baseline.py::test_unrecognized_narration_returns_none PASSED [ 83%]
+tests/test_narration_baseline.py::test_case_insensitive_extraction_preserves_uppercase_output PASSED [ 84%]
+tests/test_narration_baseline.py::test_metrics_perfect_case PASSED       [ 85%]
+tests/test_narration_baseline.py::test_false_proposal_is_counted PASSED  [ 85%]
+tests/test_narration_baseline.py::test_abstention_is_not_a_false_proposal PASSED [ 86%]
+tests/test_narration_extraction_eval.py::test_perfect_extraction_metrics FAILED [ 87%]
+tests/test_narration_extraction_eval.py::test_wrong_transaction_proposal_counts_as_false_proposal FAILED [ 87%]
+tests/test_narration_extraction_eval.py::test_abstention_is_not_a_false_proposal FAILED [ 88%]
+tests/test_narration_extraction_eval.py::test_failed_provider_call_is_recorded FAILED [ 88%]
+tests/test_provider_failures.py::test_provider_exception_is_contained_by_guardrail PASSED [ 89%]
+tests/test_provider_failures.py::test_slow_provider_is_bounded_by_guardrail PASSED [ 90%]
+tests/test_provider_failures.py::test_empty_provider_response_is_rejected PASSED [ 90%]
+tests/test_provider_failures.py::test_malformed_provider_response_is_rejected PASSED [ 91%]
+tests/test_provider_failures.py::test_gemini_provider_rejects_empty_prompt FAILED [ 91%]
+tests/test_provider_failures.py::test_provider_response_contains_no_financial_authority PASSED [ 92%]
+tests/test_tax_decision.py::test_gst_verified_when_correct PASSED        [ 93%]
+tests/test_tax_decision.py::test_gst_flagged_when_wrong PASSED           [ 93%]
+tests/test_tax_decision.py::test_tds_correctly_zero_below_threshold PASSED [ 94%]
+tests/test_tax_decision.py::test_tds_wrongly_zero_above_threshold_is_flagged PASSED [ 95%]
+tests/test_tax_decision.py::test_tds_unknown_seller_gross_cannot_verify PASSED [ 95%]
+tests/test_tax_decision.py::test_seller_ledger_reads_opening_balance_directly PASSED [ 96%]
+tests/test_tax_decision.py::test_clean_match_produces_matched_status PASSED [ 96%]
+tests/test_tax_decision.py::test_unmatched_always_has_exception_code PASSED [ 97%]
+tests/test_tax_decision.py::test_full_pipeline_produces_decisions_for_every_record PASSED [ 98%]
+tests/test_tax_decision.py::test_no_decision_left_without_exception_code_when_not_matched PASSED [ 98%]
+tests/test_tax_decision.py::test_decision_distribution_is_realistic PASSED [ 99%]
+tests/test_tax_decision.py::test_tax_mismatch_matches_ground_truth_exactly PASSED [100%]
+
+================================== FAILURES ===================================
+___________________________ test_baseline_is_stable ___________________________
+tests\test_e2e_gold_baseline.py:112: in test_baseline_is_stable
+    assert (
+E   assert False is True
+_________________________ test_no_baseline_divergence _________________________
+tests\test_e2e_gold_baseline.py:127: in test_no_baseline_divergence
+    assert (
+E   assert 11 == 0
+____________________________ test_all_cases_match _____________________________
+tests\test_e2e_gold_baseline.py:155: in test_all_cases_match
+    assert (
+E   assert False is True
+_________________________ test_case_coverage_is_exact _________________________
+tests\test_e2e_gold_baseline.py:183: in test_case_coverage_is_exact
+    assert (
+E   assert 52 == 63
+__________________________ test_existing_pyt_pattern __________________________
+tests\test_narration_baseline.py:48: in test_existing_pyt_pattern
+    assert result == "PYT_1234567"
+E   AssertionError: assert '1234567' == 'PYT_1234567'
+E     
+E     - PYT_1234567
+E     ? ----
+E     + 1234567
+_______________________ test_perfect_extraction_metrics _______________________
+tests\test_narration_extraction_eval.py:30: in test_perfect_extraction_metrics
+    CaseResult(
+E   TypeError: CaseResult.__init__() missing 1 required positional argument: 'outcome'
+__________ test_wrong_transaction_proposal_counts_as_false_proposal ___________
+tests\test_narration_extraction_eval.py:61: in test_wrong_transaction_proposal_counts_as_false_proposal
+    CaseResult(
+E   TypeError: CaseResult.__init__() missing 1 required positional argument: 'outcome'
+___________________ test_abstention_is_not_a_false_proposal ___________________
+tests\test_narration_extraction_eval.py:82: in test_abstention_is_not_a_false_proposal
+    CaseResult(
+E   TypeError: CaseResult.__init__() missing 1 required positional argument: 'outcome'
+____________________ test_failed_provider_call_is_recorded ____________________
+tests\test_narration_extraction_eval.py:101: in test_failed_provider_call_is_recorded
+    CaseResult(
+E   TypeError: CaseResult.__init__() missing 1 required positional argument: 'outcome'
+__________________ test_gemini_provider_rejects_empty_prompt __________________
+tests\test_provider_failures.py:127: in test_gemini_provider_rejects_empty_prompt
+    config = load_agent_config()
+             ^^^^^^^^^^^^^^^^^^^
+src\agent\config.py:77: in load_agent_config
+    raise RuntimeError(
+E   RuntimeError: GEMINI_API_KEY is not configured. Set it as an environment variable; never hardcode the API key in source code.
+=========================== short test summary info ===========================
+FAILED tests/test_e2e_gold_baseline.py::test_baseline_is_stable - assert Fals...
+FAILED tests/test_e2e_gold_baseline.py::test_no_baseline_divergence - assert ...
+FAILED tests/test_e2e_gold_baseline.py::test_all_cases_match - assert False i...
+FAILED tests/test_e2e_gold_baseline.py::test_case_coverage_is_exact - assert ...
+FAILED tests/test_narration_baseline.py::test_existing_pyt_pattern - Assertio...
+FAILED tests/test_narration_extraction_eval.py::test_perfect_extraction_metrics
+FAILED tests/test_narration_extraction_eval.py::test_wrong_transaction_proposal_counts_as_false_proposal
+FAILED tests/test_narration_extraction_eval.py::test_abstention_is_not_a_false_proposal
+FAILED tests/test_narration_extraction_eval.py::test_failed_provider_call_is_recorded
+FAILED tests/test_provider_failures.py::test_gemini_provider_rejects_empty_prompt
+======================= 10 failed, 152 passed in 22.91s =======================

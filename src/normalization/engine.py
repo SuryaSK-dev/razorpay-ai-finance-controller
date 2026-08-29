@@ -48,7 +48,7 @@ def _to_utc(dt) -> datetime:
 _NARRATION_PATTERNS = [
     r"(TXN_\d{5,8})",
     r"(TXN-\d{4}-\d{4,8})",
-    r"PYT_(\d{7,8})",
+    r"(PYT_\d{7,8})",        # was: r"PYT_(\d{7,8})"
 ]
 
 

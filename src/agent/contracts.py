@@ -43,7 +43,6 @@ class NarrationExtraction:
                     f"does not match the required schema."
                 )
 
-
 @dataclass(frozen=True)
 class Explanation:
     """The ONLY shape an explanation response can take. Notice:

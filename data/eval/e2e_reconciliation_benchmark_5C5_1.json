@@ -1,0 +1,4506 @@
+{
+  "dataset_version": "5C.5-v1",
+  "evaluation_stage": "5C.5.1",
+  "authority": "deterministic",
+  "model_role": "read_only_candidate_and_explanation",
+  "description": "Frozen end-to-end benchmark containing real source transaction inputs and bank narrations for AI-assisted reconciliation evaluation.",
+  "source_artifacts": {
+    "pg": "data\\raw\\pg_settlement.json",
+    "bank": "data\\raw\\bank_statement.json",
+    "invoice": "data\\raw\\merchant_invoice.json",
+    "ground_truth": "data\\ground_truth.json"
+  },
+  "case_count": 63,
+  "cases": [
+    {
+      "case_id": "E2E_001",
+      "category": "exact_match",
+      "input_transaction": {
+        "pg": [
+          {
+            "settlement_id": "SET_TXN_00001",
+            "txn_id": "TXN_00001",
+            "order_id": "ORD_TXN_00001",
+            "merchant_id": "MERCH_002",
+            "gross_amount": "3200.00",
+            "pg_fee": "64.00",
+            "gst_on_fee": "11.52",
+            "tds_withheld": "0.00",
+            "net_payout": "3124.48",
+            "merchant_gstin": "29AAAAA0002A1Z5",
+            "merchant_ytd_gross_opening": "495000.00",
+            "payment_method": "CARD",
+            "utr": "UTR980655899",
+            "timestamp": "2026-08-01T00:00:00+00:00"
+          }
+        ],
+        "bank": [
+          {
+            "bank_ref": "BANKREF_TXN_00001",
+            "utr": "UTR980655899",
+            "credited_amount": "3124.48",
+            "value_date": "2026-08-02",
+            "narration": "NEFT CR UTR980655899 MERCH_002",
+            "bank_charges": "0.00"
+          }
+        ],
+        "invoice": [
+          {
+            "invoice_id": "INV_TXN_00001",
+            "txn_id": "TXN_00001",
+            "irn": "0000000000000000000000000000000000000000000000000009bff8934ff110",
+            "gstin": "29AAAAA0002A1Z5",
+            "invoice_amount": "75.52",
+            "claimed_gst": "11.52",
+            "claimed_tds": "0.00",
+            "period": "2026-08"
+          }
+        ]
+      },
+      "narration": "NEFT CR UTR980655899 MERCH_002",
+      "deterministic_expected_decision": {
+        "expected_status": "MATCHED",
+        "expected_exception_code": "NONE"
+      },
+      "expected_reason_codes": [],
+      "expected_financial_facts": {
+        "pg_txn_id": "TXN_00001",
+        "pg_gross_amount": "3200.00",
+        "pg_pg_fee": "64.00",
+        "pg_gst_on_fee": "11.52",
+        "pg_tds_withheld": "0.00",
+        "pg_net_payout": "3124.48",
+        "pg_utr": "UTR980655899",
+        "bank_utr": "UTR980655899",
+        "bank_credited_amount": "3124.48",
+        "bank_value_date": "2026-08-02",
+        "bank_bank_charges": "0.00",
+        "invoice_txn_id": "TXN_00001",
+        "invoice_invoice_amount": "75.52",
+        "invoice_claimed_gst": "11.52",
+        "invoice_claimed_tds": "0.00"
+      },
+      "source_transaction_id": "TXN_00001",
+      "notes": "Clean match across all three sources; no discrepancies."
+    },
+    {
+      "case_id": "E2E_002",
+      "category": "exact_match",
+      "input_transaction": {
+        "pg": [
+          {
+            "settlement_id": "SET_TXN_00002",
+            "txn_id": "TXN_00002",
+            "order_id": "ORD_TXN_00002",
+            "merchant_id": "MERCH_005",
+            "gross_amount": "12500.00",
+            "pg_fee": "250.00",
+            "gst_on_fee": "45.00",
+            "tds_withheld": "0.00",
+            "net_payout": "12205.00",
+            "merchant_gstin": "29AAAAA0005A1Z5",
+            "merchant_ytd_gross_opening": "0.00",
+            "payment_method": "CARD",
+            "utr": "UTR273610978",
+            "timestamp": "2026-08-02T13:00:00+00:00"
+          }
+        ],
+        "bank": [
+          {
+            "bank_ref": "BANKREF_TXN_00002",
+            "utr": "UTR273610978",
+            "credited_amount": "12205.00",
+            "value_date": "2026-08-03",
+            "narration": "UPI CR UTR273610978 MERCH_005",
+            "bank_charges": "0.00"
+          }
+        ],
+        "invoice": [
+          {
+            "invoice_id": "INV_TXN_00002",
+            "txn_id": "TXN_00002",
+            "irn": "0000000000000000000000000000000000000000000000000011681c849063b1",
+            "gstin": "29AAAAA0005A1Z5",
+            "invoice_amount": "295.00",
+            "claimed_gst": "45.00",
+            "claimed_tds": "0.00",
+            "period": "2026-08"
+          }
+        ]
+      },
+      "narration": "UPI CR UTR273610978 MERCH_005",
+      "deterministic_expected_decision": {
+        "expected_status": "MATCHED",
+        "expected_exception_code": "NONE"
+      },
+      "expected_reason_codes": [],
+      "expected_financial_facts": {
+        "pg_txn_id": "TXN_00002",
+        "pg_gross_amount": "12500.00",
+        "pg_pg_fee": "250.00",
+        "pg_gst_on_fee": "45.00",
+        "pg_tds_withheld": "0.00",
+        "pg_net_payout": "12205.00",
+        "pg_utr": "UTR273610978",
+        "bank_utr": "UTR273610978",
+        "bank_credited_amount": "12205.00",
+        "bank_value_date": "2026-08-03",
+        "bank_bank_charges": "0.00",
+        "invoice_txn_id": "TXN_00002",
+        "invoice_invoice_amount": "295.00",
+        "invoice_claimed_gst": "45.00",
+        "invoice_claimed_tds": "0.00"
+      },
+      "source_transaction_id": "TXN_00002",
+      "notes": "Clean match across all three sources; no discrepancies."
+    },
+    {
+      "case_id": "E2E_003",
+      "category": "exact_match",
+      "input_transaction": {
+        "pg": [
+          {
+            "settlement_id": "SET_TXN_00003",
+            "txn_id": "TXN_00003",
+            "order_id": "ORD_TXN_00003",
+            "merchant_id": "MERCH_005",
+            "gross_amount": "12500.00",
+            "pg_fee": "250.00",
+            "gst_on_fee": "45.00",
+            "tds_withheld": "0.00",
+            "net_payout": "12205.00",
+            "merchant_gstin": "29AAAAA0005A1Z5",
+            "merchant_ytd_gross_opening": "12500.00",
+            "payment_method": "NETBANKING",
+            "utr": "UTR287199970",
+            "timestamp": "2026-08-03T20:00:00+00:00"
+          }
+        ],
+        "bank": [
+          {
+            "bank_ref": "BANKREF_TXN_00003",
+            "utr": "UTR287199970",
+            "credited_amount": "12205.00",
+            "value_date": "2026-08-04",
+            "narration": "IMPS CR UTR287199970 MERCH_005",
+            "bank_charges": "0.00"
+          }
+        ],
+        "invoice": [
+          {
+            "invoice_id": "INV_TXN_00003",
+            "txn_id": "TXN_00003",
+            "irn": "000000000000000000000000000000000000000000000000000ee8d8d49937a4",
+            "gstin": "29AAAAA0005A1Z5",
+            "invoice_amount": "295.00",
+            "claimed_gst": "45.00",
+            "claimed_tds": "0.00",
+            "period": "2026-08"
+          }
+        ]
+      },
+      "narration": "IMPS CR UTR287199970 MERCH_005",
+      "deterministic_expected_decision": {
+        "expected_status": "MATCHED",
+        "expected_exception_code": "NONE"
+      },
+      "expected_reason_codes": [],
+      "expected_financial_facts": {
+        "pg_txn_id": "TXN_00003",
+        "pg_gross_amount": "12500.00",
+        "pg_pg_fee": "250.00",
+        "pg_gst_on_fee": "45.00",
+        "pg_tds_withheld": "0.00",
+        "pg_net_payout": "12205.00",
+        "pg_utr": "UTR287199970",
+        "bank_utr": "UTR287199970",
+        "bank_credited_amount": "12205.00",
+        "bank_value_date": "2026-08-04",
+        "bank_bank_charges": "0.00",
+        "invoice_txn_id": "TXN_00003",
+        "invoice_invoice_amount": "295.00",
+        "invoice_claimed_gst": "45.00",
+        "invoice_claimed_tds": "0.00"
+      },
+      "source_transaction_id": "TXN_00003",
+      "notes": "Clean match across all three sources; no discrepancies."
+    },
+    {
+      "case_id": "E2E_004",
+      "category": "exact_match",
+      "input_transaction": {
+        "pg": [
+          {
+            "settlement_id": "SET_TXN_00004",
+            "txn_id": "TXN_00004",
+            "order_id": "ORD_TXN_00004",
+            "merchant_id": "MERCH_003",
+            "gross_amount": "3200.00",
+            "pg_fee": "64.00",
+            "gst_on_fee": "11.52",
+            "tds_withheld": "0.00",
+            "net_payout": "3124.48",
+            "merchant_gstin": "29AAAAA0003A1Z5",
+            "merchant_ytd_gross_opening": "495000.00",
+            "payment_method": "NETBANKING",
+            "utr": "UTR670202811",
+            "timestamp": "2026-08-04T02:00:00+00:00"
+          }
+        ],
+        "bank": [
+          {
+            "bank_ref": "BANKREF_TXN_00004",
+            "utr": "UTR670202811",
+            "credited_amount": "3124.48",
+            "value_date": "2026-08-05",
+            "narration": "NEFT CR UTR670202811 MERCH_003",
+            "bank_charges": "0.00"
+          }
+        ],
+        "invoice": [
+          {
+            "invoice_id": "INV_TXN_00004",
+            "txn_id": "TXN_00004",
+            "irn": "0000000000000000000000000000000000000000000000000013adbc3a8c7b98",
+            "gstin": "29AAAAA0003A1Z5",
+            "invoice_amount": "75.52",
+            "claimed_gst": "11.52",
+            "claimed_tds": "0.00",
+            "period": "2026-08"
+          }
+        ]
+      },
+      "narration": "NEFT CR UTR670202811 MERCH_003",
+      "deterministic_expected_decision": {
+        "expected_status": "MATCHED",
+        "expected_exception_code": "NONE"
+      },
+      "expected_reason_codes": [],
+      "expected_financial_facts": {
+        "pg_txn_id": "TXN_00004",
+        "pg_gross_amount": "3200.00",
+        "pg_pg_fee": "64.00",
+        "pg_gst_on_fee": "11.52",
+        "pg_tds_withheld": "0.00",
+        "pg_net_payout": "3124.48",
+        "pg_utr": "UTR670202811",
+        "bank_utr": "UTR670202811",
+        "bank_credited_amount": "3124.48",
+        "bank_value_date": "2026-08-05",
+        "bank_bank_charges": "0.00",
+        "invoice_txn_id": "TXN_00004",
+        "invoice_invoice_amount": "75.52",
+        "invoice_claimed_gst": "11.52",
+        "invoice_claimed_tds": "0.00"
+      },
+      "source_transaction_id": "TXN_00004",
+      "notes": "Clean match across all three sources; no discrepancies."
+    },
+    {
+      "case_id": "E2E_005",
+      "category": "exact_match",
+      "input_transaction": {
+        "pg": [
+          {
+            "settlement_id": "SET_TXN_00005",
+            "txn_id": "TXN_00005",
+            "order_id": "ORD_TXN_00005",
+            "merchant_id": "MERCH_003",
+            "gross_amount": "2500.00",
+            "pg_fee": "50.00",
+            "gst_on_fee": "9.00",
+            "tds_withheld": "2.50",
+            "net_payout": "2438.50",
+            "merchant_gstin": "29AAAAA0003A1Z5",
+            "merchant_ytd_gross_opening": "498200.00",
+            "payment_method": "UPI",
+            "utr": "UTR871985091",
+            "timestamp": "2026-08-05T06:00:00+00:00"
+          }
+        ],
+        "bank": [
+          {
+            "bank_ref": "BANKREF_TXN_00005",
+            "utr": "UTR871985091",
+            "credited_amount": "2438.50",
+            "value_date": "2026-08-06",
+            "narration": "UPI CR UTR871985091 MERCH_003",
+            "bank_charges": "0.00"
+          }
+        ],
+        "invoice": [
+          {
+            "invoice_id": "INV_TXN_00005",
+            "txn_id": "TXN_00005",
+            "irn": "000000000000000000000000000000000000000000000000000e7b8f7b10bce0",
+            "gstin": "29AAAAA0003A1Z5",
+            "invoice_amount": "59.00",
+            "claimed_gst": "9.00",
+            "claimed_tds": "2.50",
+            "period": "2026-08"
+          }
+        ]
+      },
+      "narration": "UPI CR UTR871985091 MERCH_003",
+      "deterministic_expected_decision": {
+        "expected_status": "MATCHED",
+        "expected_exception_code": "NONE"
+      },
+      "expected_reason_codes": [],
+      "expected_financial_facts": {
+        "pg_txn_id": "TXN_00005",
+        "pg_gross_amount": "2500.00",
+        "pg_pg_fee": "50.00",
+        "pg_gst_on_fee": "9.00",
+        "pg_tds_withheld": "2.50",
+        "pg_net_payout": "2438.50",
+        "pg_utr": "UTR871985091",
+        "bank_utr": "UTR871985091",
+        "bank_credited_amount": "2438.50",
+        "bank_value_date": "2026-08-06",
+        "bank_bank_charges": "0.00",
+        "invoice_txn_id": "TXN_00005",
+        "invoice_invoice_amount": "59.00",
+        "invoice_claimed_gst": "9.00",
+        "invoice_claimed_tds": "2.50"
+      },
+      "source_transaction_id": "TXN_00005",
+      "notes": "Clean match across all three sources; TDS applied (merchant crossed INR 500000 threshold)."
+    },
+    {
+      "case_id": "E2E_006",
+      "category": "exact_match",
+      "input_transaction": {
+        "pg": [
+          {
+            "settlement_id": "SET_TXN_00006",
+            "txn_id": "TXN_00006",
+            "order_id": "ORD_TXN_00006",
+            "merchant_id": "MERCH_006",
+            "gross_amount": "1000.00",
+            "pg_fee": "20.00",
+            "gst_on_fee": "3.60",
+            "tds_withheld": "0.00",
+            "net_payout": "976.40",
+            "merchant_gstin": "29AAAAA0006A1Z5",
+            "merchant_ytd_gross_opening": "0.00",
+            "payment_method": "UPI",
+            "utr": "UTR464554432",
+            "timestamp": "2026-08-06T14:00:00+00:00"
+          }
+        ],
+        "bank": [
+          {
+            "bank_ref": "BANKREF_TXN_00006",
+            "utr": "UTR464554432",
+            "credited_amount": "976.40",
+            "value_date": "2026-08-07",
+            "narration": "IMPS CR UTR464554432 MERCH_006",
+            "bank_charges": "0.00"
+          }
+        ],
+        "invoice": [
+          {
+            "invoice_id": "INV_TXN_00006",
+            "txn_id": "TXN_00006",
+            "irn": "0000000000000000000000000000000000000000000000000019a7cc9f590906",
+            "gstin": "29AAAAA0006A1Z5",
+            "invoice_amount": "23.60",
+            "claimed_gst": "3.60",
+            "claimed_tds": "0.00",
+            "period": "2026-08"
+          }
+        ]
+      },
+      "narration": "IMPS CR UTR464554432 MERCH_006",
+      "deterministic_expected_decision": {
+        "expected_status": "MATCHED",
+        "expected_exception_code": "NONE"
+      },
+      "expected_reason_codes": [],
+      "expected_financial_facts": {
+        "pg_txn_id": "TXN_00006",
+        "pg_gross_amount": "1000.00",
+        "pg_pg_fee": "20.00",
+        "pg_gst_on_fee": "3.60",
+        "pg_tds_withheld": "0.00",
+        "pg_net_payout": "976.40",
+        "pg_utr": "UTR464554432",
+        "bank_utr": "UTR464554432",
+        "bank_credited_amount": "976.40",
+        "bank_value_date": "2026-08-07",
+        "bank_bank_charges": "0.00",
+        "invoice_txn_id": "TXN_00006",
+        "invoice_invoice_amount": "23.60",
+        "invoice_claimed_gst": "3.60",
+        "invoice_claimed_tds": "0.00"
+      },
+      "source_transaction_id": "TXN_00006",
+      "notes": "Clean match across all three sources; no discrepancies."
+    },
+    {
+      "case_id": "E2E_007",
+      "category": "exact_match",
+      "input_transaction": {
+        "pg": [
+          {
+            "settlement_id": "SET_TXN_00007",
+            "txn_id": "TXN_00007",
+            "order_id": "ORD_TXN_00007",
+            "merchant_id": "MERCH_003",
+            "gross_amount": "890.00",
+            "pg_fee": "17.80",
+            "gst_on_fee": "3.20",
+            "tds_withheld": "0.89",
+            "net_payout": "868.11",
+            "merchant_gstin": "29AAAAA0003A1Z5",
+            "merchant_ytd_gross_opening": "500700.00",
+            "payment_method": "NETBANKING",
+            "utr": "UTR107165407",
+            "timestamp": "2026-08-07T00:00:00+00:00"
+          }
+        ],
+        "bank": [
+          {
+            "bank_ref": "BANKREF_TXN_00007",
+            "utr": "UTR107165407",
+            "credited_amount": "868.11",
+            "value_date": "2026-08-08",
+            "narration": "UPI CR UTR107165407 MERCH_003",
+            "bank_charges": "0.00"
+          }
+        ],
+        "invoice": [
+          {
+            "invoice_id": "INV_TXN_00007",
+            "txn_id": "TXN_00007",
+            "irn": "00000000000000000000000000000000000000000000000000161dc06a1be63f",
+            "gstin": "29AAAAA0003A1Z5",
+            "invoice_amount": "21.00",
+            "claimed_gst": "3.20",
+            "claimed_tds": "0.89",
+            "period": "2026-08"
+          }
+        ]
+      },
+      "narration": "UPI CR UTR107165407 MERCH_003",
+      "deterministic_expected_decision": {
+        "expected_status": "MATCHED",
+        "expected_exception_code": "NONE"
+      },
+      "expected_reason_codes": [],
+      "expected_financial_facts": {
+        "pg_txn_id": "TXN_00007",
+        "pg_gross_amount": "890.00",
+        "pg_pg_fee": "17.80",
+        "pg_gst_on_fee": "3.20",
+        "pg_tds_withheld": "0.89",
+        "pg_net_payout": "868.11",
+        "pg_utr": "UTR107165407",
+        "bank_utr": "UTR107165407",
+        "bank_credited_amount": "868.11",
+        "bank_value_date": "2026-08-08",
+        "bank_bank_charges": "0.00",
+        "invoice_txn_id": "TXN_00007",
+        "invoice_invoice_amount": "21.00",
+        "invoice_claimed_gst": "3.20",
+        "invoice_claimed_tds": "0.89"
+      },
+      "source_transaction_id": "TXN_00007",
+      "notes": "Clean match across all three sources; TDS applied (merchant crossed INR 500000 threshold)."
+    },
+    {
+      "case_id": "E2E_008",
+      "category": "exact_match",
+      "input_transaction": {
+        "pg": [
+          {
+            "settlement_id": "SET_TXN_00008",
+            "txn_id": "TXN_00008",
+            "order_id": "ORD_TXN_00008",
+            "merchant_id": "MERCH_003",
+            "gross_amount": "5400.00",
+            "pg_fee": "108.00",
+            "gst_on_fee": "19.44",
+            "tds_withheld": "5.40",
+            "net_payout": "5267.16",
+            "merchant_gstin": "29AAAAA0003A1Z5",
+            "merchant_ytd_gross_opening": "501590.00",
+            "payment_method": "CARD",
+            "utr": "UTR800659821",
+            "timestamp": "2026-08-08T03:00:00+00:00"
+          }
+        ],
+        "bank": [
+          {
+            "bank_ref": "BANKREF_TXN_00008",
+            "utr": "UTR800659821",
+            "credited_amount": "5267.16",
+            "value_date": "2026-08-09",
+            "narration": "UPI CR UTR800659821 MERCH_003",
+            "bank_charges": "0.00"
+          }
+        ],
+        "invoice": [
+          {
+            "invoice_id": "INV_TXN_00008",
+            "txn_id": "TXN_00008",
+            "irn": "00000000000000000000000000000000000000000000000000195ba18779048b",
+            "gstin": "29AAAAA0003A1Z5",
+            "invoice_amount": "127.44",
+            "claimed_gst": "19.44",
+            "claimed_tds": "5.40",
+            "period": "2026-08"
+          }
+        ]
+      },
+      "narration": "UPI CR UTR800659821 MERCH_003",
+      "deterministic_expected_decision": {
+        "expected_status": "MATCHED",
+        "expected_exception_code": "NONE"
+      },
+      "expected_reason_codes": [],
+      "expected_financial_facts": {
+        "pg_txn_id": "TXN_00008",
+        "pg_gross_amount": "5400.00",
+        "pg_pg_fee": "108.00",
+        "pg_gst_on_fee": "19.44",
+        "pg_tds_withheld": "5.40",
+        "pg_net_payout": "5267.16",
+        "pg_utr": "UTR800659821",
+        "bank_utr": "UTR800659821",
+        "bank_credited_amount": "5267.16",
+        "bank_value_date": "2026-08-09",
+        "bank_bank_charges": "0.00",
+        "invoice_txn_id": "TXN_00008",
+        "invoice_invoice_amount": "127.44",
+        "invoice_claimed_gst": "19.44",
+        "invoice_claimed_tds": "5.40"
+      },
+      "source_transaction_id": "TXN_00008",
+      "notes": "Clean match across all three sources; TDS applied (merchant crossed INR 500000 threshold)."
+    },
+    {
+      "case_id": "E2E_009",
+      "category": "exact_match",
+      "input_transaction": {
+        "pg": [
+          {
+            "settlement_id": "SET_TXN_00009",
+            "txn_id": "TXN_00009",
+            "order_id": "ORD_TXN_00009",
+            "merchant_id": "MERCH_010",
+            "gross_amount": "2500.00",
+            "pg_fee": "50.00",
+            "gst_on_fee": "9.00",
+            "tds_withheld": "0.00",
+            "net_payout": "2441.00",
+            "merchant_gstin": "29AAAAA0010A1Z5",
+            "merchant_ytd_gross_opening": "0.00",
+            "payment_method": "UPI",
+            "utr": "UTR502655738",
+            "timestamp": "2026-08-09T23:00:00+00:00"
+          }
+        ],
+        "bank": [
+          {
+            "bank_ref": "BANKREF_TXN_00009",
+            "utr": "UTR502655738",
+            "credited_amount": "2441.00",
+            "value_date": "2026-08-10",
+            "narration": "IMPS CR UTR502655738 MERCH_010",
+            "bank_charges": "0.00"
+          }
+        ],
+        "invoice": [
+          {
+            "invoice_id": "INV_TXN_00009",
+            "txn_id": "TXN_00009",
+            "irn": "000000000000000000000000000000000000000000000000001a40ca3d59d88c",
+            "gstin": "29AAAAA0010A1Z5",
+            "invoice_amount": "59.00",
+            "claimed_gst": "9.00",
+            "claimed_tds": "0.00",
+            "period": "2026-08"
+          }
+        ]
+      },
+      "narration": "IMPS CR UTR502655738 MERCH_010",
+      "deterministic_expected_decision": {
+        "expected_status": "MATCHED",
+        "expected_exception_code": "NONE"
+      },
+      "expected_reason_codes": [],
+      "expected_financial_facts": {
+        "pg_txn_id": "TXN_00009",
+        "pg_gross_amount": "2500.00",
+        "pg_pg_fee": "50.00",
+        "pg_gst_on_fee": "9.00",
+        "pg_tds_withheld": "0.00",
+        "pg_net_payout": "2441.00",
+        "pg_utr": "UTR502655738",
+        "bank_utr": "UTR502655738",
+        "bank_credited_amount": "2441.00",
+        "bank_value_date": "2026-08-10",
+        "bank_bank_charges": "0.00",
+        "invoice_txn_id": "TXN_00009",
+        "invoice_invoice_amount": "59.00",
+        "invoice_claimed_gst": "9.00",
+        "invoice_claimed_tds": "0.00"
+      },
+      "source_transaction_id": "TXN_00009",
+      "notes": "Clean match across all three sources; no discrepancies."
+    },
+    {
+      "case_id": "E2E_010",
+      "category": "exact_match",
+      "input_transaction": {
+        "pg": [
+          {
+            "settlement_id": "SET_TXN_00010",
+            "txn_id": "TXN_00010",
+            "order_id": "ORD_TXN_00010",
+            "merchant_id": "MERCH_002",
+            "gross_amount": "1000.00",
+            "pg_fee": "20.00",
+            "gst_on_fee": "3.60",
+            "tds_withheld": "0.00",
+            "net_payout": "976.40",
+            "merchant_gstin": "29AAAAA0002A1Z5",
+            "merchant_ytd_gross_opening": "498200.00",
+            "payment_method": "CARD",
+            "utr": "UTR228636726",
+            "timestamp": "2026-08-10T07:00:00+00:00"
+          }
+        ],
+        "bank": [
+          {
+            "bank_ref": "BANKREF_TXN_00010",
+            "utr": "UTR228636726",
+            "credited_amount": "976.40",
+            "value_date": "2026-08-11",
+            "narration": "UPI CR UTR228636726 MERCH_002",
+            "bank_charges": "0.00"
+          }
+        ],
+        "invoice": [
+          {
+            "invoice_id": "INV_TXN_00010",
+            "txn_id": "TXN_00010",
+            "irn": "000000000000000000000000000000000000000000000000001d36a7617f2084",
+            "gstin": "29AAAAA0002A1Z5",
+            "invoice_amount": "23.60",
+            "claimed_gst": "3.60",
+            "claimed_tds": "0.00",
+            "period": "2026-08"
+          }
+        ]
+      },
+      "narration": "UPI CR UTR228636726 MERCH_002",
+      "deterministic_expected_decision": {
+        "expected_status": "MATCHED",
+        "expected_exception_code": "NONE"
+      },
+      "expected_reason_codes": [],
+      "expected_financial_facts": {
+        "pg_txn_id": "TXN_00010",
+        "pg_gross_amount": "1000.00",
+        "pg_pg_fee": "20.00",
+        "pg_gst_on_fee": "3.60",
+        "pg_tds_withheld": "0.00",
+        "pg_net_payout": "976.40",
+        "pg_utr": "UTR228636726",
+        "bank_utr": "UTR228636726",
+        "bank_credited_amount": "976.40",
+        "bank_value_date": "2026-08-11",
+        "bank_bank_charges": "0.00",
+        "invoice_txn_id": "TXN_00010",
+        "invoice_invoice_amount": "23.60",
+        "invoice_claimed_gst": "3.60",
+        "invoice_claimed_tds": "0.00"
+      },
+      "source_transaction_id": "TXN_00010",
+      "notes": "Clean match across all three sources; no discrepancies."
+    },
+    {
+      "case_id": "E2E_011",
+      "category": "exact_match",
+      "input_transaction": {
+        "pg": [
+          {
+            "settlement_id": "SET_TXN_00011",
+            "txn_id": "TXN_00011",
+            "order_id": "ORD_TXN_00011",
+            "merchant_id": "MERCH_013",
+            "gross_amount": "12500.00",
+            "pg_fee": "250.00",
+            "gst_on_fee": "45.00",
+            "tds_withheld": "0.00",
+            "net_payout": "12205.00",
+            "merchant_gstin": "29AAAAA0013A1Z5",
+            "merchant_ytd_gross_opening": "0.00",
+            "payment_method": "CARD",
+            "utr": "UTR299531684",
+            "timestamp": "2026-08-11T21:00:00+00:00"
+          }
+        ],
+        "bank": [
+          {
+            "bank_ref": "BANKREF_TXN_00011",
+            "utr": "UTR299531684",
+            "credited_amount": "12205.00",
+            "value_date": "2026-08-12",
+            "narration": "IMPS CR UTR299531684 MERCH_013",
+            "bank_charges": "0.00"
+          }
+        ],
+        "invoice": [
+          {
+            "invoice_id": "INV_TXN_00011",
+            "txn_id": "TXN_00011",
+            "irn": "000000000000000000000000000000000000000000000000001422e913cbd718",
+            "gstin": "29AAAAA0013A1Z5",
+            "invoice_amount": "295.00",
+            "claimed_gst": "45.00",
+            "claimed_tds": "0.00",
+            "period": "2026-08"
+          }
+        ]
+      },
+      "narration": "IMPS CR UTR299531684 MERCH_013",
+      "deterministic_expected_decision": {
+        "expected_status": "MATCHED",
+        "expected_exception_code": "NONE"
+      },
+      "expected_reason_codes": [],
+      "expected_financial_facts": {
+        "pg_txn_id": "TXN_00011",
+        "pg_gross_amount": "12500.00",
+        "pg_pg_fee": "250.00",
+        "pg_gst_on_fee": "45.00",
+        "pg_tds_withheld": "0.00",
+        "pg_net_payout": "12205.00",
+        "pg_utr": "UTR299531684",
+        "bank_utr": "UTR299531684",
+        "bank_credited_amount": "12205.00",
+        "bank_value_date": "2026-08-12",
+        "bank_bank_charges": "0.00",
+        "invoice_txn_id": "TXN_00011",
+        "invoice_invoice_amount": "295.00",
+        "invoice_claimed_gst": "45.00",
+        "invoice_claimed_tds": "0.00"
+      },
+      "source_transaction_id": "TXN_00011",
+      "notes": "Clean match across all three sources; no discrepancies."
+    },
+    {
+      "case_id": "E2E_012",
+      "category": "exact_match",
+      "input_transaction": {
+        "pg": [
+          {
+            "settlement_id": "SET_TXN_00012",
+            "txn_id": "TXN_00012",
+            "order_id": "ORD_TXN_00012",
+            "merchant_id": "MERCH_015",
+            "gross_amount": "2500.00",
+            "pg_fee": "50.00",
+            "gst_on_fee": "9.00",
+            "tds_withheld": "0.00",
+            "net_payout": "2441.00",
+            "merchant_gstin": "29AAAAA0015A1Z5",
+            "merchant_ytd_gross_opening": "0.00",
+            "payment_method": "CARD",
+            "utr": "UTR276242142",
+            "timestamp": "2026-08-12T01:00:00+00:00"
+          }
+        ],
+        "bank": [
+          {
+            "bank_ref": "BANKREF_TXN_00012",
+            "utr": "UTR276242142",
+            "credited_amount": "2441.00",
+            "value_date": "2026-08-13",
+            "narration": "UPI CR UTR276242142 MERCH_015",
+            "bank_charges": "0.00"
+          }
+        ],
+        "invoice": [
+          {
+            "invoice_id": "INV_TXN_00012",
+            "txn_id": "TXN_00012",
+            "irn": "00000000000000000000000000000000000000000000000000226edbcb3ec184",
+            "gstin": "29AAAAA0015A1Z5",
+            "invoice_amount": "59.00",
+            "claimed_gst": "9.00",
+            "claimed_tds": "0.00",
+            "period": "2026-08"
+          }
+        ]
+      },
+      "narration": "UPI CR UTR276242142 MERCH_015",
+      "deterministic_expected_decision": {
+        "expected_status": "MATCHED",
+        "expected_exception_code": "NONE"
+      },
+      "expected_reason_codes": [],
+      "expected_financial_facts": {
+        "pg_txn_id": "TXN_00012",
+        "pg_gross_amount": "2500.00",
+        "pg_pg_fee": "50.00",
+        "pg_gst_on_fee": "9.00",
+        "pg_tds_withheld": "0.00",
+        "pg_net_payout": "2441.00",
+        "pg_utr": "UTR276242142",
+        "bank_utr": "UTR276242142",
+        "bank_credited_amount": "2441.00",
+        "bank_value_date": "2026-08-13",
+        "bank_bank_charges": "0.00",
+        "invoice_txn_id": "TXN_00012",
+        "invoice_invoice_amount": "59.00",
+        "invoice_claimed_gst": "9.00",
+        "invoice_claimed_tds": "0.00"
+      },
+      "source_transaction_id": "TXN_00012",
+      "notes": "Clean match across all three sources; no discrepancies."
+    },
+    {
+      "case_id": "E2E_013",
+      "category": "exact_match",
+      "input_transaction": {
+        "pg": [
+          {
+            "settlement_id": "SET_TXN_00013",
+            "txn_id": "TXN_00013",
+            "order_id": "ORD_TXN_00013",
+            "merchant_id": "MERCH_001",
+            "gross_amount": "5400.00",
+            "pg_fee": "108.00",
+            "gst_on_fee": "19.44",
+            "tds_withheld": "5.40",
+            "net_payout": "5267.16",
+            "merchant_gstin": "29AAAAA0001A1Z5",
+            "merchant_ytd_gross_opening": "495000.00",
+            "payment_method": "UPI",
+            "utr": "UTR467184137",
+            "timestamp": "2026-08-13T17:00:00+00:00"
+          }
+        ],
+        "bank": [
+          {
+            "bank_ref": "BANKREF_TXN_00013",
+            "utr": "UTR467184137",
+            "credited_amount": "5267.16",
+            "value_date": "2026-08-14",
+            "narration": "NEFT CR UTR467184137 MERCH_001",
+            "bank_charges": "0.00"
+          }
+        ],
+        "invoice": [
+          {
+            "invoice_id": "INV_TXN_00013",
+            "txn_id": "TXN_00013",
+            "irn": "0000000000000000000000000000000000000000000000000003f6b1f7a87bb0",
+            "gstin": "29AAAAA0001A1Z5",
+            "invoice_amount": "127.44",
+            "claimed_gst": "19.44",
+            "claimed_tds": "5.40",
+            "period": "2026-08"
+          }
+        ]
+      },
+      "narration": "NEFT CR UTR467184137 MERCH_001",
+      "deterministic_expected_decision": {
+        "expected_status": "MATCHED",
+        "expected_exception_code": "NONE"
+      },
+      "expected_reason_codes": [],
+      "expected_financial_facts": {
+        "pg_txn_id": "TXN_00013",
+        "pg_gross_amount": "5400.00",
+        "pg_pg_fee": "108.00",
+        "pg_gst_on_fee": "19.44",
+        "pg_tds_withheld": "5.40",
+        "pg_net_payout": "5267.16",
+        "pg_utr": "UTR467184137",
+        "bank_utr": "UTR467184137",
+        "bank_credited_amount": "5267.16",
+        "bank_value_date": "2026-08-14",
+        "bank_bank_charges": "0.00",
+        "invoice_txn_id": "TXN_00013",
+        "invoice_invoice_amount": "127.44",
+        "invoice_claimed_gst": "19.44",
+        "invoice_claimed_tds": "5.40"
+      },
+      "source_transaction_id": "TXN_00013",
+      "notes": "Clean match across all three sources; TDS applied (merchant crossed INR 500000 threshold)."
+    },
+    {
+      "case_id": "E2E_014",
+      "category": "exact_match",
+      "input_transaction": {
+        "pg": [
+          {
+            "settlement_id": "SET_TXN_00014",
+            "txn_id": "TXN_00014",
+            "order_id": "ORD_TXN_00014",
+            "merchant_id": "MERCH_001",
+            "gross_amount": "1000.00",
+            "pg_fee": "20.00",
+            "gst_on_fee": "3.60",
+            "tds_withheld": "1.00",
+            "net_payout": "975.40",
+            "merchant_gstin": "29AAAAA0001A1Z5",
+            "merchant_ytd_gross_opening": "500400.00",
+            "payment_method": "UPI",
+            "utr": "UTR577937265",
+            "timestamp": "2026-08-14T22:00:00+00:00"
+          }
+        ],
+        "bank": [
+          {
+            "bank_ref": "BANKREF_TXN_00014",
+            "utr": "UTR577937265",
+            "credited_amount": "975.40",
+            "value_date": "2026-08-15",
+            "narration": "NEFT CR UTR577937265 MERCH_001",
+            "bank_charges": "0.00"
+          }
+        ],
+        "invoice": [
+          {
+            "invoice_id": "INV_TXN_00014",
+            "txn_id": "TXN_00014",
+            "irn": "000000000000000000000000000000000000000000000000001d1f8aa364e246",
+            "gstin": "29AAAAA0001A1Z5",
+            "invoice_amount": "23.60",
+            "claimed_gst": "3.60",
+            "claimed_tds": "1.00",
+            "period": "2026-08"
+          }
+        ]
+      },
+      "narration": "NEFT CR UTR577937265 MERCH_001",
+      "deterministic_expected_decision": {
+        "expected_status": "MATCHED",
+        "expected_exception_code": "NONE"
+      },
+      "expected_reason_codes": [],
+      "expected_financial_facts": {
+        "pg_txn_id": "TXN_00014",
+        "pg_gross_amount": "1000.00",
+        "pg_pg_fee": "20.00",
+        "pg_gst_on_fee": "3.60",
+        "pg_tds_withheld": "1.00",
+        "pg_net_payout": "975.40",
+        "pg_utr": "UTR577937265",
+        "bank_utr": "UTR577937265",
+        "bank_credited_amount": "975.40",
+        "bank_value_date": "2026-08-15",
+        "bank_bank_charges": "0.00",
+        "invoice_txn_id": "TXN_00014",
+        "invoice_invoice_amount": "23.60",
+        "invoice_claimed_gst": "3.60",
+        "invoice_claimed_tds": "1.00"
+      },
+      "source_transaction_id": "TXN_00014",
+      "notes": "Clean match across all three sources; TDS applied (merchant crossed INR 500000 threshold)."
+    },
+    {
+      "case_id": "E2E_015",
+      "category": "exact_match",
+      "input_transaction": {
+        "pg": [
+          {
+            "settlement_id": "SET_TXN_00015",
+            "txn_id": "TXN_00015",
+            "order_id": "ORD_TXN_00015",
+            "merchant_id": "MERCH_015",
+            "gross_amount": "2500.00",
+            "pg_fee": "50.00",
+            "gst_on_fee": "9.00",
+            "tds_withheld": "0.00",
+            "net_payout": "2441.00",
+            "merchant_gstin": "29AAAAA0015A1Z5",
+            "merchant_ytd_gross_opening": "2500.00",
+            "payment_method": "NETBANKING",
+            "utr": "UTR929364510",
+            "timestamp": "2026-08-15T00:00:00+00:00"
+          }
+        ],
+        "bank": [
+          {
+            "bank_ref": "BANKREF_TXN_00015",
+            "utr": "UTR929364510",
+            "credited_amount": "2441.00",
+            "value_date": "2026-08-16",
+            "narration": "NEFT CR UTR929364510 MERCH_015",
+            "bank_charges": "0.00"
+          }
+        ],
+        "invoice": [
+          {
+            "invoice_id": "INV_TXN_00015",
+            "txn_id": "TXN_00015",
+            "irn": "00000000000000000000000000000000000000000000000000194574dbe7b9f3",
+            "gstin": "29AAAAA0015A1Z5",
+            "invoice_amount": "59.00",
+            "claimed_gst": "9.00",
+            "claimed_tds": "0.00",
+            "period": "2026-08"
+          }
+        ]
+      },
+      "narration": "NEFT CR UTR929364510 MERCH_015",
+      "deterministic_expected_decision": {
+        "expected_status": "MATCHED",
+        "expected_exception_code": "NONE"
+      },
+      "expected_reason_codes": [],
+      "expected_financial_facts": {
+        "pg_txn_id": "TXN_00015",
+        "pg_gross_amount": "2500.00",
+        "pg_pg_fee": "50.00",
+        "pg_gst_on_fee": "9.00",
+        "pg_tds_withheld": "0.00",
+        "pg_net_payout": "2441.00",
+        "pg_utr": "UTR929364510",
+        "bank_utr": "UTR929364510",
+        "bank_credited_amount": "2441.00",
+        "bank_value_date": "2026-08-16",
+        "bank_bank_charges": "0.00",
+        "invoice_txn_id": "TXN_00015",
+        "invoice_invoice_amount": "59.00",
+        "invoice_claimed_gst": "9.00",
+        "invoice_claimed_tds": "0.00"
+      },
+      "source_transaction_id": "TXN_00015",
+      "notes": "Clean match across all three sources; no discrepancies."
+    },
+    {
+      "case_id": "E2E_016",
+      "category": "exact_match",
+      "input_transaction": {
+        "pg": [
+          {
+            "settlement_id": "SET_TXN_00016",
+            "txn_id": "TXN_00016",
+            "order_id": "ORD_TXN_00016",
+            "merchant_id": "MERCH_003",
+            "gross_amount": "1000.00",
+            "pg_fee": "20.00",
+            "gst_on_fee": "3.60",
+            "tds_withheld": "1.00",
+            "net_payout": "975.40",
+            "merchant_gstin": "29AAAAA0003A1Z5",
+            "merchant_ytd_gross_opening": "506990.00",
+            "payment_method": "UPI",
+            "utr": "UTR767705360",
+            "timestamp": "2026-08-16T15:00:00+00:00"
+          }
+        ],
+        "bank": [
+          {
+            "bank_ref": "BANKREF_TXN_00016",
+            "utr": "UTR767705360",
+            "credited_amount": "975.40",
+            "value_date": "2026-08-17",
+            "narration": "UPI CR UTR767705360 MERCH_003",
+            "bank_charges": "0.00"
+          }
+        ],
+        "invoice": [
+          {
+            "invoice_id": "INV_TXN_00016",
+            "txn_id": "TXN_00016",
+            "irn": "00000000000000000000000000000000000000000000000000134a3f450ed922",
+            "gstin": "29AAAAA0003A1Z5",
+            "invoice_amount": "23.60",
+            "claimed_gst": "3.60",
+            "claimed_tds": "1.00",
+            "period": "2026-08"
+          }
+        ]
+      },
+      "narration": "UPI CR UTR767705360 MERCH_003",
+      "deterministic_expected_decision": {
+        "expected_status": "MATCHED",
+        "expected_exception_code": "NONE"
+      },
+      "expected_reason_codes": [],
+      "expected_financial_facts": {
+        "pg_txn_id": "TXN_00016",
+        "pg_gross_amount": "1000.00",
+        "pg_pg_fee": "20.00",
+        "pg_gst_on_fee": "3.60",
+        "pg_tds_withheld": "1.00",
+        "pg_net_payout": "975.40",
+        "pg_utr": "UTR767705360",
+        "bank_utr": "UTR767705360",
+        "bank_credited_amount": "975.40",
+        "bank_value_date": "2026-08-17",
+        "bank_bank_charges": "0.00",
+        "invoice_txn_id": "TXN_00016",
+        "invoice_invoice_amount": "23.60",
+        "invoice_claimed_gst": "3.60",
+        "invoice_claimed_tds": "1.00"
+      },
+      "source_transaction_id": "TXN_00016",
+      "notes": "Clean match across all three sources; TDS applied (merchant crossed INR 500000 threshold)."
+    },
+    {
+      "case_id": "E2E_017",
+      "category": "exact_match",
+      "input_transaction": {
+        "pg": [
+          {
+            "settlement_id": "SET_TXN_00017",
+            "txn_id": "TXN_00017",
+            "order_id": "ORD_TXN_00017",
+            "merchant_id": "MERCH_006",
+            "gross_amount": "12500.00",
+            "pg_fee": "250.00",
+            "gst_on_fee": "45.00",
+            "tds_withheld": "0.00",
+            "net_payout": "12205.00",
+            "merchant_gstin": "29AAAAA0006A1Z5",
+            "merchant_ytd_gross_opening": "1000.00",
+            "payment_method": "UPI",
+            "utr": "UTR690353756",
+            "timestamp": "2026-08-17T13:00:00+00:00"
+          }
+        ],
+        "bank": [
+          {
+            "bank_ref": "BANKREF_TXN_00017",
+            "utr": "UTR690353756",
+            "credited_amount": "12205.00",
+            "value_date": "2026-08-18",
+            "narration": "NEFT CR UTR690353756 MERCH_006",
+            "bank_charges": "0.00"
+          }
+        ],
+        "invoice": [
+          {
+            "invoice_id": "INV_TXN_00017",
+            "txn_id": "TXN_00017",
+            "irn": "0000000000000000000000000000000000000000000000000018c388699a454c",
+            "gstin": "29AAAAA0006A1Z5",
+            "invoice_amount": "295.00",
+            "claimed_gst": "45.00",
+            "claimed_tds": "0.00",
+            "period": "2026-08"
+          }
+        ]
+      },
+      "narration": "NEFT CR UTR690353756 MERCH_006",
+      "deterministic_expected_decision": {
+        "expected_status": "MATCHED",
+        "expected_exception_code": "NONE"
+      },
+      "expected_reason_codes": [],
+      "expected_financial_facts": {
+        "pg_txn_id": "TXN_00017",
+        "pg_gross_amount": "12500.00",
+        "pg_pg_fee": "250.00",
+        "pg_gst_on_fee": "45.00",
+        "pg_tds_withheld": "0.00",
+        "pg_net_payout": "12205.00",
+        "pg_utr": "UTR690353756",
+        "bank_utr": "UTR690353756",
+        "bank_credited_amount": "12205.00",
+        "bank_value_date": "2026-08-18",
+        "bank_bank_charges": "0.00",
+        "invoice_txn_id": "TXN_00017",
+        "invoice_invoice_amount": "295.00",
+        "invoice_claimed_gst": "45.00",
+        "invoice_claimed_tds": "0.00"
+      },
+      "source_transaction_id": "TXN_00017",
+      "notes": "Clean match across all three sources; no discrepancies."
+    },
+    {
+      "case_id": "E2E_018",
+      "category": "exact_match",
+      "input_transaction": {
+        "pg": [
+          {
+            "settlement_id": "SET_TXN_00018",
+            "txn_id": "TXN_00018",
+            "order_id": "ORD_TXN_00018",
+            "merchant_id": "MERCH_012",
+            "gross_amount": "1000.00",
+            "pg_fee": "20.00",
+            "gst_on_fee": "3.60",
+            "tds_withheld": "0.00",
+            "net_payout": "976.40",
+            "merchant_gstin": "29AAAAA0012A1Z5",
+            "merchant_ytd_gross_opening": "0.00",
+            "payment_method": "UPI",
+            "utr": "UTR260695646",
+            "timestamp": "2026-08-18T17:00:00+00:00"
+          }
+        ],
+        "bank": [
+          {
+            "bank_ref": "BANKREF_TXN_00018",
+            "utr": "UTR260695646",
+            "credited_amount": "976.40",
+            "value_date": "2026-08-19",
+            "narration": "NEFT CR UTR260695646 MERCH_012",
+            "bank_charges": "0.00"
+          }
+        ],
+        "invoice": [
+          {
+            "invoice_id": "INV_TXN_00018",
+            "txn_id": "TXN_00018",
+            "irn": "00000000000000000000000000000000000000000000000000201ce4cf00c667",
+            "gstin": "29AAAAA0012A1Z5",
+            "invoice_amount": "23.60",
+            "claimed_gst": "3.60",
+            "claimed_tds": "0.00",
+            "period": "2026-08"
+          }
+        ]
+      },
+      "narration": "NEFT CR UTR260695646 MERCH_012",
+      "deterministic_expected_decision": {
+        "expected_status": "MATCHED",
+        "expected_exception_code": "NONE"
+      },
+      "expected_reason_codes": [],
+      "expected_financial_facts": {
+        "pg_txn_id": "TXN_00018",
+        "pg_gross_amount": "1000.00",
+        "pg_pg_fee": "20.00",
+        "pg_gst_on_fee": "3.60",
+        "pg_tds_withheld": "0.00",
+        "pg_net_payout": "976.40",
+        "pg_utr": "UTR260695646",
+        "bank_utr": "UTR260695646",
+        "bank_credited_amount": "976.40",
+        "bank_value_date": "2026-08-19",
+        "bank_bank_charges": "0.00",
+        "invoice_txn_id": "TXN_00018",
+        "invoice_invoice_amount": "23.60",
+        "invoice_claimed_gst": "3.60",
+        "invoice_claimed_tds": "0.00"
+      },
+      "source_transaction_id": "TXN_00018",
+      "notes": "Clean match across all three sources; no discrepancies."
+    },
+    {
+      "case_id": "E2E_019",
+      "category": "timing_difference",
+      "input_transaction": {
+        "pg": [
+          {
+            "settlement_id": "SET_TXN_00019",
+            "txn_id": "TXN_00019",
+            "order_id": "ORD_TXN_00019",
+            "merchant_id": "MERCH_002",
+            "gross_amount": "2500.00",
+            "pg_fee": "50.00",
+            "gst_on_fee": "9.00",
+            "tds_withheld": "2.50",
+            "net_payout": "2438.50",
+            "merchant_gstin": "29AAAAA0002A1Z5",
+            "merchant_ytd_gross_opening": "499200.00",
+            "payment_method": "UPI",
+            "utr": "UTR275602993",
+            "timestamp": "2026-08-19T06:00:00+00:00"
+          }
+        ],
+        "bank": [
+          {
+            "bank_ref": "BANKREF_TXN_00019",
+            "utr": "UTR275602993",
+            "credited_amount": "2438.50",
+            "value_date": "2026-08-21",
+            "narration": "NEFT CR UTR275602993 MERCH_002",
+            "bank_charges": "0.00"
+          }
+        ],
+        "invoice": [
+          {
+            "invoice_id": "INV_TXN_00019",
+            "txn_id": "TXN_00019",
+            "irn": "0000000000000000000000000000000000000000000000000014bd95cb365f5c",
+            "gstin": "29AAAAA0002A1Z5",
+            "invoice_amount": "59.00",
+            "claimed_gst": "9.00",
+            "claimed_tds": "2.50",
+            "period": "2026-08"
+          }
+        ]
+      },
+      "narration": "NEFT CR UTR275602993 MERCH_002",
+      "deterministic_expected_decision": {
+        "expected_status": "MATCHED",
+        "expected_exception_code": "NONE"
+      },
+      "expected_reason_codes": [],
+      "expected_financial_facts": {
+        "pg_txn_id": "TXN_00019",
+        "pg_gross_amount": "2500.00",
+        "pg_pg_fee": "50.00",
+        "pg_gst_on_fee": "9.00",
+        "pg_tds_withheld": "2.50",
+        "pg_net_payout": "2438.50",
+        "pg_utr": "UTR275602993",
+        "bank_utr": "UTR275602993",
+        "bank_credited_amount": "2438.50",
+        "bank_value_date": "2026-08-21",
+        "bank_bank_charges": "0.00",
+        "invoice_txn_id": "TXN_00019",
+        "invoice_invoice_amount": "59.00",
+        "invoice_claimed_gst": "9.00",
+        "invoice_claimed_tds": "2.50"
+      },
+      "source_transaction_id": "TXN_00019",
+      "notes": "T+2 settlement lag with exact amounts; normal, not an exception."
+    },
+    {
+      "case_id": "E2E_020",
+      "category": "timing_difference",
+      "input_transaction": {
+        "pg": [
+          {
+            "settlement_id": "SET_TXN_00020",
+            "txn_id": "TXN_00020",
+            "order_id": "ORD_TXN_00020",
+            "merchant_id": "MERCH_009",
+            "gross_amount": "3200.00",
+            "pg_fee": "64.00",
+            "gst_on_fee": "11.52",
+            "tds_withheld": "0.00",
+            "net_payout": "3124.48",
+            "merchant_gstin": "29AAAAA0009A1Z5",
+            "merchant_ytd_gross_opening": "0.00",
+            "payment_method": "UPI",
+            "utr": "UTR257347812",
+            "timestamp": "2026-08-20T00:00:00+00:00"
+          }
+        ],
+        "bank": [
+          {
+            "bank_ref": "BANKREF_TXN_00020",
+            "utr": "UTR257347812",
+            "credited_amount": "3124.48",
+            "value_date": "2026-08-22",
+            "narration": "IMPS CR UTR257347812 MERCH_009",
+            "bank_charges": "0.00"
+          }
+        ],
+        "invoice": [
+          {
+            "invoice_id": "INV_TXN_00020",
+            "txn_id": "TXN_00020",
+            "irn": "000000000000000000000000000000000000000000000000001fe71b23c4b69a",
+            "gstin": "29AAAAA0009A1Z5",
+            "invoice_amount": "75.52",
+            "claimed_gst": "11.52",
+            "claimed_tds": "0.00",
+            "period": "2026-08"
+          }
+        ]
+      },
+      "narration": "IMPS CR UTR257347812 MERCH_009",
+      "deterministic_expected_decision": {
+        "expected_status": "MATCHED",
+        "expected_exception_code": "NONE"
+      },
+      "expected_reason_codes": [],
+      "expected_financial_facts": {
+        "pg_txn_id": "TXN_00020",
+        "pg_gross_amount": "3200.00",
+        "pg_pg_fee": "64.00",
+        "pg_gst_on_fee": "11.52",
+        "pg_tds_withheld": "0.00",
+        "pg_net_payout": "3124.48",
+        "pg_utr": "UTR257347812",
+        "bank_utr": "UTR257347812",
+        "bank_credited_amount": "3124.48",
+        "bank_value_date": "2026-08-22",
+        "bank_bank_charges": "0.00",
+        "invoice_txn_id": "TXN_00020",
+        "invoice_invoice_amount": "75.52",
+        "invoice_claimed_gst": "11.52",
+        "invoice_claimed_tds": "0.00"
+      },
+      "source_transaction_id": "TXN_00020",
+      "notes": "T+2 settlement lag with exact amounts; normal, not an exception."
+    },
+    {
+      "case_id": "E2E_021",
+      "category": "timing_difference",
+      "input_transaction": {
+        "pg": [
+          {
+            "settlement_id": "SET_TXN_00021",
+            "txn_id": "TXN_00021",
+            "order_id": "ORD_TXN_00021",
+            "merchant_id": "MERCH_014",
+            "gross_amount": "12500.00",
+            "pg_fee": "250.00",
+            "gst_on_fee": "45.00",
+            "tds_withheld": "0.00",
+            "net_payout": "12205.00",
+            "merchant_gstin": "29AAAAA0014A1Z5",
+            "merchant_ytd_gross_opening": "0.00",
+            "payment_method": "NETBANKING",
+            "utr": "UTR383767074",
+            "timestamp": "2026-08-01T03:00:00+00:00"
+          }
+        ],
+        "bank": [
+          {
+            "bank_ref": "BANKREF_TXN_00021",
+            "utr": "UTR383767074",
+            "credited_amount": "12205.00",
+            "value_date": "2026-08-04",
+            "narration": "NEFT CR UTR383767074 MERCH_014",
+            "bank_charges": "0.00"
+          }
+        ],
+        "invoice": [
+          {
+            "invoice_id": "INV_TXN_00021",
+            "txn_id": "TXN_00021",
+            "irn": "000000000000000000000000000000000000000000000000001cd8e2b5b38260",
+            "gstin": "29AAAAA0014A1Z5",
+            "invoice_amount": "295.00",
+            "claimed_gst": "45.00",
+            "claimed_tds": "0.00",
+            "period": "2026-08"
+          }
+        ]
+      },
+      "narration": "NEFT CR UTR383767074 MERCH_014",
+      "deterministic_expected_decision": {
+        "expected_status": "MATCHED",
+        "expected_exception_code": "NONE"
+      },
+      "expected_reason_codes": [],
+      "expected_financial_facts": {
+        "pg_txn_id": "TXN_00021",
+        "pg_gross_amount": "12500.00",
+        "pg_pg_fee": "250.00",
+        "pg_gst_on_fee": "45.00",
+        "pg_tds_withheld": "0.00",
+        "pg_net_payout": "12205.00",
+        "pg_utr": "UTR383767074",
+        "bank_utr": "UTR383767074",
+        "bank_credited_amount": "12205.00",
+        "bank_value_date": "2026-08-04",
+        "bank_bank_charges": "0.00",
+        "invoice_txn_id": "TXN_00021",
+        "invoice_invoice_amount": "295.00",
+        "invoice_claimed_gst": "45.00",
+        "invoice_claimed_tds": "0.00"
+      },
+      "source_transaction_id": "TXN_00021",
+      "notes": "T+3 settlement lag with exact amounts; normal, not an exception."
+    },
+    {
+      "case_id": "E2E_022",
+      "category": "timing_difference",
+      "input_transaction": {
+        "pg": [
+          {
+            "settlement_id": "SET_TXN_00022",
+            "txn_id": "TXN_00022",
+            "order_id": "ORD_TXN_00022",
+            "merchant_id": "MERCH_002",
+            "gross_amount": "2500.00",
+            "pg_fee": "50.00",
+            "gst_on_fee": "9.00",
+            "tds_withheld": "2.50",
+            "net_payout": "2438.50",
+            "merchant_gstin": "29AAAAA0002A1Z5",
+            "merchant_ytd_gross_opening": "501700.00",
+            "payment_method": "UPI",
+            "utr": "UTR297913261",
+            "timestamp": "2026-08-02T07:00:00+00:00"
+          }
+        ],
+        "bank": [
+          {
+            "bank_ref": "BANKREF_TXN_00022",
+            "utr": "UTR297913261",
+            "credited_amount": "2438.50",
+            "value_date": "2026-08-05",
+            "narration": "NEFT CR UTR297913261 MERCH_002",
+            "bank_charges": "0.00"
+          }
+        ],
+        "invoice": [
+          {
+            "invoice_id": "INV_TXN_00022",
+            "txn_id": "TXN_00022",
+            "irn": "00000000000000000000000000000000000000000000000000092ef6f95fe8e7",
+            "gstin": "29AAAAA0002A1Z5",
+            "invoice_amount": "59.00",
+            "claimed_gst": "9.00",
+            "claimed_tds": "2.50",
+            "period": "2026-08"
+          }
+        ]
+      },
+      "narration": "NEFT CR UTR297913261 MERCH_002",
+      "deterministic_expected_decision": {
+        "expected_status": "MATCHED",
+        "expected_exception_code": "NONE"
+      },
+      "expected_reason_codes": [],
+      "expected_financial_facts": {
+        "pg_txn_id": "TXN_00022",
+        "pg_gross_amount": "2500.00",
+        "pg_pg_fee": "50.00",
+        "pg_gst_on_fee": "9.00",
+        "pg_tds_withheld": "2.50",
+        "pg_net_payout": "2438.50",
+        "pg_utr": "UTR297913261",
+        "bank_utr": "UTR297913261",
+        "bank_credited_amount": "2438.50",
+        "bank_value_date": "2026-08-05",
+        "bank_bank_charges": "0.00",
+        "invoice_txn_id": "TXN_00022",
+        "invoice_invoice_amount": "59.00",
+        "invoice_claimed_gst": "9.00",
+        "invoice_claimed_tds": "2.50"
+      },
+      "source_transaction_id": "TXN_00022",
+      "notes": "T+3 settlement lag with exact amounts; normal, not an exception."
+    },
+    {
+      "case_id": "E2E_023",
+      "category": "timing_difference",
+      "input_transaction": {
+        "pg": [
+          {
+            "settlement_id": "SET_TXN_00023",
+            "txn_id": "TXN_00023",
+            "order_id": "ORD_TXN_00023",
+            "merchant_id": "MERCH_003",
+            "gross_amount": "2500.00",
+            "pg_fee": "50.00",
+            "gst_on_fee": "9.00",
+            "tds_withheld": "2.50",
+            "net_payout": "2438.50",
+            "merchant_gstin": "29AAAAA0003A1Z5",
+            "merchant_ytd_gross_opening": "507990.00",
+            "payment_method": "NETBANKING",
+            "utr": "UTR830074512",
+            "timestamp": "2026-08-03T18:00:00+00:00"
+          }
+        ],
+        "bank": [
+          {
+            "bank_ref": "BANKREF_TXN_00023",
+            "utr": "UTR830074512",
+            "credited_amount": "2438.50",
+            "value_date": "2026-08-06",
+            "narration": "UPI CR UTR830074512 MERCH_003",
+            "bank_charges": "0.00"
+          }
+        ],
+        "invoice": [
+          {
+            "invoice_id": "INV_TXN_00023",
+            "txn_id": "TXN_00023",
+            "irn": "0000000000000000000000000000000000000000000000000010c6d89a94e011",
+            "gstin": "29AAAAA0003A1Z5",
+            "invoice_amount": "59.00",
+            "claimed_gst": "9.00",
+            "claimed_tds": "2.50",
+            "period": "2026-08"
+          }
+        ]
+      },
+      "narration": "UPI CR UTR830074512 MERCH_003",
+      "deterministic_expected_decision": {
+        "expected_status": "MATCHED",
+        "expected_exception_code": "NONE"
+      },
+      "expected_reason_codes": [],
+      "expected_financial_facts": {
+        "pg_txn_id": "TXN_00023",
+        "pg_gross_amount": "2500.00",
+        "pg_pg_fee": "50.00",
+        "pg_gst_on_fee": "9.00",
+        "pg_tds_withheld": "2.50",
+        "pg_net_payout": "2438.50",
+        "pg_utr": "UTR830074512",
+        "bank_utr": "UTR830074512",
+        "bank_credited_amount": "2438.50",
+        "bank_value_date": "2026-08-06",
+        "bank_bank_charges": "0.00",
+        "invoice_txn_id": "TXN_00023",
+        "invoice_invoice_amount": "59.00",
+        "invoice_claimed_gst": "9.00",
+        "invoice_claimed_tds": "2.50"
+      },
+      "source_transaction_id": "TXN_00023",
+      "notes": "T+3 settlement lag with exact amounts; normal, not an exception."
+    },
+    {
+      "case_id": "E2E_024",
+      "category": "timing_difference",
+      "input_transaction": {
+        "pg": [
+          {
+            "settlement_id": "SET_TXN_00024",
+            "txn_id": "TXN_00024",
+            "order_id": "ORD_TXN_00024",
+            "merchant_id": "MERCH_006",
+            "gross_amount": "1000.00",
+            "pg_fee": "20.00",
+            "gst_on_fee": "3.60",
+            "tds_withheld": "0.00",
+            "net_payout": "976.40",
+            "merchant_gstin": "29AAAAA0006A1Z5",
+            "merchant_ytd_gross_opening": "13500.00",
+            "payment_method": "CARD",
+            "utr": "UTR791209908",
+            "timestamp": "2026-08-04T02:00:00+00:00"
+          }
+        ],
+        "bank": [
+          {
+            "bank_ref": "BANKREF_TXN_00024",
+            "utr": "UTR791209908",
+            "credited_amount": "976.40",
+            "value_date": "2026-08-06",
+            "narration": "IMPS CR UTR791209908 MERCH_006",
+            "bank_charges": "0.00"
+          }
+        ],
+        "invoice": [
+          {
+            "invoice_id": "INV_TXN_00024",
+            "txn_id": "TXN_00024",
+            "irn": "0000000000000000000000000000000000000000000000000017a73fd6b63ef6",
+            "gstin": "29AAAAA0006A1Z5",
+            "invoice_amount": "23.60",
+            "claimed_gst": "3.60",
+            "claimed_tds": "0.00",
+            "period": "2026-08"
+          }
+        ]
+      },
+      "narration": "IMPS CR UTR791209908 MERCH_006",
+      "deterministic_expected_decision": {
+        "expected_status": "MATCHED",
+        "expected_exception_code": "NONE"
+      },
+      "expected_reason_codes": [],
+      "expected_financial_facts": {
+        "pg_txn_id": "TXN_00024",
+        "pg_gross_amount": "1000.00",
+        "pg_pg_fee": "20.00",
+        "pg_gst_on_fee": "3.60",
+        "pg_tds_withheld": "0.00",
+        "pg_net_payout": "976.40",
+        "pg_utr": "UTR791209908",
+        "bank_utr": "UTR791209908",
+        "bank_credited_amount": "976.40",
+        "bank_value_date": "2026-08-06",
+        "bank_bank_charges": "0.00",
+        "invoice_txn_id": "TXN_00024",
+        "invoice_invoice_amount": "23.60",
+        "invoice_claimed_gst": "3.60",
+        "invoice_claimed_tds": "0.00"
+      },
+      "source_transaction_id": "TXN_00024",
+      "notes": "T+2 settlement lag with exact amounts; normal, not an exception."
+    },
+    {
+      "case_id": "E2E_025",
+      "category": "reference_mismatch_fuzzy",
+      "input_transaction": {
+        "pg": [
+          {
+            "settlement_id": "SET_TXN_00025",
+            "txn_id": "TXN_00025",
+            "order_id": "ORD_TXN_00025",
+            "merchant_id": "MERCH_012",
+            "gross_amount": "2500.00",
+            "pg_fee": "50.00",
+            "gst_on_fee": "9.00",
+            "tds_withheld": "0.00",
+            "net_payout": "2441.00",
+            "merchant_gstin": "29AAAAA0012A1Z5",
+            "merchant_ytd_gross_opening": "1000.00",
+            "payment_method": "CARD",
+            "utr": "UTR350439841",
+            "timestamp": "2026-08-05T16:00:00+00:00"
+          }
+        ],
+        "bank": [
+          {
+            "bank_ref": "BANKREF_TXN_00025",
+            "utr": "UTR350438841",
+            "credited_amount": "2441.00",
+            "value_date": "2026-08-06",
+            "narration": "IMPS CR UTR350438841 MERCH_012",
+            "bank_charges": "0.00"
+          }
+        ],
+        "invoice": [
+          {
+            "invoice_id": "INV_TXN_00025",
+            "txn_id": "TXN_00025",
+            "irn": "00000000000000000000000000000000000000000000000000079072ef9b0431",
+            "gstin": "29AAAAA0012A1Z5",
+            "invoice_amount": "59.00",
+            "claimed_gst": "9.00",
+            "claimed_tds": "0.00",
+            "period": "2026-08"
+          }
+        ]
+      },
+      "narration": "IMPS CR UTR350438841 MERCH_012",
+      "deterministic_expected_decision": {
+        "expected_status": "MATCHED",
+        "expected_exception_code": "NONE"
+      },
+      "expected_reason_codes": [],
+      "expected_financial_facts": {
+        "pg_txn_id": "TXN_00025",
+        "pg_gross_amount": "2500.00",
+        "pg_pg_fee": "50.00",
+        "pg_gst_on_fee": "9.00",
+        "pg_tds_withheld": "0.00",
+        "pg_net_payout": "2441.00",
+        "pg_utr": "UTR350439841",
+        "bank_utr": "UTR350438841",
+        "bank_credited_amount": "2441.00",
+        "bank_value_date": "2026-08-06",
+        "bank_bank_charges": "0.00",
+        "invoice_txn_id": "TXN_00025",
+        "invoice_invoice_amount": "59.00",
+        "invoice_claimed_gst": "9.00",
+        "invoice_claimed_tds": "0.00"
+      },
+      "source_transaction_id": "TXN_00025",
+      "notes": "UTR digit corrupted on bank side; recoverable via amount+date-gated fuzzy match."
+    },
+    {
+      "case_id": "E2E_026",
+      "category": "reference_mismatch_fuzzy",
+      "input_transaction": {
+        "pg": [
+          {
+            "settlement_id": "SET_TXN_00026",
+            "txn_id": "TXN_00026",
+            "order_id": "ORD_TXN_00026",
+            "merchant_id": "MERCH_012",
+            "gross_amount": "3200.00",
+            "pg_fee": "64.00",
+            "gst_on_fee": "11.52",
+            "tds_withheld": "0.00",
+            "net_payout": "3124.48",
+            "merchant_gstin": "29AAAAA0012A1Z5",
+            "merchant_ytd_gross_opening": "3500.00",
+            "payment_method": "CARD",
+            "utr": "UTR379104326",
+            "timestamp": "2026-08-06T01:00:00+00:00"
+          }
+        ],
+        "bank": [
+          {
+            "bank_ref": "BANKREF_TXN_00026",
+            "utr": "UTR379108326",
+            "credited_amount": "3124.48",
+            "value_date": "2026-08-07",
+            "narration": "UPI CR UTR379108326 MERCH_012",
+            "bank_charges": "0.00"
+          }
+        ],
+        "invoice": [
+          {
+            "invoice_id": "INV_TXN_00026",
+            "txn_id": "TXN_00026",
+            "irn": "000000000000000000000000000000000000000000000000001d20c901f3005c",
+            "gstin": "29AAAAA0012A1Z5",
+            "invoice_amount": "75.52",
+            "claimed_gst": "11.52",
+            "claimed_tds": "0.00",
+            "period": "2026-08"
+          }
+        ]
+      },
+      "narration": "UPI CR UTR379108326 MERCH_012",
+      "deterministic_expected_decision": {
+        "expected_status": "MATCHED",
+        "expected_exception_code": "NONE"
+      },
+      "expected_reason_codes": [],
+      "expected_financial_facts": {
+        "pg_txn_id": "TXN_00026",
+        "pg_gross_amount": "3200.00",
+        "pg_pg_fee": "64.00",
+        "pg_gst_on_fee": "11.52",
+        "pg_tds_withheld": "0.00",
+        "pg_net_payout": "3124.48",
+        "pg_utr": "UTR379104326",
+        "bank_utr": "UTR379108326",
+        "bank_credited_amount": "3124.48",
+        "bank_value_date": "2026-08-07",
+        "bank_bank_charges": "0.00",
+        "invoice_txn_id": "TXN_00026",
+        "invoice_invoice_amount": "75.52",
+        "invoice_claimed_gst": "11.52",
+        "invoice_claimed_tds": "0.00"
+      },
+      "source_transaction_id": "TXN_00026",
+      "notes": "UTR digit corrupted on bank side; recoverable via amount+date-gated fuzzy match."
+    },
+    {
+      "case_id": "E2E_027",
+      "category": "reference_mismatch_fuzzy",
+      "input_transaction": {
+        "pg": [
+          {
+            "settlement_id": "SET_TXN_00027",
+            "txn_id": "TXN_00027",
+            "order_id": "ORD_TXN_00027",
+            "merchant_id": "MERCH_010",
+            "gross_amount": "1000.00",
+            "pg_fee": "20.00",
+            "gst_on_fee": "3.60",
+            "tds_withheld": "0.00",
+            "net_payout": "976.40",
+            "merchant_gstin": "29AAAAA0010A1Z5",
+            "merchant_ytd_gross_opening": "2500.00",
+            "payment_method": "UPI",
+            "utr": "UTR914784628",
+            "timestamp": "2026-08-07T20:00:00+00:00"
+          }
+        ],
+        "bank": [
+          {
+            "bank_ref": "BANKREF_TXN_00027",
+            "utr": "UTR914784620",
+            "credited_amount": "976.40",
+            "value_date": "2026-08-08",
+            "narration": "UPI CR UTR914784620 MERCH_010",
+            "bank_charges": "0.00"
+          }
+        ],
+        "invoice": [
+          {
+            "invoice_id": "INV_TXN_00027",
+            "txn_id": "TXN_00027",
+            "irn": "000000000000000000000000000000000000000000000000001fb94103ce9999",
+            "gstin": "29AAAAA0010A1Z5",
+            "invoice_amount": "23.60",
+            "claimed_gst": "3.60",
+            "claimed_tds": "0.00",
+            "period": "2026-08"
+          }
+        ]
+      },
+      "narration": "UPI CR UTR914784620 MERCH_010",
+      "deterministic_expected_decision": {
+        "expected_status": "MATCHED",
+        "expected_exception_code": "NONE"
+      },
+      "expected_reason_codes": [],
+      "expected_financial_facts": {
+        "pg_txn_id": "TXN_00027",
+        "pg_gross_amount": "1000.00",
+        "pg_pg_fee": "20.00",
+        "pg_gst_on_fee": "3.60",
+        "pg_tds_withheld": "0.00",
+        "pg_net_payout": "976.40",
+        "pg_utr": "UTR914784628",
+        "bank_utr": "UTR914784620",
+        "bank_credited_amount": "976.40",
+        "bank_value_date": "2026-08-08",
+        "bank_bank_charges": "0.00",
+        "invoice_txn_id": "TXN_00027",
+        "invoice_invoice_amount": "23.60",
+        "invoice_claimed_gst": "3.60",
+        "invoice_claimed_tds": "0.00"
+      },
+      "source_transaction_id": "TXN_00027",
+      "notes": "UTR digit corrupted on bank side; recoverable via amount+date-gated fuzzy match."
+    },
+    {
+      "case_id": "E2E_028",
+      "category": "reference_mismatch_fuzzy",
+      "input_transaction": {
+        "pg": [
+          {
+            "settlement_id": "SET_TXN_00028",
+            "txn_id": "TXN_00028",
+            "order_id": "ORD_TXN_00028",
+            "merchant_id": "MERCH_005",
+            "gross_amount": "3200.00",
+            "pg_fee": "64.00",
+            "gst_on_fee": "11.52",
+            "tds_withheld": "0.00",
+            "net_payout": "3124.48",
+            "merchant_gstin": "29AAAAA0005A1Z5",
+            "merchant_ytd_gross_opening": "25000.00",
+            "payment_method": "CARD",
+            "utr": "UTR836481039",
+            "timestamp": "2026-08-08T14:00:00+00:00"
+          }
+        ],
+        "bank": [
+          {
+            "bank_ref": "BANKREF_TXN_00028",
+            "utr": "UTR836481439",
+            "credited_amount": "3124.48",
+            "value_date": "2026-08-09",
+            "narration": "NEFT CR UTR836481439 MERCH_005",
+            "bank_charges": "0.00"
+          }
+        ],
+        "invoice": [
+          {
+            "invoice_id": "INV_TXN_00028",
+            "txn_id": "TXN_00028",
+            "irn": "0000000000000000000000000000000000000000000000000011ed1af36eb8f2",
+            "gstin": "29AAAAA0005A1Z5",
+            "invoice_amount": "75.52",
+            "claimed_gst": "11.52",
+            "claimed_tds": "0.00",
+            "period": "2026-08"
+          }
+        ]
+      },
+      "narration": "NEFT CR UTR836481439 MERCH_005",
+      "deterministic_expected_decision": {
+        "expected_status": "MATCHED",
+        "expected_exception_code": "NONE"
+      },
+      "expected_reason_codes": [],
+      "expected_financial_facts": {
+        "pg_txn_id": "TXN_00028",
+        "pg_gross_amount": "3200.00",
+        "pg_pg_fee": "64.00",
+        "pg_gst_on_fee": "11.52",
+        "pg_tds_withheld": "0.00",
+        "pg_net_payout": "3124.48",
+        "pg_utr": "UTR836481039",
+        "bank_utr": "UTR836481439",
+        "bank_credited_amount": "3124.48",
+        "bank_value_date": "2026-08-09",
+        "bank_bank_charges": "0.00",
+        "invoice_txn_id": "TXN_00028",
+        "invoice_invoice_amount": "75.52",
+        "invoice_claimed_gst": "11.52",
+        "invoice_claimed_tds": "0.00"
+      },
+      "source_transaction_id": "TXN_00028",
+      "notes": "UTR digit corrupted on bank side; recoverable via amount+date-gated fuzzy match."
+    },
+    {
+      "case_id": "E2E_029",
+      "category": "reference_mismatch_fuzzy",
+      "input_transaction": {
+        "pg": [
+          {
+            "settlement_id": "SET_TXN_00029",
+            "txn_id": "TXN_00029",
+            "order_id": "ORD_TXN_00029",
+            "merchant_id": "MERCH_005",
+            "gross_amount": "3200.00",
+            "pg_fee": "64.00",
+            "gst_on_fee": "11.52",
+            "tds_withheld": "0.00",
+            "net_payout": "3124.48",
+            "merchant_gstin": "29AAAAA0005A1Z5",
+            "merchant_ytd_gross_opening": "28200.00",
+            "payment_method": "UPI",
+            "utr": "UTR615831407",
+            "timestamp": "2026-08-09T15:00:00+00:00"
+          }
+        ],
+        "bank": [
+          {
+            "bank_ref": "BANKREF_TXN_00029",
+            "utr": "UTR515831407",
+            "credited_amount": "3124.48",
+            "value_date": "2026-08-10",
+            "narration": "NEFT CR UTR515831407 MERCH_005",
+            "bank_charges": "0.00"
+          }
+        ],
+        "invoice": [
+          {
+            "invoice_id": "INV_TXN_00029",
+            "txn_id": "TXN_00029",
+            "irn": "00000000000000000000000000000000000000000000000000047df416d69a3f",
+            "gstin": "29AAAAA0005A1Z5",
+            "invoice_amount": "75.52",
+            "claimed_gst": "11.52",
+            "claimed_tds": "0.00",
+            "period": "2026-08"
+          }
+        ]
+      },
+      "narration": "NEFT CR UTR515831407 MERCH_005",
+      "deterministic_expected_decision": {
+        "expected_status": "MATCHED",
+        "expected_exception_code": "NONE"
+      },
+      "expected_reason_codes": [],
+      "expected_financial_facts": {
+        "pg_txn_id": "TXN_00029",
+        "pg_gross_amount": "3200.00",
+        "pg_pg_fee": "64.00",
+        "pg_gst_on_fee": "11.52",
+        "pg_tds_withheld": "0.00",
+        "pg_net_payout": "3124.48",
+        "pg_utr": "UTR615831407",
+        "bank_utr": "UTR515831407",
+        "bank_credited_amount": "3124.48",
+        "bank_value_date": "2026-08-10",
+        "bank_bank_charges": "0.00",
+        "invoice_txn_id": "TXN_00029",
+        "invoice_invoice_amount": "75.52",
+        "invoice_claimed_gst": "11.52",
+        "invoice_claimed_tds": "0.00"
+      },
+      "source_transaction_id": "TXN_00029",
+      "notes": "UTR digit corrupted on bank side; recoverable via amount+date-gated fuzzy match."
+    },
+    {
+      "case_id": "E2E_030",
+      "category": "reference_mismatch_fuzzy",
+      "input_transaction": {
+        "pg": [
+          {
+            "settlement_id": "SET_TXN_00030",
+            "txn_id": "TXN_00030",
+            "order_id": "ORD_TXN_00030",
+            "merchant_id": "MERCH_003",
+            "gross_amount": "1000.00",
+            "pg_fee": "20.00",
+            "gst_on_fee": "3.60",
+            "tds_withheld": "1.00",
+            "net_payout": "975.40",
+            "merchant_gstin": "29AAAAA0003A1Z5",
+            "merchant_ytd_gross_opening": "510490.00",
+            "payment_method": "UPI",
+            "utr": "UTR771735535",
+            "timestamp": "2026-08-10T21:00:00+00:00"
+          }
+        ],
+        "bank": [
+          {
+            "bank_ref": "BANKREF_TXN_00030",
+            "utr": "UTR671735535",
+            "credited_amount": "975.40",
+            "value_date": "2026-08-11",
+            "narration": "UPI CR UTR671735535 MERCH_003",
+            "bank_charges": "0.00"
+          }
+        ],
+        "invoice": [
+          {
+            "invoice_id": "INV_TXN_00030",
+            "txn_id": "TXN_00030",
+            "irn": "0000000000000000000000000000000000000000000000000016d4d0c134fbd0",
+            "gstin": "29AAAAA0003A1Z5",
+            "invoice_amount": "23.60",
+            "claimed_gst": "3.60",
+            "claimed_tds": "1.00",
+            "period": "2026-08"
+          }
+        ]
+      },
+      "narration": "UPI CR UTR671735535 MERCH_003",
+      "deterministic_expected_decision": {
+        "expected_status": "MATCHED",
+        "expected_exception_code": "NONE"
+      },
+      "expected_reason_codes": [],
+      "expected_financial_facts": {
+        "pg_txn_id": "TXN_00030",
+        "pg_gross_amount": "1000.00",
+        "pg_pg_fee": "20.00",
+        "pg_gst_on_fee": "3.60",
+        "pg_tds_withheld": "1.00",
+        "pg_net_payout": "975.40",
+        "pg_utr": "UTR771735535",
+        "bank_utr": "UTR671735535",
+        "bank_credited_amount": "975.40",
+        "bank_value_date": "2026-08-11",
+        "bank_bank_charges": "0.00",
+        "invoice_txn_id": "TXN_00030",
+        "invoice_invoice_amount": "23.60",
+        "invoice_claimed_gst": "3.60",
+        "invoice_claimed_tds": "1.00"
+      },
+      "source_transaction_id": "TXN_00030",
+      "notes": "UTR digit corrupted on bank side; recoverable via amount+date-gated fuzzy match."
+    },
+    {
+      "case_id": "E2E_031",
+      "category": "amount_fee_discrepancy",
+      "input_transaction": {
+        "pg": [
+          {
+            "settlement_id": "SET_TXN_00031",
+            "txn_id": "TXN_00031",
+            "order_id": "ORD_TXN_00031",
+            "merchant_id": "MERCH_008",
+            "gross_amount": "2500.00",
+            "pg_fee": "50.00",
+            "gst_on_fee": "9.00",
+            "tds_withheld": "0.00",
+            "net_payout": "2441.00",
+            "merchant_gstin": "29AAAAA0008A1Z5",
+            "merchant_ytd_gross_opening": "0.00",
+            "payment_method": "UPI",
+            "utr": "UTR474875253",
+            "timestamp": "2026-08-11T08:00:00+00:00"
+          }
+        ],
+        "bank": [
+          {
+            "bank_ref": "BANKREF_TXN_00031",
+            "utr": "UTR474875253",
+            "credited_amount": "2421.00",
+            "value_date": "2026-08-12",
+            "narration": "NEFT CR UTR474875253 MERCH_008",
+            "bank_charges": "0.00"
+          }
+        ],
+        "invoice": [
+          {
+            "invoice_id": "INV_TXN_00031",
+            "txn_id": "TXN_00031",
+            "irn": "000000000000000000000000000000000000000000000000000da47a5e79cee7",
+            "gstin": "29AAAAA0008A1Z5",
+            "invoice_amount": "59.00",
+            "claimed_gst": "9.00",
+            "claimed_tds": "0.00",
+            "period": "2026-08"
+          }
+        ]
+      },
+      "narration": "NEFT CR UTR474875253 MERCH_008",
+      "deterministic_expected_decision": {
+        "expected_status": "HUMAN_REVIEW",
+        "expected_exception_code": "AMOUNT_MISMATCH"
+      },
+      "expected_reason_codes": [
+        "AMOUNT_MISMATCH"
+      ],
+      "expected_financial_facts": {
+        "pg_txn_id": "TXN_00031",
+        "pg_gross_amount": "2500.00",
+        "pg_pg_fee": "50.00",
+        "pg_gst_on_fee": "9.00",
+        "pg_tds_withheld": "0.00",
+        "pg_net_payout": "2441.00",
+        "pg_utr": "UTR474875253",
+        "bank_utr": "UTR474875253",
+        "bank_credited_amount": "2421.00",
+        "bank_value_date": "2026-08-12",
+        "bank_bank_charges": "0.00",
+        "invoice_txn_id": "TXN_00031",
+        "invoice_invoice_amount": "59.00",
+        "invoice_claimed_gst": "9.00",
+        "invoice_claimed_tds": "0.00"
+      },
+      "source_transaction_id": "TXN_00031",
+      "notes": "Bank-credited amount is short by INR 20.00; genuine discrepancy, not rounding noise."
+    },
+    {
+      "case_id": "E2E_032",
+      "category": "amount_fee_discrepancy",
+      "input_transaction": {
+        "pg": [
+          {
+            "settlement_id": "SET_TXN_00032",
+            "txn_id": "TXN_00032",
+            "order_id": "ORD_TXN_00032",
+            "merchant_id": "MERCH_002",
+            "gross_amount": "12500.00",
+            "pg_fee": "250.00",
+            "gst_on_fee": "45.00",
+            "tds_withheld": "12.50",
+            "net_payout": "12192.50",
+            "merchant_gstin": "29AAAAA0002A1Z5",
+            "merchant_ytd_gross_opening": "504200.00",
+            "payment_method": "UPI",
+            "utr": "UTR495572438",
+            "timestamp": "2026-08-12T09:00:00+00:00"
+          }
+        ],
+        "bank": [
+          {
+            "bank_ref": "BANKREF_TXN_00032",
+            "utr": "UTR495572438",
+            "credited_amount": "12187.50",
+            "value_date": "2026-08-13",
+            "narration": "NEFT CR UTR495572438 MERCH_002",
+            "bank_charges": "0.00"
+          }
+        ],
+        "invoice": [
+          {
+            "invoice_id": "INV_TXN_00032",
+            "txn_id": "TXN_00032",
+            "irn": "0000000000000000000000000000000000000000000000000008b085d558272b",
+            "gstin": "29AAAAA0002A1Z5",
+            "invoice_amount": "295.00",
+            "claimed_gst": "45.00",
+            "claimed_tds": "12.50",
+            "period": "2026-08"
+          }
+        ]
+      },
+      "narration": "NEFT CR UTR495572438 MERCH_002",
+      "deterministic_expected_decision": {
+        "expected_status": "HUMAN_REVIEW",
+        "expected_exception_code": "AMOUNT_MISMATCH"
+      },
+      "expected_reason_codes": [
+        "AMOUNT_MISMATCH"
+      ],
+      "expected_financial_facts": {
+        "pg_txn_id": "TXN_00032",
+        "pg_gross_amount": "12500.00",
+        "pg_pg_fee": "250.00",
+        "pg_gst_on_fee": "45.00",
+        "pg_tds_withheld": "12.50",
+        "pg_net_payout": "12192.50",
+        "pg_utr": "UTR495572438",
+        "bank_utr": "UTR495572438",
+        "bank_credited_amount": "12187.50",
+        "bank_value_date": "2026-08-13",
+        "bank_bank_charges": "0.00",
+        "invoice_txn_id": "TXN_00032",
+        "invoice_invoice_amount": "295.00",
+        "invoice_claimed_gst": "45.00",
+        "invoice_claimed_tds": "12.50"
+      },
+      "source_transaction_id": "TXN_00032",
+      "notes": "Bank-credited amount is short by INR 5.00; genuine discrepancy, not rounding noise."
+    },
+    {
+      "case_id": "E2E_033",
+      "category": "amount_fee_discrepancy",
+      "input_transaction": {
+        "pg": [
+          {
+            "settlement_id": "SET_TXN_00033",
+            "txn_id": "TXN_00033",
+            "order_id": "ORD_TXN_00033",
+            "merchant_id": "MERCH_003",
+            "gross_amount": "5400.00",
+            "pg_fee": "108.00",
+            "gst_on_fee": "19.44",
+            "tds_withheld": "5.40",
+            "net_payout": "5267.16",
+            "merchant_gstin": "29AAAAA0003A1Z5",
+            "merchant_ytd_gross_opening": "511490.00",
+            "payment_method": "CARD",
+            "utr": "UTR457376073",
+            "timestamp": "2026-08-13T07:00:00+00:00"
+          }
+        ],
+        "bank": [
+          {
+            "bank_ref": "BANKREF_TXN_00033",
+            "utr": "UTR457376073",
+            "credited_amount": "5262.16",
+            "value_date": "2026-08-14",
+            "narration": "UPI CR UTR457376073 MERCH_003",
+            "bank_charges": "0.00"
+          }
+        ],
+        "invoice": [
+          {
+            "invoice_id": "INV_TXN_00033",
+            "txn_id": "TXN_00033",
+            "irn": "0000000000000000000000000000000000000000000000000008597da852930b",
+            "gstin": "29AAAAA0003A1Z5",
+            "invoice_amount": "127.44",
+            "claimed_gst": "19.44",
+            "claimed_tds": "5.40",
+            "period": "2026-08"
+          }
+        ]
+      },
+      "narration": "UPI CR UTR457376073 MERCH_003",
+      "deterministic_expected_decision": {
+        "expected_status": "HUMAN_REVIEW",
+        "expected_exception_code": "AMOUNT_MISMATCH"
+      },
+      "expected_reason_codes": [
+        "AMOUNT_MISMATCH"
+      ],
+      "expected_financial_facts": {
+        "pg_txn_id": "TXN_00033",
+        "pg_gross_amount": "5400.00",
+        "pg_pg_fee": "108.00",
+        "pg_gst_on_fee": "19.44",
+        "pg_tds_withheld": "5.40",
+        "pg_net_payout": "5267.16",
+        "pg_utr": "UTR457376073",
+        "bank_utr": "UTR457376073",
+        "bank_credited_amount": "5262.16",
+        "bank_value_date": "2026-08-14",
+        "bank_bank_charges": "0.00",
+        "invoice_txn_id": "TXN_00033",
+        "invoice_invoice_amount": "127.44",
+        "invoice_claimed_gst": "19.44",
+        "invoice_claimed_tds": "5.40"
+      },
+      "source_transaction_id": "TXN_00033",
+      "notes": "Bank-credited amount is short by INR 5.00; genuine discrepancy, not rounding noise."
+    },
+    {
+      "case_id": "E2E_034",
+      "category": "amount_fee_discrepancy",
+      "input_transaction": {
+        "pg": [
+          {
+            "settlement_id": "SET_TXN_00034",
+            "txn_id": "TXN_00034",
+            "order_id": "ORD_TXN_00034",
+            "merchant_id": "MERCH_009",
+            "gross_amount": "1000.00",
+            "pg_fee": "20.00",
+            "gst_on_fee": "3.60",
+            "tds_withheld": "0.00",
+            "net_payout": "976.40",
+            "merchant_gstin": "29AAAAA0009A1Z5",
+            "merchant_ytd_gross_opening": "3200.00",
+            "payment_method": "CARD",
+            "utr": "UTR521054312",
+            "timestamp": "2026-08-14T10:00:00+00:00"
+          }
+        ],
+        "bank": [
+          {
+            "bank_ref": "BANKREF_TXN_00034",
+            "utr": "UTR521054312",
+            "credited_amount": "956.40",
+            "value_date": "2026-08-15",
+            "narration": "UPI CR UTR521054312 MERCH_009",
+            "bank_charges": "0.00"
+          }
+        ],
+        "invoice": [
+          {
+            "invoice_id": "INV_TXN_00034",
+            "txn_id": "TXN_00034",
+            "irn": "0000000000000000000000000000000000000000000000000006bd8be2902075",
+            "gstin": "29AAAAA0009A1Z5",
+            "invoice_amount": "23.60",
+            "claimed_gst": "3.60",
+            "claimed_tds": "0.00",
+            "period": "2026-08"
+          }
+        ]
+      },
+      "narration": "UPI CR UTR521054312 MERCH_009",
+      "deterministic_expected_decision": {
+        "expected_status": "HUMAN_REVIEW",
+        "expected_exception_code": "AMOUNT_MISMATCH"
+      },
+      "expected_reason_codes": [
+        "AMOUNT_MISMATCH"
+      ],
+      "expected_financial_facts": {
+        "pg_txn_id": "TXN_00034",
+        "pg_gross_amount": "1000.00",
+        "pg_pg_fee": "20.00",
+        "pg_gst_on_fee": "3.60",
+        "pg_tds_withheld": "0.00",
+        "pg_net_payout": "976.40",
+        "pg_utr": "UTR521054312",
+        "bank_utr": "UTR521054312",
+        "bank_credited_amount": "956.40",
+        "bank_value_date": "2026-08-15",
+        "bank_bank_charges": "0.00",
+        "invoice_txn_id": "TXN_00034",
+        "invoice_invoice_amount": "23.60",
+        "invoice_claimed_gst": "3.60",
+        "invoice_claimed_tds": "0.00"
+      },
+      "source_transaction_id": "TXN_00034",
+      "notes": "Bank-credited amount is short by INR 20.00; genuine discrepancy, not rounding noise."
+    },
+    {
+      "case_id": "E2E_035",
+      "category": "amount_fee_discrepancy",
+      "input_transaction": {
+        "pg": [
+          {
+            "settlement_id": "SET_TXN_00035",
+            "txn_id": "TXN_00035",
+            "order_id": "ORD_TXN_00035",
+            "merchant_id": "MERCH_003",
+            "gross_amount": "12500.00",
+            "pg_fee": "250.00",
+            "gst_on_fee": "45.00",
+            "tds_withheld": "12.50",
+            "net_payout": "12192.50",
+            "merchant_gstin": "29AAAAA0003A1Z5",
+            "merchant_ytd_gross_opening": "516890.00",
+            "payment_method": "NETBANKING",
+            "utr": "UTR378264943",
+            "timestamp": "2026-08-15T06:00:00+00:00"
+          }
+        ],
+        "bank": [
+          {
+            "bank_ref": "BANKREF_TXN_00035",
+            "utr": "UTR378264943",
+            "credited_amount": "12191.75",
+            "value_date": "2026-08-16",
+            "narration": "IMPS CR UTR378264943 MERCH_003",
+            "bank_charges": "0.00"
+          }
+        ],
+        "invoice": [
+          {
+            "invoice_id": "INV_TXN_00035",
+            "txn_id": "TXN_00035",
+            "irn": "00000000000000000000000000000000000000000000000000089efe00a6f0a1",
+            "gstin": "29AAAAA0003A1Z5",
+            "invoice_amount": "295.00",
+            "claimed_gst": "45.00",
+            "claimed_tds": "12.50",
+            "period": "2026-08"
+          }
+        ]
+      },
+      "narration": "IMPS CR UTR378264943 MERCH_003",
+      "deterministic_expected_decision": {
+        "expected_status": "HUMAN_REVIEW",
+        "expected_exception_code": "AMOUNT_MISMATCH"
+      },
+      "expected_reason_codes": [
+        "AMOUNT_MISMATCH"
+      ],
+      "expected_financial_facts": {
+        "pg_txn_id": "TXN_00035",
+        "pg_gross_amount": "12500.00",
+        "pg_pg_fee": "250.00",
+        "pg_gst_on_fee": "45.00",
+        "pg_tds_withheld": "12.50",
+        "pg_net_payout": "12192.50",
+        "pg_utr": "UTR378264943",
+        "bank_utr": "UTR378264943",
+        "bank_credited_amount": "12191.75",
+        "bank_value_date": "2026-08-16",
+        "bank_bank_charges": "0.00",
+        "invoice_txn_id": "TXN_00035",
+        "invoice_invoice_amount": "295.00",
+        "invoice_claimed_gst": "45.00",
+        "invoice_claimed_tds": "12.50"
+      },
+      "source_transaction_id": "TXN_00035",
+      "notes": "Bank-credited amount is short by INR 0.75; genuine discrepancy, not rounding noise."
+    },
+    {
+      "case_id": "E2E_036",
+      "category": "amount_fee_discrepancy",
+      "input_transaction": {
+        "pg": [
+          {
+            "settlement_id": "SET_TXN_00036",
+            "txn_id": "TXN_00036",
+            "order_id": "ORD_TXN_00036",
+            "merchant_id": "MERCH_001",
+            "gross_amount": "1000.00",
+            "pg_fee": "20.00",
+            "gst_on_fee": "3.60",
+            "tds_withheld": "1.00",
+            "net_payout": "975.40",
+            "merchant_gstin": "29AAAAA0001A1Z5",
+            "merchant_ytd_gross_opening": "501400.00",
+            "payment_method": "UPI",
+            "utr": "UTR666511274",
+            "timestamp": "2026-08-16T03:00:00+00:00"
+          }
+        ],
+        "bank": [
+          {
+            "bank_ref": "BANKREF_TXN_00036",
+            "utr": "UTR666511274",
+            "credited_amount": "955.40",
+            "value_date": "2026-08-17",
+            "narration": "IMPS CR UTR666511274 MERCH_001",
+            "bank_charges": "0.00"
+          }
+        ],
+        "invoice": [
+          {
+            "invoice_id": "INV_TXN_00036",
+            "txn_id": "TXN_00036",
+            "irn": "0000000000000000000000000000000000000000000000000018961025d9c8f1",
+            "gstin": "29AAAAA0001A1Z5",
+            "invoice_amount": "23.60",
+            "claimed_gst": "3.60",
+            "claimed_tds": "1.00",
+            "period": "2026-08"
+          }
+        ]
+      },
+      "narration": "IMPS CR UTR666511274 MERCH_001",
+      "deterministic_expected_decision": {
+        "expected_status": "HUMAN_REVIEW",
+        "expected_exception_code": "AMOUNT_MISMATCH"
+      },
+      "expected_reason_codes": [
+        "AMOUNT_MISMATCH"
+      ],
+      "expected_financial_facts": {
+        "pg_txn_id": "TXN_00036",
+        "pg_gross_amount": "1000.00",
+        "pg_pg_fee": "20.00",
+        "pg_gst_on_fee": "3.60",
+        "pg_tds_withheld": "1.00",
+        "pg_net_payout": "975.40",
+        "pg_utr": "UTR666511274",
+        "bank_utr": "UTR666511274",
+        "bank_credited_amount": "955.40",
+        "bank_value_date": "2026-08-17",
+        "bank_bank_charges": "0.00",
+        "invoice_txn_id": "TXN_00036",
+        "invoice_invoice_amount": "23.60",
+        "invoice_claimed_gst": "3.60",
+        "invoice_claimed_tds": "1.00"
+      },
+      "source_transaction_id": "TXN_00036",
+      "notes": "Bank-credited amount is short by INR 20.00; genuine discrepancy, not rounding noise."
+    },
+    {
+      "case_id": "E2E_037",
+      "category": "amount_fee_discrepancy",
+      "input_transaction": {
+        "pg": [
+          {
+            "settlement_id": "SET_TXN_00037",
+            "txn_id": "TXN_00037",
+            "order_id": "ORD_TXN_00037",
+            "merchant_id": "MERCH_009",
+            "gross_amount": "1000.00",
+            "pg_fee": "20.00",
+            "gst_on_fee": "3.60",
+            "tds_withheld": "0.00",
+            "net_payout": "976.40",
+            "merchant_gstin": "29AAAAA0009A1Z5",
+            "merchant_ytd_gross_opening": "4200.00",
+            "payment_method": "NETBANKING",
+            "utr": "UTR262781261",
+            "timestamp": "2026-08-17T16:00:00+00:00"
+          }
+        ],
+        "bank": [
+          {
+            "bank_ref": "BANKREF_TXN_00037",
+            "utr": "UTR262781261",
+            "credited_amount": "963.90",
+            "value_date": "2026-08-18",
+            "narration": "IMPS CR UTR262781261 MERCH_009",
+            "bank_charges": "0.00"
+          }
+        ],
+        "invoice": [
+          {
+            "invoice_id": "INV_TXN_00037",
+            "txn_id": "TXN_00037",
+            "irn": "00000000000000000000000000000000000000000000000000165f0ef8112d58",
+            "gstin": "29AAAAA0009A1Z5",
+            "invoice_amount": "23.60",
+            "claimed_gst": "3.60",
+            "claimed_tds": "0.00",
+            "period": "2026-08"
+          }
+        ]
+      },
+      "narration": "IMPS CR UTR262781261 MERCH_009",
+      "deterministic_expected_decision": {
+        "expected_status": "HUMAN_REVIEW",
+        "expected_exception_code": "AMOUNT_MISMATCH"
+      },
+      "expected_reason_codes": [
+        "AMOUNT_MISMATCH"
+      ],
+      "expected_financial_facts": {
+        "pg_txn_id": "TXN_00037",
+        "pg_gross_amount": "1000.00",
+        "pg_pg_fee": "20.00",
+        "pg_gst_on_fee": "3.60",
+        "pg_tds_withheld": "0.00",
+        "pg_net_payout": "976.40",
+        "pg_utr": "UTR262781261",
+        "bank_utr": "UTR262781261",
+        "bank_credited_amount": "963.90",
+        "bank_value_date": "2026-08-18",
+        "bank_bank_charges": "0.00",
+        "invoice_txn_id": "TXN_00037",
+        "invoice_invoice_amount": "23.60",
+        "invoice_claimed_gst": "3.60",
+        "invoice_claimed_tds": "0.00"
+      },
+      "source_transaction_id": "TXN_00037",
+      "notes": "Bank-credited amount is short by INR 12.50; genuine discrepancy, not rounding noise."
+    },
+    {
+      "case_id": "E2E_038",
+      "category": "amount_fee_discrepancy",
+      "input_transaction": {
+        "pg": [
+          {
+            "settlement_id": "SET_TXN_00038",
+            "txn_id": "TXN_00038",
+            "order_id": "ORD_TXN_00038",
+            "merchant_id": "MERCH_008",
+            "gross_amount": "890.00",
+            "pg_fee": "17.80",
+            "gst_on_fee": "3.20",
+            "tds_withheld": "0.00",
+            "net_payout": "869.00",
+            "merchant_gstin": "29AAAAA0008A1Z5",
+            "merchant_ytd_gross_opening": "2500.00",
+            "payment_method": "CARD",
+            "utr": "UTR126381074",
+            "timestamp": "2026-08-18T14:00:00+00:00"
+          }
+        ],
+        "bank": [
+          {
+            "bank_ref": "BANKREF_TXN_00038",
+            "utr": "UTR126381074",
+            "credited_amount": "849.00",
+            "value_date": "2026-08-19",
+            "narration": "IMPS CR UTR126381074 MERCH_008",
+            "bank_charges": "0.00"
+          }
+        ],
+        "invoice": [
+          {
+            "invoice_id": "INV_TXN_00038",
+            "txn_id": "TXN_00038",
+            "irn": "000000000000000000000000000000000000000000000000001f5463abc7137b",
+            "gstin": "29AAAAA0008A1Z5",
+            "invoice_amount": "21.00",
+            "claimed_gst": "3.20",
+            "claimed_tds": "0.00",
+            "period": "2026-08"
+          }
+        ]
+      },
+      "narration": "IMPS CR UTR126381074 MERCH_008",
+      "deterministic_expected_decision": {
+        "expected_status": "HUMAN_REVIEW",
+        "expected_exception_code": "AMOUNT_MISMATCH"
+      },
+      "expected_reason_codes": [
+        "AMOUNT_MISMATCH"
+      ],
+      "expected_financial_facts": {
+        "pg_txn_id": "TXN_00038",
+        "pg_gross_amount": "890.00",
+        "pg_pg_fee": "17.80",
+        "pg_gst_on_fee": "3.20",
+        "pg_tds_withheld": "0.00",
+        "pg_net_payout": "869.00",
+        "pg_utr": "UTR126381074",
+        "bank_utr": "UTR126381074",
+        "bank_credited_amount": "849.00",
+        "bank_value_date": "2026-08-19",
+        "bank_bank_charges": "0.00",
+        "invoice_txn_id": "TXN_00038",
+        "invoice_invoice_amount": "21.00",
+        "invoice_claimed_gst": "3.20",
+        "invoice_claimed_tds": "0.00"
+      },
+      "source_transaction_id": "TXN_00038",
+      "notes": "Bank-credited amount is short by INR 20.00; genuine discrepancy, not rounding noise."
+    },
+    {
+      "case_id": "E2E_039",
+      "category": "tax_mismatch",
+      "input_transaction": {
+        "pg": [
+          {
+            "settlement_id": "SET_TXN_00039",
+            "txn_id": "TXN_00039",
+            "order_id": "ORD_TXN_00039",
+            "merchant_id": "MERCH_002",
+            "gross_amount": "3200.00",
+            "pg_fee": "64.00",
+            "gst_on_fee": "11.52",
+            "tds_withheld": "3.20",
+            "net_payout": "3121.28",
+            "merchant_gstin": "29AAAAA0002A1Z5",
+            "merchant_ytd_gross_opening": "516700.00",
+            "payment_method": "NETBANKING",
+            "utr": "UTR806552748",
+            "timestamp": "2026-08-19T17:00:00+00:00"
+          }
+        ],
+        "bank": [
+          {
+            "bank_ref": "BANKREF_TXN_00039",
+            "utr": "UTR806552748",
+            "credited_amount": "3121.28",
+            "value_date": "2026-08-20",
+            "narration": "UPI CR UTR806552748 MERCH_002",
+            "bank_charges": "0.00"
+          }
+        ],
+        "invoice": [
+          {
+            "invoice_id": "INV_TXN_00039",
+            "txn_id": "TXN_00039",
+            "irn": "000000000000000000000000000000000000000000000000001299b2f6800cae",
+            "gstin": "29AAAAA0002A1Z5",
+            "invoice_amount": "75.52",
+            "claimed_gst": "7.68",
+            "claimed_tds": "3.20",
+            "period": "2026-08"
+          }
+        ]
+      },
+      "narration": "UPI CR UTR806552748 MERCH_002",
+      "deterministic_expected_decision": {
+        "expected_status": "TAX_MISMATCH",
+        "expected_exception_code": "ERR_GST_MISMATCH"
+      },
+      "expected_reason_codes": [
+        "ERR_GST_MISMATCH"
+      ],
+      "expected_financial_facts": {
+        "pg_txn_id": "TXN_00039",
+        "pg_gross_amount": "3200.00",
+        "pg_pg_fee": "64.00",
+        "pg_gst_on_fee": "11.52",
+        "pg_tds_withheld": "3.20",
+        "pg_net_payout": "3121.28",
+        "pg_utr": "UTR806552748",
+        "bank_utr": "UTR806552748",
+        "bank_credited_amount": "3121.28",
+        "bank_value_date": "2026-08-20",
+        "bank_bank_charges": "0.00",
+        "invoice_txn_id": "TXN_00039",
+        "invoice_invoice_amount": "75.52",
+        "invoice_claimed_gst": "7.68",
+        "invoice_claimed_tds": "3.20"
+      },
+      "source_transaction_id": "TXN_00039",
+      "notes": "Claimed GST on fee reflects a 12% slab instead of the correct 18%."
+    },
+    {
+      "case_id": "E2E_040",
+      "category": "tax_mismatch",
+      "input_transaction": {
+        "pg": [
+          {
+            "settlement_id": "SET_TXN_00040",
+            "txn_id": "TXN_00040",
+            "order_id": "ORD_TXN_00040",
+            "merchant_id": "MERCH_001",
+            "gross_amount": "5400.00",
+            "pg_fee": "108.00",
+            "gst_on_fee": "19.44",
+            "tds_withheld": "5.40",
+            "net_payout": "5267.16",
+            "merchant_gstin": "29AAAAA0001A1Z5",
+            "merchant_ytd_gross_opening": "502400.00",
+            "payment_method": "CARD",
+            "utr": "UTR518198728",
+            "timestamp": "2026-08-20T10:00:00+00:00"
+          }
+        ],
+        "bank": [
+          {
+            "bank_ref": "BANKREF_TXN_00040",
+            "utr": "UTR518198728",
+            "credited_amount": "5267.16",
+            "value_date": "2026-08-21",
+            "narration": "UPI CR UTR518198728 MERCH_001",
+            "bank_charges": "0.00"
+          }
+        ],
+        "invoice": [
+          {
+            "invoice_id": "INV_TXN_00040",
+            "txn_id": "TXN_00040",
+            "irn": "0000000000000000000000000000000000000000000000000015a50005fbaeec",
+            "gstin": "29AAAAA0001A1Z5",
+            "invoice_amount": "127.44",
+            "claimed_gst": "19.44",
+            "claimed_tds": "54.00",
+            "period": "2026-08"
+          }
+        ]
+      },
+      "narration": "UPI CR UTR518198728 MERCH_001",
+      "deterministic_expected_decision": {
+        "expected_status": "TAX_MISMATCH",
+        "expected_exception_code": "ERR_TDS_VARIANCE"
+      },
+      "expected_reason_codes": [
+        "ERR_TDS_VARIANCE"
+      ],
+      "expected_financial_facts": {
+        "pg_txn_id": "TXN_00040",
+        "pg_gross_amount": "5400.00",
+        "pg_pg_fee": "108.00",
+        "pg_gst_on_fee": "19.44",
+        "pg_tds_withheld": "5.40",
+        "pg_net_payout": "5267.16",
+        "pg_utr": "UTR518198728",
+        "bank_utr": "UTR518198728",
+        "bank_credited_amount": "5267.16",
+        "bank_value_date": "2026-08-21",
+        "bank_bank_charges": "0.00",
+        "invoice_txn_id": "TXN_00040",
+        "invoice_invoice_amount": "127.44",
+        "invoice_claimed_gst": "19.44",
+        "invoice_claimed_tds": "54.00"
+      },
+      "source_transaction_id": "TXN_00040",
+      "notes": "Invoice uses stale 1% Section 393 TDS rate instead of current 0.1%."
+    },
+    {
+      "case_id": "E2E_041",
+      "category": "tax_mismatch",
+      "input_transaction": {
+        "pg": [
+          {
+            "settlement_id": "SET_TXN_00041",
+            "txn_id": "TXN_00041",
+            "order_id": "ORD_TXN_00041",
+            "merchant_id": "MERCH_010",
+            "gross_amount": "1000.00",
+            "pg_fee": "20.00",
+            "gst_on_fee": "3.60",
+            "tds_withheld": "0.00",
+            "net_payout": "976.40",
+            "merchant_gstin": "29AAAAA0010A1Z5",
+            "merchant_ytd_gross_opening": "3500.00",
+            "payment_method": "UPI",
+            "utr": "UTR227450142",
+            "timestamp": "2026-08-01T15:00:00+00:00"
+          }
+        ],
+        "bank": [
+          {
+            "bank_ref": "BANKREF_TXN_00041",
+            "utr": "UTR227450142",
+            "credited_amount": "976.40",
+            "value_date": "2026-08-02",
+            "narration": "IMPS CR UTR227450142 MERCH_010",
+            "bank_charges": "0.00"
+          }
+        ],
+        "invoice": [
+          {
+            "invoice_id": "INV_TXN_00041",
+            "txn_id": "TXN_00041",
+            "irn": "00000000000000000000000000000000000000000000000000049df5d1593dc3",
+            "gstin": "29AAAAA0010A1Z5",
+            "invoice_amount": "23.60",
+            "claimed_gst": "3.60",
+            "claimed_tds": "10.00",
+            "period": "2026-08"
+          }
+        ]
+      },
+      "narration": "IMPS CR UTR227450142 MERCH_010",
+      "deterministic_expected_decision": {
+        "expected_status": "TAX_MISMATCH",
+        "expected_exception_code": "ERR_TDS_VARIANCE"
+      },
+      "expected_reason_codes": [
+        "ERR_TDS_VARIANCE"
+      ],
+      "expected_financial_facts": {
+        "pg_txn_id": "TXN_00041",
+        "pg_gross_amount": "1000.00",
+        "pg_pg_fee": "20.00",
+        "pg_gst_on_fee": "3.60",
+        "pg_tds_withheld": "0.00",
+        "pg_net_payout": "976.40",
+        "pg_utr": "UTR227450142",
+        "bank_utr": "UTR227450142",
+        "bank_credited_amount": "976.40",
+        "bank_value_date": "2026-08-02",
+        "bank_bank_charges": "0.00",
+        "invoice_txn_id": "TXN_00041",
+        "invoice_invoice_amount": "23.60",
+        "invoice_claimed_gst": "3.60",
+        "invoice_claimed_tds": "10.00"
+      },
+      "source_transaction_id": "TXN_00041",
+      "notes": "Invoice uses stale 1% Section 393 TDS rate instead of current 0.1%."
+    },
+    {
+      "case_id": "E2E_042",
+      "category": "tax_mismatch",
+      "input_transaction": {
+        "pg": [
+          {
+            "settlement_id": "SET_TXN_00042",
+            "txn_id": "TXN_00042",
+            "order_id": "ORD_TXN_00042",
+            "merchant_id": "MERCH_002",
+            "gross_amount": "2500.00",
+            "pg_fee": "50.00",
+            "gst_on_fee": "9.00",
+            "tds_withheld": "2.50",
+            "net_payout": "2438.50",
+            "merchant_gstin": "29AAAAA0002A1Z5",
+            "merchant_ytd_gross_opening": "519900.00",
+            "payment_method": "CARD",
+            "utr": "UTR203568473",
+            "timestamp": "2026-08-02T16:00:00+00:00"
+          }
+        ],
+        "bank": [
+          {
+            "bank_ref": "BANKREF_TXN_00042",
+            "utr": "UTR203568473",
+            "credited_amount": "2438.50",
+            "value_date": "2026-08-03",
+            "narration": "NEFT CR UTR203568473 MERCH_002",
+            "bank_charges": "0.00"
+          }
+        ],
+        "invoice": [
+          {
+            "invoice_id": "INV_TXN_00042",
+            "txn_id": "TXN_00042",
+            "irn": "00000000000000000000000000000000000000000000000000056fee1cdd3e63",
+            "gstin": "29AAAAA0002A1Z5",
+            "invoice_amount": "59.00",
+            "claimed_gst": "6.00",
+            "claimed_tds": "2.50",
+            "period": "2026-08"
+          }
+        ]
+      },
+      "narration": "NEFT CR UTR203568473 MERCH_002",
+      "deterministic_expected_decision": {
+        "expected_status": "TAX_MISMATCH",
+        "expected_exception_code": "ERR_GST_MISMATCH"
+      },
+      "expected_reason_codes": [
+        "ERR_GST_MISMATCH"
+      ],
+      "expected_financial_facts": {
+        "pg_txn_id": "TXN_00042",
+        "pg_gross_amount": "2500.00",
+        "pg_pg_fee": "50.00",
+        "pg_gst_on_fee": "9.00",
+        "pg_tds_withheld": "2.50",
+        "pg_net_payout": "2438.50",
+        "pg_utr": "UTR203568473",
+        "bank_utr": "UTR203568473",
+        "bank_credited_amount": "2438.50",
+        "bank_value_date": "2026-08-03",
+        "bank_bank_charges": "0.00",
+        "invoice_txn_id": "TXN_00042",
+        "invoice_invoice_amount": "59.00",
+        "invoice_claimed_gst": "6.00",
+        "invoice_claimed_tds": "2.50"
+      },
+      "source_transaction_id": "TXN_00042",
+      "notes": "Claimed GST on fee reflects a 12% slab instead of the correct 18%."
+    },
+    {
+      "case_id": "E2E_043",
+      "category": "tax_mismatch",
+      "input_transaction": {
+        "pg": [
+          {
+            "settlement_id": "SET_TXN_00043",
+            "txn_id": "TXN_00043",
+            "order_id": "ORD_TXN_00043",
+            "merchant_id": "MERCH_004",
+            "gross_amount": "2500.00",
+            "pg_fee": "50.00",
+            "gst_on_fee": "9.00",
+            "tds_withheld": "0.00",
+            "net_payout": "2441.00",
+            "merchant_gstin": "29AAAAA0004A1Z5",
+            "merchant_ytd_gross_opening": "0.00",
+            "payment_method": "UPI",
+            "utr": "UTR900094518",
+            "timestamp": "2026-08-03T10:00:00+00:00"
+          }
+        ],
+        "bank": [
+          {
+            "bank_ref": "BANKREF_TXN_00043",
+            "utr": "UTR900094518",
+            "credited_amount": "2441.00",
+            "value_date": "2026-08-04",
+            "narration": "NEFT CR UTR900094518 MERCH_004",
+            "bank_charges": "0.00"
+          }
+        ],
+        "invoice": [
+          {
+            "invoice_id": "INV_TXN_00043",
+            "txn_id": "TXN_00043",
+            "irn": "0000000000000000000000000000000000000000000000000014f0033b56b191",
+            "gstin": "29AAAAA0004A1Z5",
+            "invoice_amount": "59.00",
+            "claimed_gst": "9.00",
+            "claimed_tds": "25.00",
+            "period": "2026-08"
+          }
+        ]
+      },
+      "narration": "NEFT CR UTR900094518 MERCH_004",
+      "deterministic_expected_decision": {
+        "expected_status": "TAX_MISMATCH",
+        "expected_exception_code": "ERR_TDS_VARIANCE"
+      },
+      "expected_reason_codes": [
+        "ERR_TDS_VARIANCE"
+      ],
+      "expected_financial_facts": {
+        "pg_txn_id": "TXN_00043",
+        "pg_gross_amount": "2500.00",
+        "pg_pg_fee": "50.00",
+        "pg_gst_on_fee": "9.00",
+        "pg_tds_withheld": "0.00",
+        "pg_net_payout": "2441.00",
+        "pg_utr": "UTR900094518",
+        "bank_utr": "UTR900094518",
+        "bank_credited_amount": "2441.00",
+        "bank_value_date": "2026-08-04",
+        "bank_bank_charges": "0.00",
+        "invoice_txn_id": "TXN_00043",
+        "invoice_invoice_amount": "59.00",
+        "invoice_claimed_gst": "9.00",
+        "invoice_claimed_tds": "25.00"
+      },
+      "source_transaction_id": "TXN_00043",
+      "notes": "Invoice uses stale 1% Section 393 TDS rate instead of current 0.1%."
+    },
+    {
+      "case_id": "E2E_044",
+      "category": "tax_mismatch",
+      "input_transaction": {
+        "pg": [
+          {
+            "settlement_id": "SET_TXN_00044",
+            "txn_id": "TXN_00044",
+            "order_id": "ORD_TXN_00044",
+            "merchant_id": "MERCH_011",
+            "gross_amount": "890.00",
+            "pg_fee": "17.80",
+            "gst_on_fee": "3.20",
+            "tds_withheld": "0.00",
+            "net_payout": "869.00",
+            "merchant_gstin": "29AAAAA0011A1Z5",
+            "merchant_ytd_gross_opening": "0.00",
+            "payment_method": "NETBANKING",
+            "utr": "UTR323841641",
+            "timestamp": "2026-08-04T05:00:00+00:00"
+          }
+        ],
+        "bank": [
+          {
+            "bank_ref": "BANKREF_TXN_00044",
+            "utr": "UTR323841641",
+            "credited_amount": "869.00",
+            "value_date": "2026-08-05",
+            "narration": "IMPS CR UTR323841641 MERCH_011",
+            "bank_charges": "0.00"
+          }
+        ],
+        "invoice": [
+          {
+            "invoice_id": "INV_TXN_00044",
+            "txn_id": "TXN_00044",
+            "irn": "0000000000000000000000000000000000000000000000000015309293130dc6",
+            "gstin": "29AAAAA0011A1Z5",
+            "invoice_amount": "21.00",
+            "claimed_gst": "3.20",
+            "claimed_tds": "8.90",
+            "period": "2026-08"
+          }
+        ]
+      },
+      "narration": "IMPS CR UTR323841641 MERCH_011",
+      "deterministic_expected_decision": {
+        "expected_status": "TAX_MISMATCH",
+        "expected_exception_code": "ERR_TDS_VARIANCE"
+      },
+      "expected_reason_codes": [
+        "ERR_TDS_VARIANCE"
+      ],
+      "expected_financial_facts": {
+        "pg_txn_id": "TXN_00044",
+        "pg_gross_amount": "890.00",
+        "pg_pg_fee": "17.80",
+        "pg_gst_on_fee": "3.20",
+        "pg_tds_withheld": "0.00",
+        "pg_net_payout": "869.00",
+        "pg_utr": "UTR323841641",
+        "bank_utr": "UTR323841641",
+        "bank_credited_amount": "869.00",
+        "bank_value_date": "2026-08-05",
+        "bank_bank_charges": "0.00",
+        "invoice_txn_id": "TXN_00044",
+        "invoice_invoice_amount": "21.00",
+        "invoice_claimed_gst": "3.20",
+        "invoice_claimed_tds": "8.90"
+      },
+      "source_transaction_id": "TXN_00044",
+      "notes": "Invoice uses stale 1% Section 393 TDS rate instead of current 0.1%."
+    },
+    {
+      "case_id": "E2E_045",
+      "category": "tax_mismatch",
+      "input_transaction": {
+        "pg": [
+          {
+            "settlement_id": "SET_TXN_00045",
+            "txn_id": "TXN_00045",
+            "order_id": "ORD_TXN_00045",
+            "merchant_id": "MERCH_001",
+            "gross_amount": "3200.00",
+            "pg_fee": "64.00",
+            "gst_on_fee": "11.52",
+            "tds_withheld": "3.20",
+            "net_payout": "3121.28",
+            "merchant_gstin": "29AAAAA0001A1Z5",
+            "merchant_ytd_gross_opening": "507800.00",
+            "payment_method": "UPI",
+            "utr": "UTR589036921",
+            "timestamp": "2026-08-05T23:00:00+00:00"
+          }
+        ],
+        "bank": [
+          {
+            "bank_ref": "BANKREF_TXN_00045",
+            "utr": "UTR589036921",
+            "credited_amount": "3121.28",
+            "value_date": "2026-08-06",
+            "narration": "IMPS CR UTR589036921 MERCH_001",
+            "bank_charges": "0.00"
+          }
+        ],
+        "invoice": [
+          {
+            "invoice_id": "INV_TXN_00045",
+            "txn_id": "TXN_00045",
+            "irn": "0000000000000000000000000000000000000000000000000005e540d6acb801",
+            "gstin": "29AAAAA0001A1Z5",
+            "invoice_amount": "75.52",
+            "claimed_gst": "11.52",
+            "claimed_tds": "32.00",
+            "period": "2026-08"
+          }
+        ]
+      },
+      "narration": "IMPS CR UTR589036921 MERCH_001",
+      "deterministic_expected_decision": {
+        "expected_status": "TAX_MISMATCH",
+        "expected_exception_code": "ERR_TDS_VARIANCE"
+      },
+      "expected_reason_codes": [
+        "ERR_TDS_VARIANCE"
+      ],
+      "expected_financial_facts": {
+        "pg_txn_id": "TXN_00045",
+        "pg_gross_amount": "3200.00",
+        "pg_pg_fee": "64.00",
+        "pg_gst_on_fee": "11.52",
+        "pg_tds_withheld": "3.20",
+        "pg_net_payout": "3121.28",
+        "pg_utr": "UTR589036921",
+        "bank_utr": "UTR589036921",
+        "bank_credited_amount": "3121.28",
+        "bank_value_date": "2026-08-06",
+        "bank_bank_charges": "0.00",
+        "invoice_txn_id": "TXN_00045",
+        "invoice_invoice_amount": "75.52",
+        "invoice_claimed_gst": "11.52",
+        "invoice_claimed_tds": "32.00"
+      },
+      "source_transaction_id": "TXN_00045",
+      "notes": "Invoice uses stale 1% Section 393 TDS rate instead of current 0.1%."
+    },
+    {
+      "case_id": "E2E_046",
+      "category": "missing_in_source",
+      "input_transaction": {
+        "pg": [
+          {
+            "settlement_id": "SET_TXN_00046",
+            "txn_id": "TXN_00046",
+            "order_id": "ORD_TXN_00046",
+            "merchant_id": "MERCH_009",
+            "gross_amount": "1000.00",
+            "pg_fee": "20.00",
+            "gst_on_fee": "3.60",
+            "tds_withheld": "0.00",
+            "net_payout": "976.40",
+            "merchant_gstin": "29AAAAA0009A1Z5",
+            "merchant_ytd_gross_opening": "5200.00",
+            "payment_method": "NETBANKING",
+            "utr": "UTR384813472",
+            "timestamp": "2026-08-06T03:00:00+00:00"
+          }
+        ],
+        "bank": [
+          {
+            "bank_ref": "BANKREF_TXN_00046",
+            "utr": "UTR384813472",
+            "credited_amount": "976.40",
+            "value_date": "2026-08-07",
+            "narration": "UPI CR UTR384813472 MERCH_009",
+            "bank_charges": "0.00"
+          }
+        ],
+        "invoice": []
+      },
+      "narration": "UPI CR UTR384813472 MERCH_009",
+      "deterministic_expected_decision": {
+        "expected_status": "PARTIAL_MATCH",
+        "expected_exception_code": "MISSING_IN_INVOICE"
+      },
+      "expected_reason_codes": [
+        "MISSING_IN_INVOICE"
+      ],
+      "expected_financial_facts": {
+        "pg_txn_id": "TXN_00046",
+        "pg_gross_amount": "1000.00",
+        "pg_pg_fee": "20.00",
+        "pg_gst_on_fee": "3.60",
+        "pg_tds_withheld": "0.00",
+        "pg_net_payout": "976.40",
+        "pg_utr": "UTR384813472",
+        "bank_utr": "UTR384813472",
+        "bank_credited_amount": "976.40",
+        "bank_value_date": "2026-08-07",
+        "bank_bank_charges": "0.00"
+      },
+      "source_transaction_id": "TXN_00046",
+      "notes": "PG and bank agree; invoice not generated, so tax cannot be verified."
+    },
+    {
+      "case_id": "E2E_047",
+      "category": "missing_in_source",
+      "input_transaction": {
+        "pg": [
+          {
+            "settlement_id": "SET_TXN_00047",
+            "txn_id": "TXN_00047",
+            "order_id": "ORD_TXN_00047",
+            "merchant_id": "MERCH_004",
+            "gross_amount": "890.00",
+            "pg_fee": "17.80",
+            "gst_on_fee": "3.20",
+            "tds_withheld": "0.00",
+            "net_payout": "869.00",
+            "merchant_gstin": "29AAAAA0004A1Z5",
+            "merchant_ytd_gross_opening": "2500.00",
+            "payment_method": "NETBANKING",
+            "utr": "UTR888331419",
+            "timestamp": "2026-08-07T11:00:00+00:00"
+          }
+        ],
+        "bank": [],
+        "invoice": [
+          {
+            "invoice_id": "INV_TXN_00047",
+            "txn_id": "TXN_00047",
+            "irn": "000000000000000000000000000000000000000000000000001077584e8bc447",
+            "gstin": "29AAAAA0004A1Z5",
+            "invoice_amount": "21.00",
+            "claimed_gst": "3.20",
+            "claimed_tds": "0.00",
+            "period": "2026-08"
+          }
+        ]
+      },
+      "narration": "",
+      "deterministic_expected_decision": {
+        "expected_status": "UNMATCHED",
+        "expected_exception_code": "MISSING_IN_BANK"
+      },
+      "expected_reason_codes": [
+        "MISSING_IN_BANK"
+      ],
+      "expected_financial_facts": {
+        "pg_txn_id": "TXN_00047",
+        "pg_gross_amount": "890.00",
+        "pg_pg_fee": "17.80",
+        "pg_gst_on_fee": "3.20",
+        "pg_tds_withheld": "0.00",
+        "pg_net_payout": "869.00",
+        "pg_utr": "UTR888331419",
+        "invoice_txn_id": "TXN_00047",
+        "invoice_invoice_amount": "21.00",
+        "invoice_claimed_gst": "3.20",
+        "invoice_claimed_tds": "0.00"
+      },
+      "source_transaction_id": "TXN_00047",
+      "notes": "PG and invoice agree; settlement not yet reflected in the bank feed."
+    },
+    {
+      "case_id": "E2E_048",
+      "category": "missing_in_source",
+      "input_transaction": {
+        "pg": [
+          {
+            "settlement_id": "SET_TXN_00048",
+            "txn_id": "TXN_00048",
+            "order_id": "ORD_TXN_00048",
+            "merchant_id": "MERCH_011",
+            "gross_amount": "890.00",
+            "pg_fee": "17.80",
+            "gst_on_fee": "3.20",
+            "tds_withheld": "0.00",
+            "net_payout": "869.00",
+            "merchant_gstin": "29AAAAA0011A1Z5",
+            "merchant_ytd_gross_opening": "890.00",
+            "payment_method": "NETBANKING",
+            "utr": "UTR216443999",
+            "timestamp": "2026-08-08T16:00:00+00:00"
+          }
+        ],
+        "bank": [
+          {
+            "bank_ref": "BANKREF_TXN_00048",
+            "utr": "UTR216443999",
+            "credited_amount": "869.00",
+            "value_date": "2026-08-09",
+            "narration": "UPI CR UTR216443999 MERCH_011",
+            "bank_charges": "0.00"
+          }
+        ],
+        "invoice": []
+      },
+      "narration": "UPI CR UTR216443999 MERCH_011",
+      "deterministic_expected_decision": {
+        "expected_status": "PARTIAL_MATCH",
+        "expected_exception_code": "MISSING_IN_INVOICE"
+      },
+      "expected_reason_codes": [
+        "MISSING_IN_INVOICE"
+      ],
+      "expected_financial_facts": {
+        "pg_txn_id": "TXN_00048",
+        "pg_gross_amount": "890.00",
+        "pg_pg_fee": "17.80",
+        "pg_gst_on_fee": "3.20",
+        "pg_tds_withheld": "0.00",
+        "pg_net_payout": "869.00",
+        "pg_utr": "UTR216443999",
+        "bank_utr": "UTR216443999",
+        "bank_credited_amount": "869.00",
+        "bank_value_date": "2026-08-09",
+        "bank_bank_charges": "0.00"
+      },
+      "source_transaction_id": "TXN_00048",
+      "notes": "PG and bank agree; invoice not generated, so tax cannot be verified."
+    },
+    {
+      "case_id": "E2E_049",
+      "category": "missing_in_source",
+      "input_transaction": {
+        "pg": [
+          {
+            "settlement_id": "SET_TXN_00049",
+            "txn_id": "TXN_00049",
+            "order_id": "ORD_TXN_00049",
+            "merchant_id": "MERCH_004",
+            "gross_amount": "890.00",
+            "pg_fee": "17.80",
+            "gst_on_fee": "3.20",
+            "tds_withheld": "0.00",
+            "net_payout": "869.00",
+            "merchant_gstin": "29AAAAA0004A1Z5",
+            "merchant_ytd_gross_opening": "3390.00",
+            "payment_method": "UPI",
+            "utr": "UTR835416391",
+            "timestamp": "2026-08-09T15:00:00+00:00"
+          }
+        ],
+        "bank": [
+          {
+            "bank_ref": "BANKREF_TXN_00049",
+            "utr": "UTR835416391",
+            "credited_amount": "869.00",
+            "value_date": "2026-08-10",
+            "narration": "NEFT CR UTR835416391 MERCH_004",
+            "bank_charges": "0.00"
+          }
+        ],
+        "invoice": []
+      },
+      "narration": "NEFT CR UTR835416391 MERCH_004",
+      "deterministic_expected_decision": {
+        "expected_status": "PARTIAL_MATCH",
+        "expected_exception_code": "MISSING_IN_INVOICE"
+      },
+      "expected_reason_codes": [
+        "MISSING_IN_INVOICE"
+      ],
+      "expected_financial_facts": {
+        "pg_txn_id": "TXN_00049",
+        "pg_gross_amount": "890.00",
+        "pg_pg_fee": "17.80",
+        "pg_gst_on_fee": "3.20",
+        "pg_tds_withheld": "0.00",
+        "pg_net_payout": "869.00",
+        "pg_utr": "UTR835416391",
+        "bank_utr": "UTR835416391",
+        "bank_credited_amount": "869.00",
+        "bank_value_date": "2026-08-10",
+        "bank_bank_charges": "0.00"
+      },
+      "source_transaction_id": "TXN_00049",
+      "notes": "PG and bank agree; invoice not generated, so tax cannot be verified."
+    },
+    {
+      "case_id": "E2E_050",
+      "category": "missing_in_source",
+      "input_transaction": {
+        "pg": [
+          {
+            "settlement_id": "SET_TXN_00050",
+            "txn_id": "TXN_00050",
+            "order_id": "ORD_TXN_00050",
+            "merchant_id": "MERCH_004",
+            "gross_amount": "890.00",
+            "pg_fee": "17.80",
+            "gst_on_fee": "3.20",
+            "tds_withheld": "0.00",
+            "net_payout": "869.00",
+            "merchant_gstin": "29AAAAA0004A1Z5",
+            "merchant_ytd_gross_opening": "4280.00",
+            "payment_method": "NETBANKING",
+            "utr": "UTR555946517",
+            "timestamp": "2026-08-10T09:00:00+00:00"
+          }
+        ],
+        "bank": [
+          {
+            "bank_ref": "BANKREF_TXN_00050",
+            "utr": "UTR555946517",
+            "credited_amount": "869.00",
+            "value_date": "2026-08-11",
+            "narration": "UPI CR UTR555946517 MERCH_004",
+            "bank_charges": "0.00"
+          }
+        ],
+        "invoice": []
+      },
+      "narration": "UPI CR UTR555946517 MERCH_004",
+      "deterministic_expected_decision": {
+        "expected_status": "PARTIAL_MATCH",
+        "expected_exception_code": "MISSING_IN_INVOICE"
+      },
+      "expected_reason_codes": [
+        "MISSING_IN_INVOICE"
+      ],
+      "expected_financial_facts": {
+        "pg_txn_id": "TXN_00050",
+        "pg_gross_amount": "890.00",
+        "pg_pg_fee": "17.80",
+        "pg_gst_on_fee": "3.20",
+        "pg_tds_withheld": "0.00",
+        "pg_net_payout": "869.00",
+        "pg_utr": "UTR555946517",
+        "bank_utr": "UTR555946517",
+        "bank_credited_amount": "869.00",
+        "bank_value_date": "2026-08-11",
+        "bank_bank_charges": "0.00"
+      },
+      "source_transaction_id": "TXN_00050",
+      "notes": "PG and bank agree; invoice not generated, so tax cannot be verified."
+    },
+    {
+      "case_id": "E2E_051",
+      "category": "duplicate",
+      "input_transaction": {
+        "pg": [
+          {
+            "settlement_id": "SET_TXN_00051",
+            "txn_id": "TXN_00051",
+            "order_id": "ORD_TXN_00051",
+            "merchant_id": "MERCH_005",
+            "gross_amount": "12500.00",
+            "pg_fee": "250.00",
+            "gst_on_fee": "45.00",
+            "tds_withheld": "0.00",
+            "net_payout": "12205.00",
+            "merchant_gstin": "29AAAAA0005A1Z5",
+            "merchant_ytd_gross_opening": "31400.00",
+            "payment_method": "UPI",
+            "utr": "UTR934672680",
+            "timestamp": "2026-08-11T20:00:00+00:00"
+          }
+        ],
+        "bank": [
+          {
+            "bank_ref": "BANKREF_TXN_00051_DUP",
+            "utr": "UTR934672680",
+            "credited_amount": "12205.00",
+            "value_date": "2026-08-12",
+            "narration": "IMPS CR UTR934672680 MERCH_005",
+            "bank_charges": "0.00"
+          },
+          {
+            "bank_ref": "BANKREF_TXN_00051",
+            "utr": "UTR934672680",
+            "credited_amount": "12205.00",
+            "value_date": "2026-08-12",
+            "narration": "IMPS CR UTR934672680 MERCH_005",
+            "bank_charges": "0.00"
+          }
+        ],
+        "invoice": [
+          {
+            "invoice_id": "INV_TXN_00051",
+            "txn_id": "TXN_00051",
+            "irn": "000000000000000000000000000000000000000000000000001414d3a63572f6",
+            "gstin": "29AAAAA0005A1Z5",
+            "invoice_amount": "295.00",
+            "claimed_gst": "45.00",
+            "claimed_tds": "0.00",
+            "period": "2026-08"
+          }
+        ]
+      },
+      "narration": "IMPS CR UTR934672680 MERCH_005",
+      "deterministic_expected_decision": {
+        "expected_status": "AMBIGUOUS",
+        "expected_exception_code": "DUPLICATE_DETECTED"
+      },
+      "expected_reason_codes": [
+        "DUPLICATE_DETECTED"
+      ],
+      "expected_financial_facts": {
+        "pg_txn_id": "TXN_00051",
+        "pg_gross_amount": "12500.00",
+        "pg_pg_fee": "250.00",
+        "pg_gst_on_fee": "45.00",
+        "pg_tds_withheld": "0.00",
+        "pg_net_payout": "12205.00",
+        "pg_utr": "UTR934672680",
+        "bank_utr": "UTR934672680",
+        "bank_credited_amount": "12205.00",
+        "bank_value_date": "2026-08-12",
+        "bank_bank_charges": "0.00",
+        "invoice_txn_id": "TXN_00051",
+        "invoice_invoice_amount": "295.00",
+        "invoice_claimed_gst": "45.00",
+        "invoice_claimed_tds": "0.00"
+      },
+      "source_transaction_id": "TXN_00051",
+      "notes": "Same transaction credited twice in the bank feed; duplicate row injected at batch assembly."
+    },
+    {
+      "case_id": "E2E_052",
+      "category": "duplicate",
+      "input_transaction": {
+        "pg": [
+          {
+            "settlement_id": "SET_TXN_00052",
+            "txn_id": "TXN_00052",
+            "order_id": "ORD_TXN_00052",
+            "merchant_id": "MERCH_012",
+            "gross_amount": "3200.00",
+            "pg_fee": "64.00",
+            "gst_on_fee": "11.52",
+            "tds_withheld": "0.00",
+            "net_payout": "3124.48",
+            "merchant_gstin": "29AAAAA0012A1Z5",
+            "merchant_ytd_gross_opening": "6700.00",
+            "payment_method": "CARD",
+            "utr": "UTR125506754",
+            "timestamp": "2026-08-12T08:00:00+00:00"
+          }
+        ],
+        "bank": [
+          {
+            "bank_ref": "BANKREF_TXN_00052",
+            "utr": "UTR125506754",
+            "credited_amount": "3124.48",
+            "value_date": "2026-08-13",
+            "narration": "NEFT CR UTR125506754 MERCH_012",
+            "bank_charges": "0.00"
+          },
+          {
+            "bank_ref": "BANKREF_TXN_00052_DUP",
+            "utr": "UTR125506754",
+            "credited_amount": "3124.48",
+            "value_date": "2026-08-13",
+            "narration": "NEFT CR UTR125506754 MERCH_012",
+            "bank_charges": "0.00"
+          }
+        ],
+        "invoice": [
+          {
+            "invoice_id": "INV_TXN_00052",
+            "txn_id": "TXN_00052",
+            "irn": "0000000000000000000000000000000000000000000000000017c03a56648934",
+            "gstin": "29AAAAA0012A1Z5",
+            "invoice_amount": "75.52",
+            "claimed_gst": "11.52",
+            "claimed_tds": "0.00",
+            "period": "2026-08"
+          }
+        ]
+      },
+      "narration": "NEFT CR UTR125506754 MERCH_012",
+      "deterministic_expected_decision": {
+        "expected_status": "AMBIGUOUS",
+        "expected_exception_code": "DUPLICATE_DETECTED"
+      },
+      "expected_reason_codes": [
+        "DUPLICATE_DETECTED"
+      ],
+      "expected_financial_facts": {
+        "pg_txn_id": "TXN_00052",
+        "pg_gross_amount": "3200.00",
+        "pg_pg_fee": "64.00",
+        "pg_gst_on_fee": "11.52",
+        "pg_tds_withheld": "0.00",
+        "pg_net_payout": "3124.48",
+        "pg_utr": "UTR125506754",
+        "bank_utr": "UTR125506754",
+        "bank_credited_amount": "3124.48",
+        "bank_value_date": "2026-08-13",
+        "bank_bank_charges": "0.00",
+        "invoice_txn_id": "TXN_00052",
+        "invoice_invoice_amount": "75.52",
+        "invoice_claimed_gst": "11.52",
+        "invoice_claimed_tds": "0.00"
+      },
+      "source_transaction_id": "TXN_00052",
+      "notes": "Same transaction credited twice in the bank feed; duplicate row injected at batch assembly."
+    },
+    {
+      "case_id": "E2E_053",
+      "category": "duplicate",
+      "input_transaction": {
+        "pg": [
+          {
+            "settlement_id": "SET_TXN_00053",
+            "txn_id": "TXN_00053",
+            "order_id": "ORD_TXN_00053",
+            "merchant_id": "MERCH_004",
+            "gross_amount": "3200.00",
+            "pg_fee": "64.00",
+            "gst_on_fee": "11.52",
+            "tds_withheld": "0.00",
+            "net_payout": "3124.48",
+            "merchant_gstin": "29AAAAA0004A1Z5",
+            "merchant_ytd_gross_opening": "5170.00",
+            "payment_method": "NETBANKING",
+            "utr": "UTR130197839",
+            "timestamp": "2026-08-13T09:00:00+00:00"
+          }
+        ],
+        "bank": [
+          {
+            "bank_ref": "BANKREF_TXN_00053_DUP",
+            "utr": "UTR130197839",
+            "credited_amount": "3124.48",
+            "value_date": "2026-08-14",
+            "narration": "NEFT CR UTR130197839 MERCH_004",
+            "bank_charges": "0.00"
+          },
+          {
+            "bank_ref": "BANKREF_TXN_00053",
+            "utr": "UTR130197839",
+            "credited_amount": "3124.48",
+            "value_date": "2026-08-14",
+            "narration": "NEFT CR UTR130197839 MERCH_004",
+            "bank_charges": "0.00"
+          }
+        ],
+        "invoice": [
+          {
+            "invoice_id": "INV_TXN_00053",
+            "txn_id": "TXN_00053",
+            "irn": "000000000000000000000000000000000000000000000000000a71cd02bbd1bb",
+            "gstin": "29AAAAA0004A1Z5",
+            "invoice_amount": "75.52",
+            "claimed_gst": "11.52",
+            "claimed_tds": "0.00",
+            "period": "2026-08"
+          }
+        ]
+      },
+      "narration": "NEFT CR UTR130197839 MERCH_004",
+      "deterministic_expected_decision": {
+        "expected_status": "AMBIGUOUS",
+        "expected_exception_code": "DUPLICATE_DETECTED"
+      },
+      "expected_reason_codes": [
+        "DUPLICATE_DETECTED"
+      ],
+      "expected_financial_facts": {
+        "pg_txn_id": "TXN_00053",
+        "pg_gross_amount": "3200.00",
+        "pg_pg_fee": "64.00",
+        "pg_gst_on_fee": "11.52",
+        "pg_tds_withheld": "0.00",
+        "pg_net_payout": "3124.48",
+        "pg_utr": "UTR130197839",
+        "bank_utr": "UTR130197839",
+        "bank_credited_amount": "3124.48",
+        "bank_value_date": "2026-08-14",
+        "bank_bank_charges": "0.00",
+        "invoice_txn_id": "TXN_00053",
+        "invoice_invoice_amount": "75.52",
+        "invoice_claimed_gst": "11.52",
+        "invoice_claimed_tds": "0.00"
+      },
+      "source_transaction_id": "TXN_00053",
+      "notes": "Same transaction credited twice in the bank feed; duplicate row injected at batch assembly."
+    },
+    {
+      "case_id": "E2E_054",
+      "category": "ambiguous",
+      "input_transaction": {
+        "pg": [
+          {
+            "settlement_id": "SET_TXN_00054",
+            "txn_id": "TXN_00054",
+            "order_id": "ORD_TXN_00054",
+            "merchant_id": "MERCH_015",
+            "gross_amount": "12500.00",
+            "pg_fee": "250.00",
+            "gst_on_fee": "45.00",
+            "tds_withheld": "0.00",
+            "net_payout": "12205.00",
+            "merchant_gstin": "29AAAAA0015A1Z5",
+            "merchant_ytd_gross_opening": "5000.00",
+            "payment_method": "UPI",
+            "utr": "UTR347439911",
+            "timestamp": "2026-08-14T08:00:00+00:00"
+          }
+        ],
+        "bank": [
+          {
+            "bank_ref": "BANKREF_TXN_00054",
+            "utr": "UTR347439911",
+            "credited_amount": "12205.00",
+            "value_date": "2026-08-15",
+            "narration": "UPI CR UTR347439911 MERCH_015",
+            "bank_charges": "0.00"
+          }
+        ],
+        "invoice": [
+          {
+            "invoice_id": "INV_TXN_00054",
+            "txn_id": "TXN_00054",
+            "irn": "0000000000000000000000000000000000000000000000000020f00de519d59f",
+            "gstin": "29AAAAA0015A1Z5",
+            "invoice_amount": "295.00",
+            "claimed_gst": "45.00",
+            "claimed_tds": "0.00",
+            "period": "2026-08"
+          }
+        ]
+      },
+      "narration": "UPI CR UTR347439911 MERCH_015",
+      "deterministic_expected_decision": {
+        "expected_status": "AMBIGUOUS",
+        "expected_exception_code": "AMBIGUOUS_MATCH"
+      },
+      "expected_reason_codes": [
+        "AMBIGUOUS_MATCH"
+      ],
+      "expected_financial_facts": {
+        "pg_txn_id": "TXN_00054",
+        "pg_gross_amount": "12500.00",
+        "pg_pg_fee": "250.00",
+        "pg_gst_on_fee": "45.00",
+        "pg_tds_withheld": "0.00",
+        "pg_net_payout": "12205.00",
+        "pg_utr": "UTR347439911",
+        "bank_utr": "UTR347439911",
+        "bank_credited_amount": "12205.00",
+        "bank_value_date": "2026-08-15",
+        "bank_bank_charges": "0.00",
+        "invoice_txn_id": "TXN_00054",
+        "invoice_invoice_amount": "295.00",
+        "invoice_claimed_gst": "45.00",
+        "invoice_claimed_tds": "0.00"
+      },
+      "source_transaction_id": "TXN_00054",
+      "notes": "A sibling transaction shares the same amount and date; genuinely ambiguous without a stronger signal."
+    },
+    {
+      "case_id": "E2E_055",
+      "category": "ambiguous",
+      "input_transaction": {
+        "pg": [
+          {
+            "settlement_id": "SET_TXN_00055",
+            "txn_id": "TXN_00055",
+            "order_id": "ORD_TXN_00055",
+            "merchant_id": "MERCH_009",
+            "gross_amount": "12500.00",
+            "pg_fee": "250.00",
+            "gst_on_fee": "45.00",
+            "tds_withheld": "0.00",
+            "net_payout": "12205.00",
+            "merchant_gstin": "29AAAAA0009A1Z5",
+            "merchant_ytd_gross_opening": "6200.00",
+            "payment_method": "UPI",
+            "utr": "UTR106280914",
+            "timestamp": "2026-08-14T08:00:00+00:00"
+          }
+        ],
+        "bank": [
+          {
+            "bank_ref": "BANKREF_TXN_00055",
+            "utr": "UTR106280914",
+            "credited_amount": "12205.00",
+            "value_date": "2026-08-15",
+            "narration": "UPI CR UTR106280914 MERCH_009",
+            "bank_charges": "0.00"
+          }
+        ],
+        "invoice": [
+          {
+            "invoice_id": "INV_TXN_00055",
+            "txn_id": "TXN_00055",
+            "irn": "00000000000000000000000000000000000000000000000000162d87350593f6",
+            "gstin": "29AAAAA0009A1Z5",
+            "invoice_amount": "295.00",
+            "claimed_gst": "45.00",
+            "claimed_tds": "0.00",
+            "period": "2026-08"
+          }
+        ]
+      },
+      "narration": "UPI CR UTR106280914 MERCH_009",
+      "deterministic_expected_decision": {
+        "expected_status": "AMBIGUOUS",
+        "expected_exception_code": "AMBIGUOUS_MATCH"
+      },
+      "expected_reason_codes": [
+        "AMBIGUOUS_MATCH"
+      ],
+      "expected_financial_facts": {
+        "pg_txn_id": "TXN_00055",
+        "pg_gross_amount": "12500.00",
+        "pg_pg_fee": "250.00",
+        "pg_gst_on_fee": "45.00",
+        "pg_tds_withheld": "0.00",
+        "pg_net_payout": "12205.00",
+        "pg_utr": "UTR106280914",
+        "bank_utr": "UTR106280914",
+        "bank_credited_amount": "12205.00",
+        "bank_value_date": "2026-08-15",
+        "bank_bank_charges": "0.00",
+        "invoice_txn_id": "TXN_00055",
+        "invoice_invoice_amount": "295.00",
+        "invoice_claimed_gst": "45.00",
+        "invoice_claimed_tds": "0.00"
+      },
+      "source_transaction_id": "TXN_00055",
+      "notes": "Sibling of an ambiguous pair; same amount and date as its counterpart, internally consistent on its own financial fields."
+    },
+    {
+      "case_id": "E2E_056",
+      "category": "ambiguous",
+      "input_transaction": {
+        "pg": [
+          {
+            "settlement_id": "SET_TXN_00056",
+            "txn_id": "TXN_00056",
+            "order_id": "ORD_TXN_00056",
+            "merchant_id": "MERCH_013",
+            "gross_amount": "2500.00",
+            "pg_fee": "50.00",
+            "gst_on_fee": "9.00",
+            "tds_withheld": "0.00",
+            "net_payout": "2441.00",
+            "merchant_gstin": "29AAAAA0013A1Z5",
+            "merchant_ytd_gross_opening": "12500.00",
+            "payment_method": "UPI",
+            "utr": "UTR328910784",
+            "timestamp": "2026-08-15T10:00:00+00:00"
+          }
+        ],
+        "bank": [
+          {
+            "bank_ref": "BANKREF_TXN_00056",
+            "utr": "UTR328910784",
+            "credited_amount": "2441.00",
+            "value_date": "2026-08-16",
+            "narration": "IMPS CR UTR328910784 MERCH_013",
+            "bank_charges": "0.00"
+          }
+        ],
+        "invoice": [
+          {
+            "invoice_id": "INV_TXN_00056",
+            "txn_id": "TXN_00056",
+            "irn": "000000000000000000000000000000000000000000000000000d5c674442854d",
+            "gstin": "29AAAAA0013A1Z5",
+            "invoice_amount": "59.00",
+            "claimed_gst": "9.00",
+            "claimed_tds": "0.00",
+            "period": "2026-08"
+          }
+        ]
+      },
+      "narration": "IMPS CR UTR328910784 MERCH_013",
+      "deterministic_expected_decision": {
+        "expected_status": "AMBIGUOUS",
+        "expected_exception_code": "AMBIGUOUS_MATCH"
+      },
+      "expected_reason_codes": [
+        "AMBIGUOUS_MATCH"
+      ],
+      "expected_financial_facts": {
+        "pg_txn_id": "TXN_00056",
+        "pg_gross_amount": "2500.00",
+        "pg_pg_fee": "50.00",
+        "pg_gst_on_fee": "9.00",
+        "pg_tds_withheld": "0.00",
+        "pg_net_payout": "2441.00",
+        "pg_utr": "UTR328910784",
+        "bank_utr": "UTR328910784",
+        "bank_credited_amount": "2441.00",
+        "bank_value_date": "2026-08-16",
+        "bank_bank_charges": "0.00",
+        "invoice_txn_id": "TXN_00056",
+        "invoice_invoice_amount": "59.00",
+        "invoice_claimed_gst": "9.00",
+        "invoice_claimed_tds": "0.00"
+      },
+      "source_transaction_id": "TXN_00056",
+      "notes": "A sibling transaction shares the same amount and date; genuinely ambiguous without a stronger signal."
+    },
+    {
+      "case_id": "E2E_057",
+      "category": "ambiguous",
+      "input_transaction": {
+        "pg": [
+          {
+            "settlement_id": "SET_TXN_00057",
+            "txn_id": "TXN_00057",
+            "order_id": "ORD_TXN_00057",
+            "merchant_id": "MERCH_009",
+            "gross_amount": "2500.00",
+            "pg_fee": "50.00",
+            "gst_on_fee": "9.00",
+            "tds_withheld": "0.00",
+            "net_payout": "2441.00",
+            "merchant_gstin": "29AAAAA0009A1Z5",
+            "merchant_ytd_gross_opening": "18700.00",
+            "payment_method": "UPI",
+            "utr": "UTR406893072",
+            "timestamp": "2026-08-15T10:00:00+00:00"
+          }
+        ],
+        "bank": [
+          {
+            "bank_ref": "BANKREF_TXN_00057",
+            "utr": "UTR406893072",
+            "credited_amount": "2441.00",
+            "value_date": "2026-08-16",
+            "narration": "UPI CR UTR406893072 MERCH_009",
+            "bank_charges": "0.00"
+          }
+        ],
+        "invoice": [
+          {
+            "invoice_id": "INV_TXN_00057",
+            "txn_id": "TXN_00057",
+            "irn": "00000000000000000000000000000000000000000000000000102396128809f6",
+            "gstin": "29AAAAA0009A1Z5",
+            "invoice_amount": "59.00",
+            "claimed_gst": "9.00",
+            "claimed_tds": "0.00",
+            "period": "2026-08"
+          }
+        ]
+      },
+      "narration": "UPI CR UTR406893072 MERCH_009",
+      "deterministic_expected_decision": {
+        "expected_status": "AMBIGUOUS",
+        "expected_exception_code": "AMBIGUOUS_MATCH"
+      },
+      "expected_reason_codes": [
+        "AMBIGUOUS_MATCH"
+      ],
+      "expected_financial_facts": {
+        "pg_txn_id": "TXN_00057",
+        "pg_gross_amount": "2500.00",
+        "pg_pg_fee": "50.00",
+        "pg_gst_on_fee": "9.00",
+        "pg_tds_withheld": "0.00",
+        "pg_net_payout": "2441.00",
+        "pg_utr": "UTR406893072",
+        "bank_utr": "UTR406893072",
+        "bank_credited_amount": "2441.00",
+        "bank_value_date": "2026-08-16",
+        "bank_bank_charges": "0.00",
+        "invoice_txn_id": "TXN_00057",
+        "invoice_invoice_amount": "59.00",
+        "invoice_claimed_gst": "9.00",
+        "invoice_claimed_tds": "0.00"
+      },
+      "source_transaction_id": "TXN_00057",
+      "notes": "Sibling of an ambiguous pair; same amount and date as its counterpart, internally consistent on its own financial fields."
+    },
+    {
+      "case_id": "E2E_058",
+      "category": "ambiguous",
+      "input_transaction": {
+        "pg": [
+          {
+            "settlement_id": "SET_TXN_00058",
+            "txn_id": "TXN_00058",
+            "order_id": "ORD_TXN_00058",
+            "merchant_id": "MERCH_015",
+            "gross_amount": "3200.00",
+            "pg_fee": "64.00",
+            "gst_on_fee": "11.52",
+            "tds_withheld": "0.00",
+            "net_payout": "3124.48",
+            "merchant_gstin": "29AAAAA0015A1Z5",
+            "merchant_ytd_gross_opening": "17500.00",
+            "payment_method": "NETBANKING",
+            "utr": "UTR531153970",
+            "timestamp": "2026-08-16T18:00:00+00:00"
+          }
+        ],
+        "bank": [
+          {
+            "bank_ref": "BANKREF_TXN_00058",
+            "utr": "UTR531153970",
+            "credited_amount": "3124.48",
+            "value_date": "2026-08-17",
+            "narration": "IMPS CR UTR531153970 MERCH_015",
+            "bank_charges": "0.00"
+          }
+        ],
+        "invoice": [
+          {
+            "invoice_id": "INV_TXN_00058",
+            "txn_id": "TXN_00058",
+            "irn": "0000000000000000000000000000000000000000000000000018b05c5f193147",
+            "gstin": "29AAAAA0015A1Z5",
+            "invoice_amount": "75.52",
+            "claimed_gst": "11.52",
+            "claimed_tds": "0.00",
+            "period": "2026-08"
+          }
+        ]
+      },
+      "narration": "IMPS CR UTR531153970 MERCH_015",
+      "deterministic_expected_decision": {
+        "expected_status": "AMBIGUOUS",
+        "expected_exception_code": "AMBIGUOUS_MATCH"
+      },
+      "expected_reason_codes": [
+        "AMBIGUOUS_MATCH"
+      ],
+      "expected_financial_facts": {
+        "pg_txn_id": "TXN_00058",
+        "pg_gross_amount": "3200.00",
+        "pg_pg_fee": "64.00",
+        "pg_gst_on_fee": "11.52",
+        "pg_tds_withheld": "0.00",
+        "pg_net_payout": "3124.48",
+        "pg_utr": "UTR531153970",
+        "bank_utr": "UTR531153970",
+        "bank_credited_amount": "3124.48",
+        "bank_value_date": "2026-08-17",
+        "bank_bank_charges": "0.00",
+        "invoice_txn_id": "TXN_00058",
+        "invoice_invoice_amount": "75.52",
+        "invoice_claimed_gst": "11.52",
+        "invoice_claimed_tds": "0.00"
+      },
+      "source_transaction_id": "TXN_00058",
+      "notes": "A sibling transaction shares the same amount and date; genuinely ambiguous without a stronger signal."
+    },
+    {
+      "case_id": "E2E_059",
+      "category": "ambiguous",
+      "input_transaction": {
+        "pg": [
+          {
+            "settlement_id": "SET_TXN_00059",
+            "txn_id": "TXN_00059",
+            "order_id": "ORD_TXN_00059",
+            "merchant_id": "MERCH_013",
+            "gross_amount": "3200.00",
+            "pg_fee": "64.00",
+            "gst_on_fee": "11.52",
+            "tds_withheld": "0.00",
+            "net_payout": "3124.48",
+            "merchant_gstin": "29AAAAA0013A1Z5",
+            "merchant_ytd_gross_opening": "15000.00",
+            "payment_method": "NETBANKING",
+            "utr": "UTR572616741",
+            "timestamp": "2026-08-16T18:00:00+00:00"
+          }
+        ],
+        "bank": [
+          {
+            "bank_ref": "BANKREF_TXN_00059",
+            "utr": "UTR572616741",
+            "credited_amount": "3124.48",
+            "value_date": "2026-08-17",
+            "narration": "IMPS CR UTR572616741 MERCH_013",
+            "bank_charges": "0.00"
+          }
+        ],
+        "invoice": [
+          {
+            "invoice_id": "INV_TXN_00059",
+            "txn_id": "TXN_00059",
+            "irn": "000000000000000000000000000000000000000000000000000c8318a24be67a",
+            "gstin": "29AAAAA0013A1Z5",
+            "invoice_amount": "75.52",
+            "claimed_gst": "11.52",
+            "claimed_tds": "0.00",
+            "period": "2026-08"
+          }
+        ]
+      },
+      "narration": "IMPS CR UTR572616741 MERCH_013",
+      "deterministic_expected_decision": {
+        "expected_status": "AMBIGUOUS",
+        "expected_exception_code": "AMBIGUOUS_MATCH"
+      },
+      "expected_reason_codes": [
+        "AMBIGUOUS_MATCH"
+      ],
+      "expected_financial_facts": {
+        "pg_txn_id": "TXN_00059",
+        "pg_gross_amount": "3200.00",
+        "pg_pg_fee": "64.00",
+        "pg_gst_on_fee": "11.52",
+        "pg_tds_withheld": "0.00",
+        "pg_net_payout": "3124.48",
+        "pg_utr": "UTR572616741",
+        "bank_utr": "UTR572616741",
+        "bank_credited_amount": "3124.48",
+        "bank_value_date": "2026-08-17",
+        "bank_bank_charges": "0.00",
+        "invoice_txn_id": "TXN_00059",
+        "invoice_invoice_amount": "75.52",
+        "invoice_claimed_gst": "11.52",
+        "invoice_claimed_tds": "0.00"
+      },
+      "source_transaction_id": "TXN_00059",
+      "notes": "Sibling of an ambiguous pair; same amount and date as its counterpart, internally consistent on its own financial fields."
+    },
+    {
+      "case_id": "E2E_060",
+      "category": "corrupted",
+      "input_transaction": {
+        "pg": [
+          {
+            "settlement_id": "SET_TXN_00060",
+            "txn_id": "TXN_00060",
+            "order_id": "ORD_TXN_00060",
+            "merchant_id": "MERCH_009",
+            "gross_amount": "NOT_A_NUMBER",
+            "pg_fee": "108.00",
+            "gst_on_fee": "19.44",
+            "tds_withheld": "0.00",
+            "net_payout": "5272.56",
+            "merchant_gstin": "29AAAAA0009A1Z5",
+            "merchant_ytd_gross_opening": "21200.00",
+            "payment_method": "NETBANKING",
+            "utr": "UTR178528253",
+            "timestamp": "2026-08-17T17:00:00+00:00"
+          }
+        ],
+        "bank": [
+          {
+            "bank_ref": "BANKREF_TXN_00060",
+            "utr": "UTR178528253",
+            "credited_amount": "5272.56",
+            "value_date": "2026-08-18",
+            "narration": "NEFT CR UTR178528253 MERCH_009",
+            "bank_charges": "0.00"
+          }
+        ],
+        "invoice": [
+          {
+            "invoice_id": "INV_TXN_00060",
+            "txn_id": "TXN_00060",
+            "irn": "000000000000000000000000000000000000000000000000001ebdc09d6deffd",
+            "gstin": "29AAAAA0009A1Z5",
+            "invoice_amount": "127.44",
+            "claimed_gst": "19.44",
+            "claimed_tds": "0.00",
+            "period": "2026-08"
+          }
+        ]
+      },
+      "narration": "NEFT CR UTR178528253 MERCH_009",
+      "deterministic_expected_decision": {
+        "expected_status": "UNMATCHED",
+        "expected_exception_code": "CORRUPTED_RECORD"
+      },
+      "expected_reason_codes": [
+        "CORRUPTED_RECORD"
+      ],
+      "expected_financial_facts": {
+        "pg_txn_id": "TXN_00060",
+        "pg_gross_amount": "NOT_A_NUMBER",
+        "pg_pg_fee": "108.00",
+        "pg_gst_on_fee": "19.44",
+        "pg_tds_withheld": "0.00",
+        "pg_net_payout": "5272.56",
+        "pg_utr": "UTR178528253",
+        "bank_utr": "UTR178528253",
+        "bank_credited_amount": "5272.56",
+        "bank_value_date": "2026-08-18",
+        "bank_bank_charges": "0.00",
+        "invoice_txn_id": "TXN_00060",
+        "invoice_invoice_amount": "127.44",
+        "invoice_claimed_gst": "19.44",
+        "invoice_claimed_tds": "0.00"
+      },
+      "source_transaction_id": "TXN_00060",
+      "notes": "PG record has a malformed gross_amount field; must fail validation gracefully."
+    },
+    {
+      "case_id": "E2E_061",
+      "category": "corrupted",
+      "input_transaction": {
+        "pg": [
+          {
+            "settlement_id": "SET_TXN_00061",
+            "txn_id": "TXN_00061",
+            "order_id": "ORD_TXN_00061",
+            "merchant_id": "MERCH_012",
+            "gross_amount": "NOT_A_NUMBER",
+            "pg_fee": "17.80",
+            "gst_on_fee": "3.20",
+            "tds_withheld": "0.00",
+            "net_payout": "869.00",
+            "merchant_gstin": "29AAAAA0012A1Z5",
+            "merchant_ytd_gross_opening": "9900.00",
+            "payment_method": "CARD",
+            "utr": "UTR270362777",
+            "timestamp": "2026-08-18T20:00:00+00:00"
+          }
+        ],
+        "bank": [
+          {
+            "bank_ref": "BANKREF_TXN_00061",
+            "utr": "UTR270362777",
+            "credited_amount": "869.00",
+            "value_date": "2026-08-19",
+            "narration": "UPI CR UTR270362777 MERCH_012",
+            "bank_charges": "0.00"
+          }
+        ],
+        "invoice": [
+          {
+            "invoice_id": "INV_TXN_00061",
+            "txn_id": "TXN_00061",
+            "irn": "0000000000000000000000000000000000000000000000000006b2ff58dffa6f",
+            "gstin": "29AAAAA0012A1Z5",
+            "invoice_amount": "21.00",
+            "claimed_gst": "3.20",
+            "claimed_tds": "0.00",
+            "period": "2026-08"
+          }
+        ]
+      },
+      "narration": "UPI CR UTR270362777 MERCH_012",
+      "deterministic_expected_decision": {
+        "expected_status": "UNMATCHED",
+        "expected_exception_code": "CORRUPTED_RECORD"
+      },
+      "expected_reason_codes": [
+        "CORRUPTED_RECORD"
+      ],
+      "expected_financial_facts": {
+        "pg_txn_id": "TXN_00061",
+        "pg_gross_amount": "NOT_A_NUMBER",
+        "pg_pg_fee": "17.80",
+        "pg_gst_on_fee": "3.20",
+        "pg_tds_withheld": "0.00",
+        "pg_net_payout": "869.00",
+        "pg_utr": "UTR270362777",
+        "bank_utr": "UTR270362777",
+        "bank_credited_amount": "869.00",
+        "bank_value_date": "2026-08-19",
+        "bank_bank_charges": "0.00",
+        "invoice_txn_id": "TXN_00061",
+        "invoice_invoice_amount": "21.00",
+        "invoice_claimed_gst": "3.20",
+        "invoice_claimed_tds": "0.00"
+      },
+      "source_transaction_id": "TXN_00061",
+      "notes": "PG record has a malformed gross_amount field; must fail validation gracefully."
+    },
+    {
+      "case_id": "E2E_062",
+      "category": "unresolvable",
+      "input_transaction": {
+        "pg": [
+          {
+            "settlement_id": "SET_TXN_00062",
+            "txn_id": "TXN_00062",
+            "order_id": "ORD_TXN_00062",
+            "merchant_id": "MERCH_012",
+            "gross_amount": "1000.00",
+            "pg_fee": "20.00",
+            "gst_on_fee": "3.60",
+            "tds_withheld": "0.00",
+            "net_payout": "976.40",
+            "merchant_gstin": "29AAAAA0012A1Z5",
+            "merchant_ytd_gross_opening": "10790.00",
+            "payment_method": "CARD",
+            "utr": "UTR812408287",
+            "timestamp": "2026-08-19T08:00:00+00:00"
+          }
+        ],
+        "bank": [
+          {
+            "bank_ref": "BANKREF_TXN_00062",
+            "utr": null,
+            "credited_amount": "926.40",
+            "value_date": "2026-08-28",
+            "narration": "NEFT CR UTR812408287 MERCH_012",
+            "bank_charges": "0.00"
+          }
+        ],
+        "invoice": [
+          {
+            "invoice_id": "INV_TXN_00062",
+            "txn_id": "TXN_00062",
+            "irn": "00000000000000000000000000000000000000000000000000101bc46027bf0c",
+            "gstin": "29AAAAA0012A1Z5",
+            "invoice_amount": "23.60",
+            "claimed_gst": "3.60",
+            "claimed_tds": "0.00",
+            "period": "2026-08"
+          }
+        ]
+      },
+      "narration": "NEFT CR UTR812408287 MERCH_012",
+      "deterministic_expected_decision": {
+        "expected_status": "UNMATCHED",
+        "expected_exception_code": "HUMAN_REVIEW_REQUIRED"
+      },
+      "expected_reason_codes": [
+        "HUMAN_REVIEW_REQUIRED"
+      ],
+      "expected_financial_facts": {
+        "pg_txn_id": "TXN_00062",
+        "pg_gross_amount": "1000.00",
+        "pg_pg_fee": "20.00",
+        "pg_gst_on_fee": "3.60",
+        "pg_tds_withheld": "0.00",
+        "pg_net_payout": "976.40",
+        "pg_utr": "UTR812408287",
+        "bank_utr": null,
+        "bank_credited_amount": "926.40",
+        "bank_value_date": "2026-08-28",
+        "bank_bank_charges": "0.00",
+        "invoice_txn_id": "TXN_00062",
+        "invoice_invoice_amount": "23.60",
+        "invoice_claimed_gst": "3.60",
+        "invoice_claimed_tds": "0.00"
+      },
+      "source_transaction_id": "TXN_00062",
+      "notes": "Amount, date, and UTR all diverge simultaneously; no defensible automated resolution."
+    },
+    {
+      "case_id": "E2E_063",
+      "category": "unresolvable",
+      "input_transaction": {
+        "pg": [
+          {
+            "settlement_id": "SET_TXN_00063",
+            "txn_id": "TXN_00063",
+            "order_id": "ORD_TXN_00063",
+            "merchant_id": "MERCH_008",
+            "gross_amount": "1000.00",
+            "pg_fee": "20.00",
+            "gst_on_fee": "3.60",
+            "tds_withheld": "0.00",
+            "net_payout": "976.40",
+            "merchant_gstin": "29AAAAA0008A1Z5",
+            "merchant_ytd_gross_opening": "3390.00",
+            "payment_method": "NETBANKING",
+            "utr": "UTR839148362",
+            "timestamp": "2026-08-20T12:00:00+00:00"
+          }
+        ],
+        "bank": [
+          {
+            "bank_ref": "BANKREF_TXN_00063",
+            "utr": null,
+            "credited_amount": "926.40",
+            "value_date": "2026-08-29",
+            "narration": "UPI CR UTR839148362 MERCH_008",
+            "bank_charges": "0.00"
+          }
+        ],
+        "invoice": [
+          {
+            "invoice_id": "INV_TXN_00063",
+            "txn_id": "TXN_00063",
+            "irn": "0000000000000000000000000000000000000000000000000011576e62146cd4",
+            "gstin": "29AAAAA0008A1Z5",
+            "invoice_amount": "23.60",
+            "claimed_gst": "3.60",
+            "claimed_tds": "0.00",
+            "period": "2026-08"
+          }
+        ]
+      },
+      "narration": "UPI CR UTR839148362 MERCH_008",
+      "deterministic_expected_decision": {
+        "expected_status": "UNMATCHED",
+        "expected_exception_code": "HUMAN_REVIEW_REQUIRED"
+      },
+      "expected_reason_codes": [
+        "HUMAN_REVIEW_REQUIRED"
+      ],
+      "expected_financial_facts": {
+        "pg_txn_id": "TXN_00063",
+        "pg_gross_amount": "1000.00",
+        "pg_pg_fee": "20.00",
+        "pg_gst_on_fee": "3.60",
+        "pg_tds_withheld": "0.00",
+        "pg_net_payout": "976.40",
+        "pg_utr": "UTR839148362",
+        "bank_utr": null,
+        "bank_credited_amount": "926.40",
+        "bank_value_date": "2026-08-29",
+        "bank_bank_charges": "0.00",
+        "invoice_txn_id": "TXN_00063",
+        "invoice_invoice_amount": "23.60",
+        "invoice_claimed_gst": "3.60",
+        "invoice_claimed_tds": "0.00"
+      },
+      "source_transaction_id": "TXN_00063",
+      "notes": "Amount, date, and UTR all diverge simultaneously; no defensible automated resolution."
+    }
+  ]
+}

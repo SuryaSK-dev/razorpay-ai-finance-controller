@@ -1,0 +1,5555 @@
+{
+  "dataset_version": "5C.5-v1",
+  "description": "Frozen end-to-end reconciliation benchmark derived from the existing deterministic financial controller.",
+  "authority": "deterministic",
+  "model_role": "read_only_assistance",
+  "financial_decision_authority": "deterministic_engine",
+  "source_of_truth": "existing_phase_0_to_4_pipeline",
+  "case_count": 61,
+  "cases": [
+    {
+      "case_id": "E2E_001",
+      "category": "PARTIAL_MATCH",
+      "authority": "deterministic",
+      "model_role": "read_only_assistance",
+      "input": {
+        "txn_id": "TXN_00050"
+      },
+      "gold_decision": {
+        "txn_id": "TXN_00050",
+        "status": "PARTIAL_MATCH",
+        "confidence_score": 59,
+        "matched_sources": [
+          "pg",
+          "bank"
+        ],
+        "tax_verified": true,
+        "exception_code": "MISSING_IN_INVOICE",
+        "reason_codes": [
+          "MISSING_IN_INVOICE"
+        ],
+        "evidence": {
+          "matched_rule": "missing_invoice_otherwise_clean",
+          "context": {
+            "no_candidates_found": false,
+            "is_ambiguous": false,
+            "low_confidence": false,
+            "missing_bank": false,
+            "missing_invoice": true,
+            "gst_mismatch": false,
+            "tds_mismatch": false,
+            "tax_unverifiable": false,
+            "fully_clean": false
+          },
+          "match_signals": {
+            "missing_bank": false,
+            "missing_invoice": true,
+            "txn_id_bank": {
+              "pg": "TXN_00050",
+              "bank": "TXN_00050",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "amount_bank": {
+              "pg_expected_net": "869.00",
+              "bank_amount": "869.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "date_bank": {
+              "delta_days": 1,
+              "matched": true,
+              "points_if_used": 14
+            },
+            "date_points_awarded": 14,
+            "utr": {
+              "pg": "UTR555946517",
+              "bank": "UTR555946517",
+              "matched": true,
+              "points_awarded": 10
+            }
+          },
+          "selection_reason": "bank: only candidate found via exact_utr; invoice: no candidates found"
+        }
+      }
+    },
+    {
+      "case_id": "E2E_002",
+      "category": "MATCHED",
+      "authority": "deterministic",
+      "model_role": "read_only_assistance",
+      "input": {
+        "txn_id": "TXN_00013"
+      },
+      "gold_decision": {
+        "txn_id": "TXN_00013",
+        "status": "MATCHED",
+        "confidence_score": 99,
+        "matched_sources": [
+          "pg",
+          "bank",
+          "invoice"
+        ],
+        "tax_verified": true,
+        "exception_code": "NONE",
+        "reason_codes": [
+          "NONE"
+        ],
+        "evidence": {
+          "matched_rule": "fully_clean_match",
+          "context": {
+            "no_candidates_found": false,
+            "is_ambiguous": false,
+            "low_confidence": false,
+            "missing_bank": false,
+            "missing_invoice": false,
+            "gst_mismatch": false,
+            "tds_mismatch": false,
+            "tax_unverifiable": false,
+            "fully_clean": true
+          },
+          "match_signals": {
+            "missing_bank": false,
+            "missing_invoice": false,
+            "txn_id_bank": {
+              "pg": "TXN_00013",
+              "bank": "TXN_00013",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "txn_id_invoice": {
+              "pg": "TXN_00013",
+              "invoice": "TXN_00013",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "amount_bank": {
+              "pg_expected_net": "5267.16",
+              "bank_amount": "5267.16",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "amount_invoice": {
+              "pg_expected_fee_plus_gst": "127.44",
+              "invoice_amount": "127.44",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "date_bank": {
+              "delta_days": 1,
+              "matched": true,
+              "points_if_used": 14
+            },
+            "date_invoice": {
+              "delta_days": 12,
+              "matched": false,
+              "points_if_used": 0
+            },
+            "date_points_awarded": 14,
+            "utr": {
+              "pg": "UTR467184137",
+              "bank": "UTR467184137",
+              "matched": true,
+              "points_awarded": 10
+            },
+            "fee_consistency": {
+              "pg_fee": "108.00",
+              "invoice_fee": "108.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 5
+            }
+          },
+          "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn"
+        }
+      }
+    },
+    {
+      "case_id": "E2E_003",
+      "category": "MATCHED",
+      "authority": "deterministic",
+      "model_role": "read_only_assistance",
+      "input": {
+        "txn_id": "TXN_00006"
+      },
+      "gold_decision": {
+        "txn_id": "TXN_00006",
+        "status": "MATCHED",
+        "confidence_score": 99,
+        "matched_sources": [
+          "pg",
+          "bank",
+          "invoice"
+        ],
+        "tax_verified": true,
+        "exception_code": "NONE",
+        "reason_codes": [
+          "NONE"
+        ],
+        "evidence": {
+          "matched_rule": "fully_clean_match",
+          "context": {
+            "no_candidates_found": false,
+            "is_ambiguous": false,
+            "low_confidence": false,
+            "missing_bank": false,
+            "missing_invoice": false,
+            "gst_mismatch": false,
+            "tds_mismatch": false,
+            "tax_unverifiable": false,
+            "fully_clean": true
+          },
+          "match_signals": {
+            "missing_bank": false,
+            "missing_invoice": false,
+            "txn_id_bank": {
+              "pg": "TXN_00006",
+              "bank": "TXN_00006",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "txn_id_invoice": {
+              "pg": "TXN_00006",
+              "invoice": "TXN_00006",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "amount_bank": {
+              "pg_expected_net": "976.40",
+              "bank_amount": "976.40",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "amount_invoice": {
+              "pg_expected_fee_plus_gst": "23.60",
+              "invoice_amount": "23.60",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "date_bank": {
+              "delta_days": 1,
+              "matched": true,
+              "points_if_used": 14
+            },
+            "date_invoice": {
+              "delta_days": 5,
+              "matched": false,
+              "points_if_used": 0
+            },
+            "date_points_awarded": 14,
+            "utr": {
+              "pg": "UTR464554432",
+              "bank": "UTR464554432",
+              "matched": true,
+              "points_awarded": 10
+            },
+            "fee_consistency": {
+              "pg_fee": "20.00",
+              "invoice_fee": "20.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 5
+            }
+          },
+          "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn"
+        }
+      }
+    },
+    {
+      "case_id": "E2E_004",
+      "category": "MATCHED",
+      "authority": "deterministic",
+      "model_role": "read_only_assistance",
+      "input": {
+        "txn_id": "TXN_00005"
+      },
+      "gold_decision": {
+        "txn_id": "TXN_00005",
+        "status": "MATCHED",
+        "confidence_score": 99,
+        "matched_sources": [
+          "pg",
+          "bank",
+          "invoice"
+        ],
+        "tax_verified": true,
+        "exception_code": "NONE",
+        "reason_codes": [
+          "NONE"
+        ],
+        "evidence": {
+          "matched_rule": "fully_clean_match",
+          "context": {
+            "no_candidates_found": false,
+            "is_ambiguous": false,
+            "low_confidence": false,
+            "missing_bank": false,
+            "missing_invoice": false,
+            "gst_mismatch": false,
+            "tds_mismatch": false,
+            "tax_unverifiable": false,
+            "fully_clean": true
+          },
+          "match_signals": {
+            "missing_bank": false,
+            "missing_invoice": false,
+            "txn_id_bank": {
+              "pg": "TXN_00005",
+              "bank": "TXN_00005",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "txn_id_invoice": {
+              "pg": "TXN_00005",
+              "invoice": "TXN_00005",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "amount_bank": {
+              "pg_expected_net": "2438.50",
+              "bank_amount": "2438.50",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "amount_invoice": {
+              "pg_expected_fee_plus_gst": "59.00",
+              "invoice_amount": "59.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "date_bank": {
+              "delta_days": 1,
+              "matched": true,
+              "points_if_used": 14
+            },
+            "date_invoice": {
+              "delta_days": 4,
+              "matched": false,
+              "points_if_used": 0
+            },
+            "date_points_awarded": 14,
+            "utr": {
+              "pg": "UTR871985091",
+              "bank": "UTR871985091",
+              "matched": true,
+              "points_awarded": 10
+            },
+            "fee_consistency": {
+              "pg_fee": "50.00",
+              "invoice_fee": "50.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 5
+            }
+          },
+          "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn"
+        }
+      }
+    },
+    {
+      "case_id": "E2E_005",
+      "category": "HUMAN_REVIEW",
+      "authority": "deterministic",
+      "model_role": "read_only_assistance",
+      "input": {
+        "txn_id": "TXN_00037"
+      },
+      "gold_decision": {
+        "txn_id": "TXN_00037",
+        "status": "HUMAN_REVIEW",
+        "confidence_score": 84,
+        "matched_sources": [
+          "pg",
+          "bank",
+          "invoice"
+        ],
+        "tax_verified": true,
+        "exception_code": "REFERENCE_MISMATCH",
+        "reason_codes": [
+          "NONE"
+        ],
+        "evidence": {
+          "matched_rule": "low_confidence_requires_human_review",
+          "context": {
+            "no_candidates_found": false,
+            "is_ambiguous": false,
+            "low_confidence": true,
+            "missing_bank": false,
+            "missing_invoice": false,
+            "gst_mismatch": false,
+            "tds_mismatch": false,
+            "tax_unverifiable": false,
+            "fully_clean": false
+          },
+          "match_signals": {
+            "missing_bank": false,
+            "missing_invoice": false,
+            "txn_id_bank": {
+              "pg": "TXN_00037",
+              "bank": "TXN_00037",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "txn_id_invoice": {
+              "pg": "TXN_00037",
+              "invoice": "TXN_00037",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "amount_bank": {
+              "pg_expected_net": "976.40",
+              "bank_amount": "963.90",
+              "delta": "12.50",
+              "matched": false,
+              "points_awarded": 0
+            },
+            "amount_invoice": {
+              "pg_expected_fee_plus_gst": "23.60",
+              "invoice_amount": "23.60",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "date_bank": {
+              "delta_days": 1,
+              "matched": true,
+              "points_if_used": 14
+            },
+            "date_invoice": {
+              "delta_days": 16,
+              "matched": false,
+              "points_if_used": 0
+            },
+            "date_points_awarded": 14,
+            "utr": {
+              "pg": "UTR262781261",
+              "bank": "UTR262781261",
+              "matched": true,
+              "points_awarded": 10
+            },
+            "fee_consistency": {
+              "pg_fee": "20.00",
+              "invoice_fee": "20.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 5
+            }
+          },
+          "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn"
+        }
+      }
+    },
+    {
+      "case_id": "E2E_006",
+      "category": "HUMAN_REVIEW",
+      "authority": "deterministic",
+      "model_role": "read_only_assistance",
+      "input": {
+        "txn_id": "TXN_00033"
+      },
+      "gold_decision": {
+        "txn_id": "TXN_00033",
+        "status": "HUMAN_REVIEW",
+        "confidence_score": 84,
+        "matched_sources": [
+          "pg",
+          "bank",
+          "invoice"
+        ],
+        "tax_verified": true,
+        "exception_code": "REFERENCE_MISMATCH",
+        "reason_codes": [
+          "NONE"
+        ],
+        "evidence": {
+          "matched_rule": "low_confidence_requires_human_review",
+          "context": {
+            "no_candidates_found": false,
+            "is_ambiguous": false,
+            "low_confidence": true,
+            "missing_bank": false,
+            "missing_invoice": false,
+            "gst_mismatch": false,
+            "tds_mismatch": false,
+            "tax_unverifiable": false,
+            "fully_clean": false
+          },
+          "match_signals": {
+            "missing_bank": false,
+            "missing_invoice": false,
+            "txn_id_bank": {
+              "pg": "TXN_00033",
+              "bank": "TXN_00033",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "txn_id_invoice": {
+              "pg": "TXN_00033",
+              "invoice": "TXN_00033",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "amount_bank": {
+              "pg_expected_net": "5267.16",
+              "bank_amount": "5262.16",
+              "delta": "5.00",
+              "matched": false,
+              "points_awarded": 0
+            },
+            "amount_invoice": {
+              "pg_expected_fee_plus_gst": "127.44",
+              "invoice_amount": "127.44",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "date_bank": {
+              "delta_days": 1,
+              "matched": true,
+              "points_if_used": 14
+            },
+            "date_invoice": {
+              "delta_days": 12,
+              "matched": false,
+              "points_if_used": 0
+            },
+            "date_points_awarded": 14,
+            "utr": {
+              "pg": "UTR457376073",
+              "bank": "UTR457376073",
+              "matched": true,
+              "points_awarded": 10
+            },
+            "fee_consistency": {
+              "pg_fee": "108.00",
+              "invoice_fee": "108.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 5
+            }
+          },
+          "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn"
+        }
+      }
+    },
+    {
+      "case_id": "E2E_007",
+      "category": "MATCHED",
+      "authority": "deterministic",
+      "model_role": "read_only_assistance",
+      "input": {
+        "txn_id": "TXN_00019"
+      },
+      "gold_decision": {
+        "txn_id": "TXN_00019",
+        "status": "MATCHED",
+        "confidence_score": 98,
+        "matched_sources": [
+          "pg",
+          "bank",
+          "invoice"
+        ],
+        "tax_verified": true,
+        "exception_code": "NONE",
+        "reason_codes": [
+          "NONE"
+        ],
+        "evidence": {
+          "matched_rule": "fully_clean_match",
+          "context": {
+            "no_candidates_found": false,
+            "is_ambiguous": false,
+            "low_confidence": false,
+            "missing_bank": false,
+            "missing_invoice": false,
+            "gst_mismatch": false,
+            "tds_mismatch": false,
+            "tax_unverifiable": false,
+            "fully_clean": true
+          },
+          "match_signals": {
+            "missing_bank": false,
+            "missing_invoice": false,
+            "txn_id_bank": {
+              "pg": "TXN_00019",
+              "bank": "TXN_00019",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "txn_id_invoice": {
+              "pg": "TXN_00019",
+              "invoice": "TXN_00019",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "amount_bank": {
+              "pg_expected_net": "2438.50",
+              "bank_amount": "2438.50",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "amount_invoice": {
+              "pg_expected_fee_plus_gst": "59.00",
+              "invoice_amount": "59.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "date_bank": {
+              "delta_days": 2,
+              "matched": true,
+              "points_if_used": 13
+            },
+            "date_invoice": {
+              "delta_days": 18,
+              "matched": false,
+              "points_if_used": 0
+            },
+            "date_points_awarded": 13,
+            "utr": {
+              "pg": "UTR275602993",
+              "bank": "UTR275602993",
+              "matched": true,
+              "points_awarded": 10
+            },
+            "fee_consistency": {
+              "pg_fee": "50.00",
+              "invoice_fee": "50.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 5
+            }
+          },
+          "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn"
+        }
+      }
+    },
+    {
+      "case_id": "E2E_008",
+      "category": "MATCHED",
+      "authority": "deterministic",
+      "model_role": "read_only_assistance",
+      "input": {
+        "txn_id": "TXN_00058"
+      },
+      "gold_decision": {
+        "txn_id": "TXN_00058",
+        "status": "MATCHED",
+        "confidence_score": 99,
+        "matched_sources": [
+          "pg",
+          "bank",
+          "invoice"
+        ],
+        "tax_verified": true,
+        "exception_code": "NONE",
+        "reason_codes": [
+          "NONE"
+        ],
+        "evidence": {
+          "matched_rule": "fully_clean_match",
+          "context": {
+            "no_candidates_found": false,
+            "is_ambiguous": false,
+            "low_confidence": false,
+            "missing_bank": false,
+            "missing_invoice": false,
+            "gst_mismatch": false,
+            "tds_mismatch": false,
+            "tax_unverifiable": false,
+            "fully_clean": true
+          },
+          "match_signals": {
+            "missing_bank": false,
+            "missing_invoice": false,
+            "txn_id_bank": {
+              "pg": "TXN_00058",
+              "bank": "TXN_00058",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "txn_id_invoice": {
+              "pg": "TXN_00058",
+              "invoice": "TXN_00058",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "amount_bank": {
+              "pg_expected_net": "869.00",
+              "bank_amount": "869.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "amount_invoice": {
+              "pg_expected_fee_plus_gst": "21.00",
+              "invoice_amount": "21.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "date_bank": {
+              "delta_days": 1,
+              "matched": true,
+              "points_if_used": 14
+            },
+            "date_invoice": {
+              "delta_days": 15,
+              "matched": false,
+              "points_if_used": 0
+            },
+            "date_points_awarded": 14,
+            "utr": {
+              "pg": "UTR787643653",
+              "bank": "UTR787643653",
+              "matched": true,
+              "points_awarded": 10
+            },
+            "fee_consistency": {
+              "pg_fee": "17.80",
+              "invoice_fee": "17.80",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 5
+            }
+          },
+          "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn"
+        }
+      }
+    },
+    {
+      "case_id": "E2E_009",
+      "category": "MATCHED",
+      "authority": "deterministic",
+      "model_role": "read_only_assistance",
+      "input": {
+        "txn_id": "TXN_00007"
+      },
+      "gold_decision": {
+        "txn_id": "TXN_00007",
+        "status": "MATCHED",
+        "confidence_score": 99,
+        "matched_sources": [
+          "pg",
+          "bank",
+          "invoice"
+        ],
+        "tax_verified": true,
+        "exception_code": "NONE",
+        "reason_codes": [
+          "NONE"
+        ],
+        "evidence": {
+          "matched_rule": "fully_clean_match",
+          "context": {
+            "no_candidates_found": false,
+            "is_ambiguous": false,
+            "low_confidence": false,
+            "missing_bank": false,
+            "missing_invoice": false,
+            "gst_mismatch": false,
+            "tds_mismatch": false,
+            "tax_unverifiable": false,
+            "fully_clean": true
+          },
+          "match_signals": {
+            "missing_bank": false,
+            "missing_invoice": false,
+            "txn_id_bank": {
+              "pg": "TXN_00007",
+              "bank": "TXN_00007",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "txn_id_invoice": {
+              "pg": "TXN_00007",
+              "invoice": "TXN_00007",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "amount_bank": {
+              "pg_expected_net": "868.11",
+              "bank_amount": "868.11",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "amount_invoice": {
+              "pg_expected_fee_plus_gst": "21.00",
+              "invoice_amount": "21.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "date_bank": {
+              "delta_days": 1,
+              "matched": true,
+              "points_if_used": 14
+            },
+            "date_invoice": {
+              "delta_days": 6,
+              "matched": false,
+              "points_if_used": 0
+            },
+            "date_points_awarded": 14,
+            "utr": {
+              "pg": "UTR107165407",
+              "bank": "UTR107165407",
+              "matched": true,
+              "points_awarded": 10
+            },
+            "fee_consistency": {
+              "pg_fee": "17.80",
+              "invoice_fee": "17.80",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 5
+            }
+          },
+          "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn"
+        }
+      }
+    },
+    {
+      "case_id": "E2E_010",
+      "category": "TAX_MISMATCH",
+      "authority": "deterministic",
+      "model_role": "read_only_assistance",
+      "input": {
+        "txn_id": "TXN_00042"
+      },
+      "gold_decision": {
+        "txn_id": "TXN_00042",
+        "status": "TAX_MISMATCH",
+        "confidence_score": 94,
+        "matched_sources": [
+          "pg",
+          "bank",
+          "invoice"
+        ],
+        "tax_verified": false,
+        "exception_code": "ERR_GST_MISMATCH",
+        "reason_codes": [
+          "ERR_GST_MISMATCH"
+        ],
+        "evidence": {
+          "matched_rule": "gst_mismatch_takes_priority_over_tds",
+          "context": {
+            "no_candidates_found": false,
+            "is_ambiguous": false,
+            "low_confidence": false,
+            "missing_bank": false,
+            "missing_invoice": false,
+            "gst_mismatch": true,
+            "tds_mismatch": false,
+            "tax_unverifiable": false,
+            "fully_clean": false
+          },
+          "match_signals": {
+            "missing_bank": false,
+            "missing_invoice": false,
+            "txn_id_bank": {
+              "pg": "TXN_00042",
+              "bank": "TXN_00042",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "txn_id_invoice": {
+              "pg": "TXN_00042",
+              "invoice": "TXN_00042",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "amount_bank": {
+              "pg_expected_net": "2438.50",
+              "bank_amount": "2438.50",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "amount_invoice": {
+              "pg_expected_fee_plus_gst": "59.00",
+              "invoice_amount": "59.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "date_bank": {
+              "delta_days": 1,
+              "matched": true,
+              "points_if_used": 14
+            },
+            "date_invoice": {
+              "delta_days": 1,
+              "matched": true,
+              "points_if_used": 14
+            },
+            "date_points_awarded": 14,
+            "utr": {
+              "pg": "UTR203568473",
+              "bank": "UTR203568473",
+              "matched": true,
+              "points_awarded": 10
+            },
+            "fee_consistency": {
+              "pg_fee": "50.00",
+              "invoice_fee": "53.00",
+              "delta": "3.00",
+              "matched": false,
+              "points_awarded": 0
+            }
+          },
+          "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn"
+        }
+      }
+    },
+    {
+      "case_id": "E2E_011",
+      "category": "AMBIGUOUS",
+      "authority": "deterministic",
+      "model_role": "read_only_assistance",
+      "input": {
+        "txn_id": "TXN_00052"
+      },
+      "gold_decision": {
+        "txn_id": "TXN_00052",
+        "status": "AMBIGUOUS",
+        "confidence_score": 99,
+        "matched_sources": [
+          "pg",
+          "bank",
+          "invoice"
+        ],
+        "tax_verified": true,
+        "exception_code": "AMBIGUOUS_MATCH",
+        "reason_codes": [
+          "AMBIGUOUS_MATCH"
+        ],
+        "evidence": {
+          "matched_rule": "ambiguous_takes_priority_over_tax_state",
+          "context": {
+            "no_candidates_found": false,
+            "is_ambiguous": true,
+            "low_confidence": false,
+            "missing_bank": false,
+            "missing_invoice": false,
+            "gst_mismatch": false,
+            "tds_mismatch": false,
+            "tax_unverifiable": false,
+            "fully_clean": false
+          },
+          "match_signals": {
+            "missing_bank": false,
+            "missing_invoice": false,
+            "txn_id_bank": {
+              "pg": "TXN_00052",
+              "bank": "TXN_00052",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "txn_id_invoice": {
+              "pg": "TXN_00052",
+              "invoice": "TXN_00052",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "amount_bank": {
+              "pg_expected_net": "3124.48",
+              "bank_amount": "3124.48",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "amount_invoice": {
+              "pg_expected_fee_plus_gst": "75.52",
+              "invoice_amount": "75.52",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "date_bank": {
+              "delta_days": 1,
+              "matched": true,
+              "points_if_used": 14
+            },
+            "date_invoice": {
+              "delta_days": 11,
+              "matched": false,
+              "points_if_used": 0
+            },
+            "date_points_awarded": 14,
+            "utr": {
+              "pg": "UTR125506754",
+              "bank": "UTR125506754",
+              "matched": true,
+              "points_awarded": 10
+            },
+            "fee_consistency": {
+              "pg_fee": "64.00",
+              "invoice_fee": "64.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 5
+            }
+          },
+          "selection_reason": "bank: selected from 2 candidates via exact_utr tier; tie-broken by lowest date delta, then amount delta, then utr; invoice: only candidate found via exact_txn"
+        }
+      }
+    },
+    {
+      "case_id": "E2E_012",
+      "category": "HUMAN_REVIEW",
+      "authority": "deterministic",
+      "model_role": "read_only_assistance",
+      "input": {
+        "txn_id": "TXN_00034"
+      },
+      "gold_decision": {
+        "txn_id": "TXN_00034",
+        "status": "HUMAN_REVIEW",
+        "confidence_score": 84,
+        "matched_sources": [
+          "pg",
+          "bank",
+          "invoice"
+        ],
+        "tax_verified": true,
+        "exception_code": "REFERENCE_MISMATCH",
+        "reason_codes": [
+          "NONE"
+        ],
+        "evidence": {
+          "matched_rule": "low_confidence_requires_human_review",
+          "context": {
+            "no_candidates_found": false,
+            "is_ambiguous": false,
+            "low_confidence": true,
+            "missing_bank": false,
+            "missing_invoice": false,
+            "gst_mismatch": false,
+            "tds_mismatch": false,
+            "tax_unverifiable": false,
+            "fully_clean": false
+          },
+          "match_signals": {
+            "missing_bank": false,
+            "missing_invoice": false,
+            "txn_id_bank": {
+              "pg": "TXN_00034",
+              "bank": "TXN_00034",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "txn_id_invoice": {
+              "pg": "TXN_00034",
+              "invoice": "TXN_00034",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "amount_bank": {
+              "pg_expected_net": "976.40",
+              "bank_amount": "956.40",
+              "delta": "20.00",
+              "matched": false,
+              "points_awarded": 0
+            },
+            "amount_invoice": {
+              "pg_expected_fee_plus_gst": "23.60",
+              "invoice_amount": "23.60",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "date_bank": {
+              "delta_days": 1,
+              "matched": true,
+              "points_if_used": 14
+            },
+            "date_invoice": {
+              "delta_days": 13,
+              "matched": false,
+              "points_if_used": 0
+            },
+            "date_points_awarded": 14,
+            "utr": {
+              "pg": "UTR521054312",
+              "bank": "UTR521054312",
+              "matched": true,
+              "points_awarded": 10
+            },
+            "fee_consistency": {
+              "pg_fee": "20.00",
+              "invoice_fee": "20.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 5
+            }
+          },
+          "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn"
+        }
+      }
+    },
+    {
+      "case_id": "E2E_013",
+      "category": "HUMAN_REVIEW",
+      "authority": "deterministic",
+      "model_role": "read_only_assistance",
+      "input": {
+        "txn_id": "TXN_00035"
+      },
+      "gold_decision": {
+        "txn_id": "TXN_00035",
+        "status": "HUMAN_REVIEW",
+        "confidence_score": 84,
+        "matched_sources": [
+          "pg",
+          "bank",
+          "invoice"
+        ],
+        "tax_verified": true,
+        "exception_code": "REFERENCE_MISMATCH",
+        "reason_codes": [
+          "NONE"
+        ],
+        "evidence": {
+          "matched_rule": "low_confidence_requires_human_review",
+          "context": {
+            "no_candidates_found": false,
+            "is_ambiguous": false,
+            "low_confidence": true,
+            "missing_bank": false,
+            "missing_invoice": false,
+            "gst_mismatch": false,
+            "tds_mismatch": false,
+            "tax_unverifiable": false,
+            "fully_clean": false
+          },
+          "match_signals": {
+            "missing_bank": false,
+            "missing_invoice": false,
+            "txn_id_bank": {
+              "pg": "TXN_00035",
+              "bank": "TXN_00035",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "txn_id_invoice": {
+              "pg": "TXN_00035",
+              "invoice": "TXN_00035",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "amount_bank": {
+              "pg_expected_net": "12192.50",
+              "bank_amount": "12191.75",
+              "delta": "0.75",
+              "matched": false,
+              "points_awarded": 0
+            },
+            "amount_invoice": {
+              "pg_expected_fee_plus_gst": "295.00",
+              "invoice_amount": "295.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "date_bank": {
+              "delta_days": 1,
+              "matched": true,
+              "points_if_used": 14
+            },
+            "date_invoice": {
+              "delta_days": 14,
+              "matched": false,
+              "points_if_used": 0
+            },
+            "date_points_awarded": 14,
+            "utr": {
+              "pg": "UTR378264943",
+              "bank": "UTR378264943",
+              "matched": true,
+              "points_awarded": 10
+            },
+            "fee_consistency": {
+              "pg_fee": "250.00",
+              "invoice_fee": "250.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 5
+            }
+          },
+          "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn"
+        }
+      }
+    },
+    {
+      "case_id": "E2E_014",
+      "category": "HUMAN_REVIEW",
+      "authority": "deterministic",
+      "model_role": "read_only_assistance",
+      "input": {
+        "txn_id": "TXN_00031"
+      },
+      "gold_decision": {
+        "txn_id": "TXN_00031",
+        "status": "HUMAN_REVIEW",
+        "confidence_score": 84,
+        "matched_sources": [
+          "pg",
+          "bank",
+          "invoice"
+        ],
+        "tax_verified": true,
+        "exception_code": "REFERENCE_MISMATCH",
+        "reason_codes": [
+          "NONE"
+        ],
+        "evidence": {
+          "matched_rule": "low_confidence_requires_human_review",
+          "context": {
+            "no_candidates_found": false,
+            "is_ambiguous": false,
+            "low_confidence": true,
+            "missing_bank": false,
+            "missing_invoice": false,
+            "gst_mismatch": false,
+            "tds_mismatch": false,
+            "tax_unverifiable": false,
+            "fully_clean": false
+          },
+          "match_signals": {
+            "missing_bank": false,
+            "missing_invoice": false,
+            "txn_id_bank": {
+              "pg": "TXN_00031",
+              "bank": "TXN_00031",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "txn_id_invoice": {
+              "pg": "TXN_00031",
+              "invoice": "TXN_00031",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "amount_bank": {
+              "pg_expected_net": "2441.00",
+              "bank_amount": "2421.00",
+              "delta": "20.00",
+              "matched": false,
+              "points_awarded": 0
+            },
+            "amount_invoice": {
+              "pg_expected_fee_plus_gst": "59.00",
+              "invoice_amount": "59.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "date_bank": {
+              "delta_days": 1,
+              "matched": true,
+              "points_if_used": 14
+            },
+            "date_invoice": {
+              "delta_days": 10,
+              "matched": false,
+              "points_if_used": 0
+            },
+            "date_points_awarded": 14,
+            "utr": {
+              "pg": "UTR474875253",
+              "bank": "UTR474875253",
+              "matched": true,
+              "points_awarded": 10
+            },
+            "fee_consistency": {
+              "pg_fee": "50.00",
+              "invoice_fee": "50.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 5
+            }
+          },
+          "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn"
+        }
+      }
+    },
+    {
+      "case_id": "E2E_015",
+      "category": "PARTIAL_MATCH",
+      "authority": "deterministic",
+      "model_role": "read_only_assistance",
+      "input": {
+        "txn_id": "TXN_00048"
+      },
+      "gold_decision": {
+        "txn_id": "TXN_00048",
+        "status": "PARTIAL_MATCH",
+        "confidence_score": 59,
+        "matched_sources": [
+          "pg",
+          "bank"
+        ],
+        "tax_verified": true,
+        "exception_code": "MISSING_IN_INVOICE",
+        "reason_codes": [
+          "MISSING_IN_INVOICE"
+        ],
+        "evidence": {
+          "matched_rule": "missing_invoice_otherwise_clean",
+          "context": {
+            "no_candidates_found": false,
+            "is_ambiguous": false,
+            "low_confidence": false,
+            "missing_bank": false,
+            "missing_invoice": true,
+            "gst_mismatch": false,
+            "tds_mismatch": false,
+            "tax_unverifiable": false,
+            "fully_clean": false
+          },
+          "match_signals": {
+            "missing_bank": false,
+            "missing_invoice": true,
+            "txn_id_bank": {
+              "pg": "TXN_00048",
+              "bank": "TXN_00048",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "amount_bank": {
+              "pg_expected_net": "869.00",
+              "bank_amount": "869.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "date_bank": {
+              "delta_days": 1,
+              "matched": true,
+              "points_if_used": 14
+            },
+            "date_points_awarded": 14,
+            "utr": {
+              "pg": "UTR216443999",
+              "bank": "UTR216443999",
+              "matched": true,
+              "points_awarded": 10
+            }
+          },
+          "selection_reason": "bank: only candidate found via exact_utr; invoice: no candidates found"
+        }
+      }
+    },
+    {
+      "case_id": "E2E_016",
+      "category": "MATCHED",
+      "authority": "deterministic",
+      "model_role": "read_only_assistance",
+      "input": {
+        "txn_id": "TXN_00004"
+      },
+      "gold_decision": {
+        "txn_id": "TXN_00004",
+        "status": "MATCHED",
+        "confidence_score": 99,
+        "matched_sources": [
+          "pg",
+          "bank",
+          "invoice"
+        ],
+        "tax_verified": true,
+        "exception_code": "NONE",
+        "reason_codes": [
+          "NONE"
+        ],
+        "evidence": {
+          "matched_rule": "fully_clean_match",
+          "context": {
+            "no_candidates_found": false,
+            "is_ambiguous": false,
+            "low_confidence": false,
+            "missing_bank": false,
+            "missing_invoice": false,
+            "gst_mismatch": false,
+            "tds_mismatch": false,
+            "tax_unverifiable": false,
+            "fully_clean": true
+          },
+          "match_signals": {
+            "missing_bank": false,
+            "missing_invoice": false,
+            "txn_id_bank": {
+              "pg": "TXN_00004",
+              "bank": "TXN_00004",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "txn_id_invoice": {
+              "pg": "TXN_00004",
+              "invoice": "TXN_00004",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "amount_bank": {
+              "pg_expected_net": "3124.48",
+              "bank_amount": "3124.48",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "amount_invoice": {
+              "pg_expected_fee_plus_gst": "75.52",
+              "invoice_amount": "75.52",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "date_bank": {
+              "delta_days": 1,
+              "matched": true,
+              "points_if_used": 14
+            },
+            "date_invoice": {
+              "delta_days": 3,
+              "matched": true,
+              "points_if_used": 12
+            },
+            "date_points_awarded": 14,
+            "utr": {
+              "pg": "UTR670202811",
+              "bank": "UTR670202811",
+              "matched": true,
+              "points_awarded": 10
+            },
+            "fee_consistency": {
+              "pg_fee": "64.00",
+              "invoice_fee": "64.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 5
+            }
+          },
+          "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn"
+        }
+      }
+    },
+    {
+      "case_id": "E2E_017",
+      "category": "MATCHED",
+      "authority": "deterministic",
+      "model_role": "read_only_assistance",
+      "input": {
+        "txn_id": "TXN_00022"
+      },
+      "gold_decision": {
+        "txn_id": "TXN_00022",
+        "status": "MATCHED",
+        "confidence_score": 99,
+        "matched_sources": [
+          "pg",
+          "bank",
+          "invoice"
+        ],
+        "tax_verified": true,
+        "exception_code": "NONE",
+        "reason_codes": [
+          "NONE"
+        ],
+        "evidence": {
+          "matched_rule": "fully_clean_match",
+          "context": {
+            "no_candidates_found": false,
+            "is_ambiguous": false,
+            "low_confidence": false,
+            "missing_bank": false,
+            "missing_invoice": false,
+            "gst_mismatch": false,
+            "tds_mismatch": false,
+            "tax_unverifiable": false,
+            "fully_clean": true
+          },
+          "match_signals": {
+            "missing_bank": false,
+            "missing_invoice": false,
+            "txn_id_bank": {
+              "pg": "TXN_00022",
+              "bank": "TXN_00022",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "txn_id_invoice": {
+              "pg": "TXN_00022",
+              "invoice": "TXN_00022",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "amount_bank": {
+              "pg_expected_net": "2438.50",
+              "bank_amount": "2438.50",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "amount_invoice": {
+              "pg_expected_fee_plus_gst": "59.00",
+              "invoice_amount": "59.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "date_bank": {
+              "delta_days": 3,
+              "matched": true,
+              "points_if_used": 12
+            },
+            "date_invoice": {
+              "delta_days": 1,
+              "matched": true,
+              "points_if_used": 14
+            },
+            "date_points_awarded": 14,
+            "utr": {
+              "pg": "UTR297913261",
+              "bank": "UTR297913261",
+              "matched": true,
+              "points_awarded": 10
+            },
+            "fee_consistency": {
+              "pg_fee": "50.00",
+              "invoice_fee": "50.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 5
+            }
+          },
+          "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn"
+        }
+      }
+    },
+    {
+      "case_id": "E2E_018",
+      "category": "MATCHED",
+      "authority": "deterministic",
+      "model_role": "read_only_assistance",
+      "input": {
+        "txn_id": "TXN_00027"
+      },
+      "gold_decision": {
+        "txn_id": "TXN_00027",
+        "status": "MATCHED",
+        "confidence_score": 89,
+        "matched_sources": [
+          "pg",
+          "bank",
+          "invoice"
+        ],
+        "tax_verified": true,
+        "exception_code": "NONE",
+        "reason_codes": [
+          "NONE"
+        ],
+        "evidence": {
+          "matched_rule": "fully_clean_match",
+          "context": {
+            "no_candidates_found": false,
+            "is_ambiguous": false,
+            "low_confidence": false,
+            "missing_bank": false,
+            "missing_invoice": false,
+            "gst_mismatch": false,
+            "tds_mismatch": false,
+            "tax_unverifiable": false,
+            "fully_clean": true
+          },
+          "match_signals": {
+            "missing_bank": false,
+            "missing_invoice": false,
+            "txn_id_bank": {
+              "pg": "TXN_00027",
+              "bank": "TXN_00027",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "txn_id_invoice": {
+              "pg": "TXN_00027",
+              "invoice": "TXN_00027",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "amount_bank": {
+              "pg_expected_net": "976.40",
+              "bank_amount": "976.40",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "amount_invoice": {
+              "pg_expected_fee_plus_gst": "23.60",
+              "invoice_amount": "23.60",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "date_bank": {
+              "delta_days": 1,
+              "matched": true,
+              "points_if_used": 14
+            },
+            "date_invoice": {
+              "delta_days": 6,
+              "matched": false,
+              "points_if_used": 0
+            },
+            "date_points_awarded": 14,
+            "utr": {
+              "pg": "UTR914784628",
+              "bank": "UTR914784620",
+              "matched": false,
+              "points_awarded": 0
+            },
+            "fee_consistency": {
+              "pg_fee": "20.00",
+              "invoice_fee": "20.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 5
+            }
+          },
+          "selection_reason": "bank: only candidate found via exact_txn; invoice: only candidate found via exact_txn"
+        }
+      }
+    },
+    {
+      "case_id": "E2E_019",
+      "category": "TAX_MISMATCH",
+      "authority": "deterministic",
+      "model_role": "read_only_assistance",
+      "input": {
+        "txn_id": "TXN_00043"
+      },
+      "gold_decision": {
+        "txn_id": "TXN_00043",
+        "status": "TAX_MISMATCH",
+        "confidence_score": 99,
+        "matched_sources": [
+          "pg",
+          "bank",
+          "invoice"
+        ],
+        "tax_verified": false,
+        "exception_code": "ERR_TDS_VARIANCE",
+        "reason_codes": [
+          "ERR_TDS_VARIANCE"
+        ],
+        "evidence": {
+          "matched_rule": "tds_mismatch",
+          "context": {
+            "no_candidates_found": false,
+            "is_ambiguous": false,
+            "low_confidence": false,
+            "missing_bank": false,
+            "missing_invoice": false,
+            "gst_mismatch": false,
+            "tds_mismatch": true,
+            "tax_unverifiable": false,
+            "fully_clean": false
+          },
+          "match_signals": {
+            "missing_bank": false,
+            "missing_invoice": false,
+            "txn_id_bank": {
+              "pg": "TXN_00043",
+              "bank": "TXN_00043",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "txn_id_invoice": {
+              "pg": "TXN_00043",
+              "invoice": "TXN_00043",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "amount_bank": {
+              "pg_expected_net": "2441.00",
+              "bank_amount": "2441.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "amount_invoice": {
+              "pg_expected_fee_plus_gst": "59.00",
+              "invoice_amount": "59.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "date_bank": {
+              "delta_days": 1,
+              "matched": true,
+              "points_if_used": 14
+            },
+            "date_invoice": {
+              "delta_days": 2,
+              "matched": true,
+              "points_if_used": 13
+            },
+            "date_points_awarded": 14,
+            "utr": {
+              "pg": "UTR900094518",
+              "bank": "UTR900094518",
+              "matched": true,
+              "points_awarded": 10
+            },
+            "fee_consistency": {
+              "pg_fee": "50.00",
+              "invoice_fee": "50.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 5
+            }
+          },
+          "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn"
+        }
+      }
+    },
+    {
+      "case_id": "E2E_020",
+      "category": "HUMAN_REVIEW",
+      "authority": "deterministic",
+      "model_role": "read_only_assistance",
+      "input": {
+        "txn_id": "TXN_00057"
+      },
+      "gold_decision": {
+        "txn_id": "TXN_00057",
+        "status": "HUMAN_REVIEW",
+        "confidence_score": 83,
+        "matched_sources": [
+          "pg",
+          "bank",
+          "invoice"
+        ],
+        "tax_verified": true,
+        "exception_code": "REFERENCE_MISMATCH",
+        "reason_codes": [
+          "NONE"
+        ],
+        "evidence": {
+          "matched_rule": "low_confidence_requires_human_review",
+          "context": {
+            "no_candidates_found": false,
+            "is_ambiguous": false,
+            "low_confidence": true,
+            "missing_bank": false,
+            "missing_invoice": false,
+            "gst_mismatch": false,
+            "tds_mismatch": false,
+            "tax_unverifiable": false,
+            "fully_clean": false
+          },
+          "match_signals": {
+            "missing_bank": false,
+            "missing_invoice": false,
+            "txn_id_bank": {
+              "pg": "TXN_00057",
+              "bank": "TXN_00057",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "txn_id_invoice": {
+              "pg": "TXN_00057",
+              "invoice": "TXN_00057",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "amount_bank": {
+              "pg_expected_net": "2372.56",
+              "bank_amount": "5272.56",
+              "delta": "2900.00",
+              "matched": false,
+              "points_awarded": 0
+            },
+            "amount_invoice": {
+              "pg_expected_fee_plus_gst": "127.44",
+              "invoice_amount": "127.44",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "date_bank": {
+              "delta_days": 2,
+              "matched": true,
+              "points_if_used": 13
+            },
+            "date_invoice": {
+              "delta_days": 14,
+              "matched": false,
+              "points_if_used": 0
+            },
+            "date_points_awarded": 13,
+            "utr": {
+              "pg": "UTR325608584",
+              "bank": "UTR325608584",
+              "matched": true,
+              "points_awarded": 10
+            },
+            "fee_consistency": {
+              "pg_fee": "108.00",
+              "invoice_fee": "108.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 5
+            }
+          },
+          "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn"
+        }
+      }
+    },
+    {
+      "case_id": "E2E_021",
+      "category": "TAX_MISMATCH",
+      "authority": "deterministic",
+      "model_role": "read_only_assistance",
+      "input": {
+        "txn_id": "TXN_00040"
+      },
+      "gold_decision": {
+        "txn_id": "TXN_00040",
+        "status": "TAX_MISMATCH",
+        "confidence_score": 99,
+        "matched_sources": [
+          "pg",
+          "bank",
+          "invoice"
+        ],
+        "tax_verified": false,
+        "exception_code": "ERR_TDS_VARIANCE",
+        "reason_codes": [
+          "ERR_TDS_VARIANCE"
+        ],
+        "evidence": {
+          "matched_rule": "tds_mismatch",
+          "context": {
+            "no_candidates_found": false,
+            "is_ambiguous": false,
+            "low_confidence": false,
+            "missing_bank": false,
+            "missing_invoice": false,
+            "gst_mismatch": false,
+            "tds_mismatch": true,
+            "tax_unverifiable": false,
+            "fully_clean": false
+          },
+          "match_signals": {
+            "missing_bank": false,
+            "missing_invoice": false,
+            "txn_id_bank": {
+              "pg": "TXN_00040",
+              "bank": "TXN_00040",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "txn_id_invoice": {
+              "pg": "TXN_00040",
+              "invoice": "TXN_00040",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "amount_bank": {
+              "pg_expected_net": "5267.16",
+              "bank_amount": "5267.16",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "amount_invoice": {
+              "pg_expected_fee_plus_gst": "127.44",
+              "invoice_amount": "127.44",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "date_bank": {
+              "delta_days": 1,
+              "matched": true,
+              "points_if_used": 14
+            },
+            "date_invoice": {
+              "delta_days": 19,
+              "matched": false,
+              "points_if_used": 0
+            },
+            "date_points_awarded": 14,
+            "utr": {
+              "pg": "UTR518198728",
+              "bank": "UTR518198728",
+              "matched": true,
+              "points_awarded": 10
+            },
+            "fee_consistency": {
+              "pg_fee": "108.00",
+              "invoice_fee": "108.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 5
+            }
+          },
+          "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn"
+        }
+      }
+    },
+    {
+      "case_id": "E2E_022",
+      "category": "HUMAN_REVIEW",
+      "authority": "deterministic",
+      "model_role": "read_only_assistance",
+      "input": {
+        "txn_id": "TXN_00055"
+      },
+      "gold_decision": {
+        "txn_id": "TXN_00055",
+        "status": "HUMAN_REVIEW",
+        "confidence_score": 83,
+        "matched_sources": [
+          "pg",
+          "bank",
+          "invoice"
+        ],
+        "tax_verified": true,
+        "exception_code": "REFERENCE_MISMATCH",
+        "reason_codes": [
+          "NONE"
+        ],
+        "evidence": {
+          "matched_rule": "low_confidence_requires_human_review",
+          "context": {
+            "no_candidates_found": false,
+            "is_ambiguous": false,
+            "low_confidence": true,
+            "missing_bank": false,
+            "missing_invoice": false,
+            "gst_mismatch": false,
+            "tds_mismatch": false,
+            "tax_unverifiable": false,
+            "fully_clean": false
+          },
+          "match_signals": {
+            "missing_bank": false,
+            "missing_invoice": false,
+            "txn_id_bank": {
+              "pg": "TXN_00055",
+              "bank": "TXN_00055",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "txn_id_invoice": {
+              "pg": "TXN_00055",
+              "invoice": "TXN_00055",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "amount_bank": {
+              "pg_expected_net": "12476.40",
+              "bank_amount": "976.40",
+              "delta": "11500.00",
+              "matched": false,
+              "points_awarded": 0
+            },
+            "amount_invoice": {
+              "pg_expected_fee_plus_gst": "23.60",
+              "invoice_amount": "23.60",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "date_bank": {
+              "delta_days": 2,
+              "matched": true,
+              "points_if_used": 13
+            },
+            "date_invoice": {
+              "delta_days": 13,
+              "matched": false,
+              "points_if_used": 0
+            },
+            "date_points_awarded": 13,
+            "utr": {
+              "pg": "UTR262494774",
+              "bank": "UTR262494774",
+              "matched": true,
+              "points_awarded": 10
+            },
+            "fee_consistency": {
+              "pg_fee": "20.00",
+              "invoice_fee": "20.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 5
+            }
+          },
+          "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn"
+        }
+      }
+    },
+    {
+      "case_id": "E2E_023",
+      "category": "MATCHED",
+      "authority": "deterministic",
+      "model_role": "read_only_assistance",
+      "input": {
+        "txn_id": "TXN_00017"
+      },
+      "gold_decision": {
+        "txn_id": "TXN_00017",
+        "status": "MATCHED",
+        "confidence_score": 99,
+        "matched_sources": [
+          "pg",
+          "bank",
+          "invoice"
+        ],
+        "tax_verified": true,
+        "exception_code": "NONE",
+        "reason_codes": [
+          "NONE"
+        ],
+        "evidence": {
+          "matched_rule": "fully_clean_match",
+          "context": {
+            "no_candidates_found": false,
+            "is_ambiguous": false,
+            "low_confidence": false,
+            "missing_bank": false,
+            "missing_invoice": false,
+            "gst_mismatch": false,
+            "tds_mismatch": false,
+            "tax_unverifiable": false,
+            "fully_clean": true
+          },
+          "match_signals": {
+            "missing_bank": false,
+            "missing_invoice": false,
+            "txn_id_bank": {
+              "pg": "TXN_00017",
+              "bank": "TXN_00017",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "txn_id_invoice": {
+              "pg": "TXN_00017",
+              "invoice": "TXN_00017",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "amount_bank": {
+              "pg_expected_net": "12205.00",
+              "bank_amount": "12205.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "amount_invoice": {
+              "pg_expected_fee_plus_gst": "295.00",
+              "invoice_amount": "295.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "date_bank": {
+              "delta_days": 1,
+              "matched": true,
+              "points_if_used": 14
+            },
+            "date_invoice": {
+              "delta_days": 16,
+              "matched": false,
+              "points_if_used": 0
+            },
+            "date_points_awarded": 14,
+            "utr": {
+              "pg": "UTR690353756",
+              "bank": "UTR690353756",
+              "matched": true,
+              "points_awarded": 10
+            },
+            "fee_consistency": {
+              "pg_fee": "250.00",
+              "invoice_fee": "250.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 5
+            }
+          },
+          "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn"
+        }
+      }
+    },
+    {
+      "case_id": "E2E_024",
+      "category": "HUMAN_REVIEW",
+      "authority": "deterministic",
+      "model_role": "read_only_assistance",
+      "input": {
+        "txn_id": "TXN_00036"
+      },
+      "gold_decision": {
+        "txn_id": "TXN_00036",
+        "status": "HUMAN_REVIEW",
+        "confidence_score": 84,
+        "matched_sources": [
+          "pg",
+          "bank",
+          "invoice"
+        ],
+        "tax_verified": true,
+        "exception_code": "REFERENCE_MISMATCH",
+        "reason_codes": [
+          "NONE"
+        ],
+        "evidence": {
+          "matched_rule": "low_confidence_requires_human_review",
+          "context": {
+            "no_candidates_found": false,
+            "is_ambiguous": false,
+            "low_confidence": true,
+            "missing_bank": false,
+            "missing_invoice": false,
+            "gst_mismatch": false,
+            "tds_mismatch": false,
+            "tax_unverifiable": false,
+            "fully_clean": false
+          },
+          "match_signals": {
+            "missing_bank": false,
+            "missing_invoice": false,
+            "txn_id_bank": {
+              "pg": "TXN_00036",
+              "bank": "TXN_00036",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "txn_id_invoice": {
+              "pg": "TXN_00036",
+              "invoice": "TXN_00036",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "amount_bank": {
+              "pg_expected_net": "975.40",
+              "bank_amount": "955.40",
+              "delta": "20.00",
+              "matched": false,
+              "points_awarded": 0
+            },
+            "amount_invoice": {
+              "pg_expected_fee_plus_gst": "23.60",
+              "invoice_amount": "23.60",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "date_bank": {
+              "delta_days": 1,
+              "matched": true,
+              "points_if_used": 14
+            },
+            "date_invoice": {
+              "delta_days": 15,
+              "matched": false,
+              "points_if_used": 0
+            },
+            "date_points_awarded": 14,
+            "utr": {
+              "pg": "UTR666511274",
+              "bank": "UTR666511274",
+              "matched": true,
+              "points_awarded": 10
+            },
+            "fee_consistency": {
+              "pg_fee": "20.00",
+              "invoice_fee": "20.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 5
+            }
+          },
+          "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn"
+        }
+      }
+    },
+    {
+      "case_id": "E2E_025",
+      "category": "PARTIAL_MATCH",
+      "authority": "deterministic",
+      "model_role": "read_only_assistance",
+      "input": {
+        "txn_id": "TXN_00049"
+      },
+      "gold_decision": {
+        "txn_id": "TXN_00049",
+        "status": "PARTIAL_MATCH",
+        "confidence_score": 59,
+        "matched_sources": [
+          "pg",
+          "bank"
+        ],
+        "tax_verified": true,
+        "exception_code": "MISSING_IN_INVOICE",
+        "reason_codes": [
+          "MISSING_IN_INVOICE"
+        ],
+        "evidence": {
+          "matched_rule": "missing_invoice_otherwise_clean",
+          "context": {
+            "no_candidates_found": false,
+            "is_ambiguous": false,
+            "low_confidence": false,
+            "missing_bank": false,
+            "missing_invoice": true,
+            "gst_mismatch": false,
+            "tds_mismatch": false,
+            "tax_unverifiable": false,
+            "fully_clean": false
+          },
+          "match_signals": {
+            "missing_bank": false,
+            "missing_invoice": true,
+            "txn_id_bank": {
+              "pg": "TXN_00049",
+              "bank": "TXN_00049",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "amount_bank": {
+              "pg_expected_net": "869.00",
+              "bank_amount": "869.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "date_bank": {
+              "delta_days": 1,
+              "matched": true,
+              "points_if_used": 14
+            },
+            "date_points_awarded": 14,
+            "utr": {
+              "pg": "UTR835416391",
+              "bank": "UTR835416391",
+              "matched": true,
+              "points_awarded": 10
+            }
+          },
+          "selection_reason": "bank: only candidate found via exact_utr; invoice: no candidates found"
+        }
+      }
+    },
+    {
+      "case_id": "E2E_026",
+      "category": "PARTIAL_MATCH",
+      "authority": "deterministic",
+      "model_role": "read_only_assistance",
+      "input": {
+        "txn_id": "TXN_00046"
+      },
+      "gold_decision": {
+        "txn_id": "TXN_00046",
+        "status": "PARTIAL_MATCH",
+        "confidence_score": 59,
+        "matched_sources": [
+          "pg",
+          "bank"
+        ],
+        "tax_verified": true,
+        "exception_code": "MISSING_IN_INVOICE",
+        "reason_codes": [
+          "MISSING_IN_INVOICE"
+        ],
+        "evidence": {
+          "matched_rule": "missing_invoice_otherwise_clean",
+          "context": {
+            "no_candidates_found": false,
+            "is_ambiguous": false,
+            "low_confidence": false,
+            "missing_bank": false,
+            "missing_invoice": true,
+            "gst_mismatch": false,
+            "tds_mismatch": false,
+            "tax_unverifiable": false,
+            "fully_clean": false
+          },
+          "match_signals": {
+            "missing_bank": false,
+            "missing_invoice": true,
+            "txn_id_bank": {
+              "pg": "TXN_00046",
+              "bank": "TXN_00046",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "amount_bank": {
+              "pg_expected_net": "976.40",
+              "bank_amount": "976.40",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "date_bank": {
+              "delta_days": 1,
+              "matched": true,
+              "points_if_used": 14
+            },
+            "date_points_awarded": 14,
+            "utr": {
+              "pg": "UTR384813472",
+              "bank": "UTR384813472",
+              "matched": true,
+              "points_awarded": 10
+            }
+          },
+          "selection_reason": "bank: only candidate found via exact_utr; invoice: no candidates found"
+        }
+      }
+    },
+    {
+      "case_id": "E2E_027",
+      "category": "MATCHED",
+      "authority": "deterministic",
+      "model_role": "read_only_assistance",
+      "input": {
+        "txn_id": "TXN_00014"
+      },
+      "gold_decision": {
+        "txn_id": "TXN_00014",
+        "status": "MATCHED",
+        "confidence_score": 99,
+        "matched_sources": [
+          "pg",
+          "bank",
+          "invoice"
+        ],
+        "tax_verified": true,
+        "exception_code": "NONE",
+        "reason_codes": [
+          "NONE"
+        ],
+        "evidence": {
+          "matched_rule": "fully_clean_match",
+          "context": {
+            "no_candidates_found": false,
+            "is_ambiguous": false,
+            "low_confidence": false,
+            "missing_bank": false,
+            "missing_invoice": false,
+            "gst_mismatch": false,
+            "tds_mismatch": false,
+            "tax_unverifiable": false,
+            "fully_clean": true
+          },
+          "match_signals": {
+            "missing_bank": false,
+            "missing_invoice": false,
+            "txn_id_bank": {
+              "pg": "TXN_00014",
+              "bank": "TXN_00014",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "txn_id_invoice": {
+              "pg": "TXN_00014",
+              "invoice": "TXN_00014",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "amount_bank": {
+              "pg_expected_net": "975.40",
+              "bank_amount": "975.40",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "amount_invoice": {
+              "pg_expected_fee_plus_gst": "23.60",
+              "invoice_amount": "23.60",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "date_bank": {
+              "delta_days": 1,
+              "matched": true,
+              "points_if_used": 14
+            },
+            "date_invoice": {
+              "delta_days": 13,
+              "matched": false,
+              "points_if_used": 0
+            },
+            "date_points_awarded": 14,
+            "utr": {
+              "pg": "UTR577937265",
+              "bank": "UTR577937265",
+              "matched": true,
+              "points_awarded": 10
+            },
+            "fee_consistency": {
+              "pg_fee": "20.00",
+              "invoice_fee": "20.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 5
+            }
+          },
+          "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn"
+        }
+      }
+    },
+    {
+      "case_id": "E2E_028",
+      "category": "MATCHED",
+      "authority": "deterministic",
+      "model_role": "read_only_assistance",
+      "input": {
+        "txn_id": "TXN_00008"
+      },
+      "gold_decision": {
+        "txn_id": "TXN_00008",
+        "status": "MATCHED",
+        "confidence_score": 99,
+        "matched_sources": [
+          "pg",
+          "bank",
+          "invoice"
+        ],
+        "tax_verified": true,
+        "exception_code": "NONE",
+        "reason_codes": [
+          "NONE"
+        ],
+        "evidence": {
+          "matched_rule": "fully_clean_match",
+          "context": {
+            "no_candidates_found": false,
+            "is_ambiguous": false,
+            "low_confidence": false,
+            "missing_bank": false,
+            "missing_invoice": false,
+            "gst_mismatch": false,
+            "tds_mismatch": false,
+            "tax_unverifiable": false,
+            "fully_clean": true
+          },
+          "match_signals": {
+            "missing_bank": false,
+            "missing_invoice": false,
+            "txn_id_bank": {
+              "pg": "TXN_00008",
+              "bank": "TXN_00008",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "txn_id_invoice": {
+              "pg": "TXN_00008",
+              "invoice": "TXN_00008",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "amount_bank": {
+              "pg_expected_net": "5267.16",
+              "bank_amount": "5267.16",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "amount_invoice": {
+              "pg_expected_fee_plus_gst": "127.44",
+              "invoice_amount": "127.44",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "date_bank": {
+              "delta_days": 1,
+              "matched": true,
+              "points_if_used": 14
+            },
+            "date_invoice": {
+              "delta_days": 7,
+              "matched": false,
+              "points_if_used": 0
+            },
+            "date_points_awarded": 14,
+            "utr": {
+              "pg": "UTR800659821",
+              "bank": "UTR800659821",
+              "matched": true,
+              "points_awarded": 10
+            },
+            "fee_consistency": {
+              "pg_fee": "108.00",
+              "invoice_fee": "108.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 5
+            }
+          },
+          "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn"
+        }
+      }
+    },
+    {
+      "case_id": "E2E_029",
+      "category": "MATCHED",
+      "authority": "deterministic",
+      "model_role": "read_only_assistance",
+      "input": {
+        "txn_id": "TXN_00012"
+      },
+      "gold_decision": {
+        "txn_id": "TXN_00012",
+        "status": "MATCHED",
+        "confidence_score": 99,
+        "matched_sources": [
+          "pg",
+          "bank",
+          "invoice"
+        ],
+        "tax_verified": true,
+        "exception_code": "NONE",
+        "reason_codes": [
+          "NONE"
+        ],
+        "evidence": {
+          "matched_rule": "fully_clean_match",
+          "context": {
+            "no_candidates_found": false,
+            "is_ambiguous": false,
+            "low_confidence": false,
+            "missing_bank": false,
+            "missing_invoice": false,
+            "gst_mismatch": false,
+            "tds_mismatch": false,
+            "tax_unverifiable": false,
+            "fully_clean": true
+          },
+          "match_signals": {
+            "missing_bank": false,
+            "missing_invoice": false,
+            "txn_id_bank": {
+              "pg": "TXN_00012",
+              "bank": "TXN_00012",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "txn_id_invoice": {
+              "pg": "TXN_00012",
+              "invoice": "TXN_00012",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "amount_bank": {
+              "pg_expected_net": "2441.00",
+              "bank_amount": "2441.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "amount_invoice": {
+              "pg_expected_fee_plus_gst": "59.00",
+              "invoice_amount": "59.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "date_bank": {
+              "delta_days": 1,
+              "matched": true,
+              "points_if_used": 14
+            },
+            "date_invoice": {
+              "delta_days": 11,
+              "matched": false,
+              "points_if_used": 0
+            },
+            "date_points_awarded": 14,
+            "utr": {
+              "pg": "UTR276242142",
+              "bank": "UTR276242142",
+              "matched": true,
+              "points_awarded": 10
+            },
+            "fee_consistency": {
+              "pg_fee": "50.00",
+              "invoice_fee": "50.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 5
+            }
+          },
+          "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn"
+        }
+      }
+    },
+    {
+      "case_id": "E2E_030",
+      "category": "MATCHED",
+      "authority": "deterministic",
+      "model_role": "read_only_assistance",
+      "input": {
+        "txn_id": "TXN_00056"
+      },
+      "gold_decision": {
+        "txn_id": "TXN_00056",
+        "status": "MATCHED",
+        "confidence_score": 99,
+        "matched_sources": [
+          "pg",
+          "bank",
+          "invoice"
+        ],
+        "tax_verified": true,
+        "exception_code": "NONE",
+        "reason_codes": [
+          "NONE"
+        ],
+        "evidence": {
+          "matched_rule": "fully_clean_match",
+          "context": {
+            "no_candidates_found": false,
+            "is_ambiguous": false,
+            "low_confidence": false,
+            "missing_bank": false,
+            "missing_invoice": false,
+            "gst_mismatch": false,
+            "tds_mismatch": false,
+            "tax_unverifiable": false,
+            "fully_clean": true
+          },
+          "match_signals": {
+            "missing_bank": false,
+            "missing_invoice": false,
+            "txn_id_bank": {
+              "pg": "TXN_00056",
+              "bank": "TXN_00056",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "txn_id_invoice": {
+              "pg": "TXN_00056",
+              "invoice": "TXN_00056",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "amount_bank": {
+              "pg_expected_net": "2441.00",
+              "bank_amount": "2441.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "amount_invoice": {
+              "pg_expected_fee_plus_gst": "59.00",
+              "invoice_amount": "59.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "date_bank": {
+              "delta_days": 1,
+              "matched": true,
+              "points_if_used": 14
+            },
+            "date_invoice": {
+              "delta_days": 14,
+              "matched": false,
+              "points_if_used": 0
+            },
+            "date_points_awarded": 14,
+            "utr": {
+              "pg": "UTR328910784",
+              "bank": "UTR328910784",
+              "matched": true,
+              "points_awarded": 10
+            },
+            "fee_consistency": {
+              "pg_fee": "50.00",
+              "invoice_fee": "50.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 5
+            }
+          },
+          "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn"
+        }
+      }
+    },
+    {
+      "case_id": "E2E_031",
+      "category": "MATCHED",
+      "authority": "deterministic",
+      "model_role": "read_only_assistance",
+      "input": {
+        "txn_id": "TXN_00015"
+      },
+      "gold_decision": {
+        "txn_id": "TXN_00015",
+        "status": "MATCHED",
+        "confidence_score": 99,
+        "matched_sources": [
+          "pg",
+          "bank",
+          "invoice"
+        ],
+        "tax_verified": true,
+        "exception_code": "NONE",
+        "reason_codes": [
+          "NONE"
+        ],
+        "evidence": {
+          "matched_rule": "fully_clean_match",
+          "context": {
+            "no_candidates_found": false,
+            "is_ambiguous": false,
+            "low_confidence": false,
+            "missing_bank": false,
+            "missing_invoice": false,
+            "gst_mismatch": false,
+            "tds_mismatch": false,
+            "tax_unverifiable": false,
+            "fully_clean": true
+          },
+          "match_signals": {
+            "missing_bank": false,
+            "missing_invoice": false,
+            "txn_id_bank": {
+              "pg": "TXN_00015",
+              "bank": "TXN_00015",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "txn_id_invoice": {
+              "pg": "TXN_00015",
+              "invoice": "TXN_00015",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "amount_bank": {
+              "pg_expected_net": "2441.00",
+              "bank_amount": "2441.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "amount_invoice": {
+              "pg_expected_fee_plus_gst": "59.00",
+              "invoice_amount": "59.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "date_bank": {
+              "delta_days": 1,
+              "matched": true,
+              "points_if_used": 14
+            },
+            "date_invoice": {
+              "delta_days": 14,
+              "matched": false,
+              "points_if_used": 0
+            },
+            "date_points_awarded": 14,
+            "utr": {
+              "pg": "UTR929364510",
+              "bank": "UTR929364510",
+              "matched": true,
+              "points_awarded": 10
+            },
+            "fee_consistency": {
+              "pg_fee": "50.00",
+              "invoice_fee": "50.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 5
+            }
+          },
+          "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn"
+        }
+      }
+    },
+    {
+      "case_id": "E2E_032",
+      "category": "HUMAN_REVIEW",
+      "authority": "deterministic",
+      "model_role": "read_only_assistance",
+      "input": {
+        "txn_id": "TXN_00063"
+      },
+      "gold_decision": {
+        "txn_id": "TXN_00063",
+        "status": "HUMAN_REVIEW",
+        "confidence_score": 60,
+        "matched_sources": [
+          "pg",
+          "bank",
+          "invoice"
+        ],
+        "tax_verified": true,
+        "exception_code": "REFERENCE_MISMATCH",
+        "reason_codes": [
+          "NONE"
+        ],
+        "evidence": {
+          "matched_rule": "low_confidence_requires_human_review",
+          "context": {
+            "no_candidates_found": false,
+            "is_ambiguous": false,
+            "low_confidence": true,
+            "missing_bank": false,
+            "missing_invoice": false,
+            "gst_mismatch": false,
+            "tds_mismatch": false,
+            "tax_unverifiable": false,
+            "fully_clean": false
+          },
+          "match_signals": {
+            "missing_bank": false,
+            "missing_invoice": false,
+            "txn_id_bank": {
+              "pg": "TXN_00063",
+              "bank": "TXN_00063",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "txn_id_invoice": {
+              "pg": "TXN_00063",
+              "invoice": "TXN_00063",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "amount_bank": {
+              "pg_expected_net": "869.00",
+              "bank_amount": "819.00",
+              "delta": "50.00",
+              "matched": false,
+              "points_awarded": 0
+            },
+            "amount_invoice": {
+              "pg_expected_fee_plus_gst": "21.00",
+              "invoice_amount": "21.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "date_bank": {
+              "delta_days": 9,
+              "matched": false,
+              "points_if_used": 0
+            },
+            "date_invoice": {
+              "delta_days": 19,
+              "matched": false,
+              "points_if_used": 0
+            },
+            "date_points_awarded": 0,
+            "utr": {
+              "pg": "UTR766447461",
+              "bank": null,
+              "matched": false,
+              "points_awarded": 0
+            },
+            "fee_consistency": {
+              "pg_fee": "17.80",
+              "invoice_fee": "17.80",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 5
+            }
+          },
+          "selection_reason": "bank: only candidate found via exact_txn; invoice: only candidate found via exact_txn"
+        }
+      }
+    },
+    {
+      "case_id": "E2E_033",
+      "category": "MATCHED",
+      "authority": "deterministic",
+      "model_role": "read_only_assistance",
+      "input": {
+        "txn_id": "TXN_00029"
+      },
+      "gold_decision": {
+        "txn_id": "TXN_00029",
+        "status": "MATCHED",
+        "confidence_score": 89,
+        "matched_sources": [
+          "pg",
+          "bank",
+          "invoice"
+        ],
+        "tax_verified": true,
+        "exception_code": "NONE",
+        "reason_codes": [
+          "NONE"
+        ],
+        "evidence": {
+          "matched_rule": "fully_clean_match",
+          "context": {
+            "no_candidates_found": false,
+            "is_ambiguous": false,
+            "low_confidence": false,
+            "missing_bank": false,
+            "missing_invoice": false,
+            "gst_mismatch": false,
+            "tds_mismatch": false,
+            "tax_unverifiable": false,
+            "fully_clean": true
+          },
+          "match_signals": {
+            "missing_bank": false,
+            "missing_invoice": false,
+            "txn_id_bank": {
+              "pg": "TXN_00029",
+              "bank": "TXN_00029",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "txn_id_invoice": {
+              "pg": "TXN_00029",
+              "invoice": "TXN_00029",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "amount_bank": {
+              "pg_expected_net": "3124.48",
+              "bank_amount": "3124.48",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "amount_invoice": {
+              "pg_expected_fee_plus_gst": "75.52",
+              "invoice_amount": "75.52",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "date_bank": {
+              "delta_days": 1,
+              "matched": true,
+              "points_if_used": 14
+            },
+            "date_invoice": {
+              "delta_days": 8,
+              "matched": false,
+              "points_if_used": 0
+            },
+            "date_points_awarded": 14,
+            "utr": {
+              "pg": "UTR615831407",
+              "bank": "UTR515831407",
+              "matched": false,
+              "points_awarded": 0
+            },
+            "fee_consistency": {
+              "pg_fee": "64.00",
+              "invoice_fee": "64.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 5
+            }
+          },
+          "selection_reason": "bank: only candidate found via exact_txn; invoice: only candidate found via exact_txn"
+        }
+      }
+    },
+    {
+      "case_id": "E2E_034",
+      "category": "HUMAN_REVIEW",
+      "authority": "deterministic",
+      "model_role": "read_only_assistance",
+      "input": {
+        "txn_id": "TXN_00059"
+      },
+      "gold_decision": {
+        "txn_id": "TXN_00059",
+        "status": "HUMAN_REVIEW",
+        "confidence_score": 83,
+        "matched_sources": [
+          "pg",
+          "bank",
+          "invoice"
+        ],
+        "tax_verified": true,
+        "exception_code": "REFERENCE_MISMATCH",
+        "reason_codes": [
+          "NONE"
+        ],
+        "evidence": {
+          "matched_rule": "low_confidence_requires_human_review",
+          "context": {
+            "no_candidates_found": false,
+            "is_ambiguous": false,
+            "low_confidence": true,
+            "missing_bank": false,
+            "missing_invoice": false,
+            "gst_mismatch": false,
+            "tds_mismatch": false,
+            "tax_unverifiable": false,
+            "fully_clean": false
+          },
+          "match_signals": {
+            "missing_bank": false,
+            "missing_invoice": false,
+            "txn_id_bank": {
+              "pg": "TXN_00059",
+              "bank": "TXN_00059",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "txn_id_invoice": {
+              "pg": "TXN_00059",
+              "invoice": "TXN_00059",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "amount_bank": {
+              "pg_expected_net": "595.00",
+              "bank_amount": "12205.00",
+              "delta": "11610.00",
+              "matched": false,
+              "points_awarded": 0
+            },
+            "amount_invoice": {
+              "pg_expected_fee_plus_gst": "295.00",
+              "invoice_amount": "295.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "date_bank": {
+              "delta_days": 2,
+              "matched": true,
+              "points_if_used": 13
+            },
+            "date_invoice": {
+              "delta_days": 15,
+              "matched": false,
+              "points_if_used": 0
+            },
+            "date_points_awarded": 13,
+            "utr": {
+              "pg": "UTR639097378",
+              "bank": "UTR639097378",
+              "matched": true,
+              "points_awarded": 10
+            },
+            "fee_consistency": {
+              "pg_fee": "250.00",
+              "invoice_fee": "250.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 5
+            }
+          },
+          "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn"
+        }
+      }
+    },
+    {
+      "case_id": "E2E_035",
+      "category": "HUMAN_REVIEW",
+      "authority": "deterministic",
+      "model_role": "read_only_assistance",
+      "input": {
+        "txn_id": "TXN_00038"
+      },
+      "gold_decision": {
+        "txn_id": "TXN_00038",
+        "status": "HUMAN_REVIEW",
+        "confidence_score": 84,
+        "matched_sources": [
+          "pg",
+          "bank",
+          "invoice"
+        ],
+        "tax_verified": true,
+        "exception_code": "REFERENCE_MISMATCH",
+        "reason_codes": [
+          "NONE"
+        ],
+        "evidence": {
+          "matched_rule": "low_confidence_requires_human_review",
+          "context": {
+            "no_candidates_found": false,
+            "is_ambiguous": false,
+            "low_confidence": true,
+            "missing_bank": false,
+            "missing_invoice": false,
+            "gst_mismatch": false,
+            "tds_mismatch": false,
+            "tax_unverifiable": false,
+            "fully_clean": false
+          },
+          "match_signals": {
+            "missing_bank": false,
+            "missing_invoice": false,
+            "txn_id_bank": {
+              "pg": "TXN_00038",
+              "bank": "TXN_00038",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "txn_id_invoice": {
+              "pg": "TXN_00038",
+              "invoice": "TXN_00038",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "amount_bank": {
+              "pg_expected_net": "869.00",
+              "bank_amount": "849.00",
+              "delta": "20.00",
+              "matched": false,
+              "points_awarded": 0
+            },
+            "amount_invoice": {
+              "pg_expected_fee_plus_gst": "21.00",
+              "invoice_amount": "21.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "date_bank": {
+              "delta_days": 1,
+              "matched": true,
+              "points_if_used": 14
+            },
+            "date_invoice": {
+              "delta_days": 17,
+              "matched": false,
+              "points_if_used": 0
+            },
+            "date_points_awarded": 14,
+            "utr": {
+              "pg": "UTR126381074",
+              "bank": "UTR126381074",
+              "matched": true,
+              "points_awarded": 10
+            },
+            "fee_consistency": {
+              "pg_fee": "17.80",
+              "invoice_fee": "17.80",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 5
+            }
+          },
+          "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn"
+        }
+      }
+    },
+    {
+      "case_id": "E2E_036",
+      "category": "MATCHED",
+      "authority": "deterministic",
+      "model_role": "read_only_assistance",
+      "input": {
+        "txn_id": "TXN_00024"
+      },
+      "gold_decision": {
+        "txn_id": "TXN_00024",
+        "status": "MATCHED",
+        "confidence_score": 98,
+        "matched_sources": [
+          "pg",
+          "bank",
+          "invoice"
+        ],
+        "tax_verified": true,
+        "exception_code": "NONE",
+        "reason_codes": [
+          "NONE"
+        ],
+        "evidence": {
+          "matched_rule": "fully_clean_match",
+          "context": {
+            "no_candidates_found": false,
+            "is_ambiguous": false,
+            "low_confidence": false,
+            "missing_bank": false,
+            "missing_invoice": false,
+            "gst_mismatch": false,
+            "tds_mismatch": false,
+            "tax_unverifiable": false,
+            "fully_clean": true
+          },
+          "match_signals": {
+            "missing_bank": false,
+            "missing_invoice": false,
+            "txn_id_bank": {
+              "pg": "TXN_00024",
+              "bank": "TXN_00024",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "txn_id_invoice": {
+              "pg": "TXN_00024",
+              "invoice": "TXN_00024",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "amount_bank": {
+              "pg_expected_net": "976.40",
+              "bank_amount": "976.40",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "amount_invoice": {
+              "pg_expected_fee_plus_gst": "23.60",
+              "invoice_amount": "23.60",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "date_bank": {
+              "delta_days": 2,
+              "matched": true,
+              "points_if_used": 13
+            },
+            "date_invoice": {
+              "delta_days": 3,
+              "matched": true,
+              "points_if_used": 12
+            },
+            "date_points_awarded": 13,
+            "utr": {
+              "pg": "UTR791209908",
+              "bank": "UTR791209908",
+              "matched": true,
+              "points_awarded": 10
+            },
+            "fee_consistency": {
+              "pg_fee": "20.00",
+              "invoice_fee": "20.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 5
+            }
+          },
+          "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn"
+        }
+      }
+    },
+    {
+      "case_id": "E2E_037",
+      "category": "MATCHED",
+      "authority": "deterministic",
+      "model_role": "read_only_assistance",
+      "input": {
+        "txn_id": "TXN_00009"
+      },
+      "gold_decision": {
+        "txn_id": "TXN_00009",
+        "status": "MATCHED",
+        "confidence_score": 99,
+        "matched_sources": [
+          "pg",
+          "bank",
+          "invoice"
+        ],
+        "tax_verified": true,
+        "exception_code": "NONE",
+        "reason_codes": [
+          "NONE"
+        ],
+        "evidence": {
+          "matched_rule": "fully_clean_match",
+          "context": {
+            "no_candidates_found": false,
+            "is_ambiguous": false,
+            "low_confidence": false,
+            "missing_bank": false,
+            "missing_invoice": false,
+            "gst_mismatch": false,
+            "tds_mismatch": false,
+            "tax_unverifiable": false,
+            "fully_clean": true
+          },
+          "match_signals": {
+            "missing_bank": false,
+            "missing_invoice": false,
+            "txn_id_bank": {
+              "pg": "TXN_00009",
+              "bank": "TXN_00009",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "txn_id_invoice": {
+              "pg": "TXN_00009",
+              "invoice": "TXN_00009",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "amount_bank": {
+              "pg_expected_net": "2441.00",
+              "bank_amount": "2441.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "amount_invoice": {
+              "pg_expected_fee_plus_gst": "59.00",
+              "invoice_amount": "59.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "date_bank": {
+              "delta_days": 1,
+              "matched": true,
+              "points_if_used": 14
+            },
+            "date_invoice": {
+              "delta_days": 8,
+              "matched": false,
+              "points_if_used": 0
+            },
+            "date_points_awarded": 14,
+            "utr": {
+              "pg": "UTR502655738",
+              "bank": "UTR502655738",
+              "matched": true,
+              "points_awarded": 10
+            },
+            "fee_consistency": {
+              "pg_fee": "50.00",
+              "invoice_fee": "50.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 5
+            }
+          },
+          "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn"
+        }
+      }
+    },
+    {
+      "case_id": "E2E_038",
+      "category": "HUMAN_REVIEW",
+      "authority": "deterministic",
+      "model_role": "read_only_assistance",
+      "input": {
+        "txn_id": "TXN_00032"
+      },
+      "gold_decision": {
+        "txn_id": "TXN_00032",
+        "status": "HUMAN_REVIEW",
+        "confidence_score": 84,
+        "matched_sources": [
+          "pg",
+          "bank",
+          "invoice"
+        ],
+        "tax_verified": true,
+        "exception_code": "REFERENCE_MISMATCH",
+        "reason_codes": [
+          "NONE"
+        ],
+        "evidence": {
+          "matched_rule": "low_confidence_requires_human_review",
+          "context": {
+            "no_candidates_found": false,
+            "is_ambiguous": false,
+            "low_confidence": true,
+            "missing_bank": false,
+            "missing_invoice": false,
+            "gst_mismatch": false,
+            "tds_mismatch": false,
+            "tax_unverifiable": false,
+            "fully_clean": false
+          },
+          "match_signals": {
+            "missing_bank": false,
+            "missing_invoice": false,
+            "txn_id_bank": {
+              "pg": "TXN_00032",
+              "bank": "TXN_00032",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "txn_id_invoice": {
+              "pg": "TXN_00032",
+              "invoice": "TXN_00032",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "amount_bank": {
+              "pg_expected_net": "12192.50",
+              "bank_amount": "12187.50",
+              "delta": "5.00",
+              "matched": false,
+              "points_awarded": 0
+            },
+            "amount_invoice": {
+              "pg_expected_fee_plus_gst": "295.00",
+              "invoice_amount": "295.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "date_bank": {
+              "delta_days": 1,
+              "matched": true,
+              "points_if_used": 14
+            },
+            "date_invoice": {
+              "delta_days": 11,
+              "matched": false,
+              "points_if_used": 0
+            },
+            "date_points_awarded": 14,
+            "utr": {
+              "pg": "UTR495572438",
+              "bank": "UTR495572438",
+              "matched": true,
+              "points_awarded": 10
+            },
+            "fee_consistency": {
+              "pg_fee": "250.00",
+              "invoice_fee": "250.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 5
+            }
+          },
+          "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn"
+        }
+      }
+    },
+    {
+      "case_id": "E2E_039",
+      "category": "MATCHED",
+      "authority": "deterministic",
+      "model_role": "read_only_assistance",
+      "input": {
+        "txn_id": "TXN_00026"
+      },
+      "gold_decision": {
+        "txn_id": "TXN_00026",
+        "status": "MATCHED",
+        "confidence_score": 89,
+        "matched_sources": [
+          "pg",
+          "bank",
+          "invoice"
+        ],
+        "tax_verified": true,
+        "exception_code": "NONE",
+        "reason_codes": [
+          "NONE"
+        ],
+        "evidence": {
+          "matched_rule": "fully_clean_match",
+          "context": {
+            "no_candidates_found": false,
+            "is_ambiguous": false,
+            "low_confidence": false,
+            "missing_bank": false,
+            "missing_invoice": false,
+            "gst_mismatch": false,
+            "tds_mismatch": false,
+            "tax_unverifiable": false,
+            "fully_clean": true
+          },
+          "match_signals": {
+            "missing_bank": false,
+            "missing_invoice": false,
+            "txn_id_bank": {
+              "pg": "TXN_00026",
+              "bank": "TXN_00026",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "txn_id_invoice": {
+              "pg": "TXN_00026",
+              "invoice": "TXN_00026",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "amount_bank": {
+              "pg_expected_net": "3124.48",
+              "bank_amount": "3124.48",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "amount_invoice": {
+              "pg_expected_fee_plus_gst": "75.52",
+              "invoice_amount": "75.52",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "date_bank": {
+              "delta_days": 1,
+              "matched": true,
+              "points_if_used": 14
+            },
+            "date_invoice": {
+              "delta_days": 5,
+              "matched": false,
+              "points_if_used": 0
+            },
+            "date_points_awarded": 14,
+            "utr": {
+              "pg": "UTR379104326",
+              "bank": "UTR379108326",
+              "matched": false,
+              "points_awarded": 0
+            },
+            "fee_consistency": {
+              "pg_fee": "64.00",
+              "invoice_fee": "64.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 5
+            }
+          },
+          "selection_reason": "bank: only candidate found via exact_txn; invoice: only candidate found via exact_txn"
+        }
+      }
+    },
+    {
+      "case_id": "E2E_040",
+      "category": "HUMAN_REVIEW",
+      "authority": "deterministic",
+      "model_role": "read_only_assistance",
+      "input": {
+        "txn_id": "TXN_00047"
+      },
+      "gold_decision": {
+        "txn_id": "TXN_00047",
+        "status": "HUMAN_REVIEW",
+        "confidence_score": 40,
+        "matched_sources": [
+          "pg",
+          "invoice"
+        ],
+        "tax_verified": true,
+        "exception_code": "REFERENCE_MISMATCH",
+        "reason_codes": [
+          "MISSING_IN_BANK"
+        ],
+        "evidence": {
+          "matched_rule": "low_confidence_requires_human_review",
+          "context": {
+            "no_candidates_found": false,
+            "is_ambiguous": false,
+            "low_confidence": true,
+            "missing_bank": true,
+            "missing_invoice": false,
+            "gst_mismatch": false,
+            "tds_mismatch": false,
+            "tax_unverifiable": false,
+            "fully_clean": false
+          },
+          "match_signals": {
+            "missing_bank": true,
+            "missing_invoice": false,
+            "txn_id_invoice": {
+              "pg": "TXN_00047",
+              "invoice": "TXN_00047",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "amount_invoice": {
+              "pg_expected_fee_plus_gst": "21.00",
+              "invoice_amount": "21.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "date_invoice": {
+              "delta_days": 6,
+              "matched": false,
+              "points_if_used": 0
+            },
+            "date_points_awarded": 0,
+            "fee_consistency": {
+              "pg_fee": "17.80",
+              "invoice_fee": "17.80",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 5
+            }
+          },
+          "selection_reason": "bank: no candidates found; invoice: only candidate found via exact_txn"
+        }
+      }
+    },
+    {
+      "case_id": "E2E_041",
+      "category": "MATCHED",
+      "authority": "deterministic",
+      "model_role": "read_only_assistance",
+      "input": {
+        "txn_id": "TXN_00002"
+      },
+      "gold_decision": {
+        "txn_id": "TXN_00002",
+        "status": "MATCHED",
+        "confidence_score": 99,
+        "matched_sources": [
+          "pg",
+          "bank",
+          "invoice"
+        ],
+        "tax_verified": true,
+        "exception_code": "NONE",
+        "reason_codes": [
+          "NONE"
+        ],
+        "evidence": {
+          "matched_rule": "fully_clean_match",
+          "context": {
+            "no_candidates_found": false,
+            "is_ambiguous": false,
+            "low_confidence": false,
+            "missing_bank": false,
+            "missing_invoice": false,
+            "gst_mismatch": false,
+            "tds_mismatch": false,
+            "tax_unverifiable": false,
+            "fully_clean": true
+          },
+          "match_signals": {
+            "missing_bank": false,
+            "missing_invoice": false,
+            "txn_id_bank": {
+              "pg": "TXN_00002",
+              "bank": "TXN_00002",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "txn_id_invoice": {
+              "pg": "TXN_00002",
+              "invoice": "TXN_00002",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "amount_bank": {
+              "pg_expected_net": "12205.00",
+              "bank_amount": "12205.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "amount_invoice": {
+              "pg_expected_fee_plus_gst": "295.00",
+              "invoice_amount": "295.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "date_bank": {
+              "delta_days": 1,
+              "matched": true,
+              "points_if_used": 14
+            },
+            "date_invoice": {
+              "delta_days": 1,
+              "matched": true,
+              "points_if_used": 14
+            },
+            "date_points_awarded": 14,
+            "utr": {
+              "pg": "UTR273610978",
+              "bank": "UTR273610978",
+              "matched": true,
+              "points_awarded": 10
+            },
+            "fee_consistency": {
+              "pg_fee": "250.00",
+              "invoice_fee": "250.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 5
+            }
+          },
+          "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn"
+        }
+      }
+    },
+    {
+      "case_id": "E2E_042",
+      "category": "MATCHED",
+      "authority": "deterministic",
+      "model_role": "read_only_assistance",
+      "input": {
+        "txn_id": "TXN_00030"
+      },
+      "gold_decision": {
+        "txn_id": "TXN_00030",
+        "status": "MATCHED",
+        "confidence_score": 89,
+        "matched_sources": [
+          "pg",
+          "bank",
+          "invoice"
+        ],
+        "tax_verified": true,
+        "exception_code": "NONE",
+        "reason_codes": [
+          "NONE"
+        ],
+        "evidence": {
+          "matched_rule": "fully_clean_match",
+          "context": {
+            "no_candidates_found": false,
+            "is_ambiguous": false,
+            "low_confidence": false,
+            "missing_bank": false,
+            "missing_invoice": false,
+            "gst_mismatch": false,
+            "tds_mismatch": false,
+            "tax_unverifiable": false,
+            "fully_clean": true
+          },
+          "match_signals": {
+            "missing_bank": false,
+            "missing_invoice": false,
+            "txn_id_bank": {
+              "pg": "TXN_00030",
+              "bank": "TXN_00030",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "txn_id_invoice": {
+              "pg": "TXN_00030",
+              "invoice": "TXN_00030",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "amount_bank": {
+              "pg_expected_net": "975.40",
+              "bank_amount": "975.40",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "amount_invoice": {
+              "pg_expected_fee_plus_gst": "23.60",
+              "invoice_amount": "23.60",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "date_bank": {
+              "delta_days": 1,
+              "matched": true,
+              "points_if_used": 14
+            },
+            "date_invoice": {
+              "delta_days": 9,
+              "matched": false,
+              "points_if_used": 0
+            },
+            "date_points_awarded": 14,
+            "utr": {
+              "pg": "UTR771735535",
+              "bank": "UTR671735535",
+              "matched": false,
+              "points_awarded": 0
+            },
+            "fee_consistency": {
+              "pg_fee": "20.00",
+              "invoice_fee": "20.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 5
+            }
+          },
+          "selection_reason": "bank: only candidate found via exact_txn; invoice: only candidate found via exact_txn"
+        }
+      }
+    },
+    {
+      "case_id": "E2E_043",
+      "category": "AMBIGUOUS",
+      "authority": "deterministic",
+      "model_role": "read_only_assistance",
+      "input": {
+        "txn_id": "TXN_00051"
+      },
+      "gold_decision": {
+        "txn_id": "TXN_00051",
+        "status": "AMBIGUOUS",
+        "confidence_score": 99,
+        "matched_sources": [
+          "pg",
+          "bank",
+          "invoice"
+        ],
+        "tax_verified": true,
+        "exception_code": "AMBIGUOUS_MATCH",
+        "reason_codes": [
+          "AMBIGUOUS_MATCH"
+        ],
+        "evidence": {
+          "matched_rule": "ambiguous_takes_priority_over_tax_state",
+          "context": {
+            "no_candidates_found": false,
+            "is_ambiguous": true,
+            "low_confidence": false,
+            "missing_bank": false,
+            "missing_invoice": false,
+            "gst_mismatch": false,
+            "tds_mismatch": false,
+            "tax_unverifiable": false,
+            "fully_clean": false
+          },
+          "match_signals": {
+            "missing_bank": false,
+            "missing_invoice": false,
+            "txn_id_bank": {
+              "pg": "TXN_00051",
+              "bank": "TXN_00051",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "txn_id_invoice": {
+              "pg": "TXN_00051",
+              "invoice": "TXN_00051",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "amount_bank": {
+              "pg_expected_net": "12205.00",
+              "bank_amount": "12205.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "amount_invoice": {
+              "pg_expected_fee_plus_gst": "295.00",
+              "invoice_amount": "295.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "date_bank": {
+              "delta_days": 1,
+              "matched": true,
+              "points_if_used": 14
+            },
+            "date_invoice": {
+              "delta_days": 10,
+              "matched": false,
+              "points_if_used": 0
+            },
+            "date_points_awarded": 14,
+            "utr": {
+              "pg": "UTR934672680",
+              "bank": "UTR934672680",
+              "matched": true,
+              "points_awarded": 10
+            },
+            "fee_consistency": {
+              "pg_fee": "250.00",
+              "invoice_fee": "250.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 5
+            }
+          },
+          "selection_reason": "bank: selected from 2 candidates via exact_utr tier; tie-broken by lowest date delta, then amount delta, then utr; invoice: only candidate found via exact_txn"
+        }
+      }
+    },
+    {
+      "case_id": "E2E_044",
+      "category": "TAX_MISMATCH",
+      "authority": "deterministic",
+      "model_role": "read_only_assistance",
+      "input": {
+        "txn_id": "TXN_00045"
+      },
+      "gold_decision": {
+        "txn_id": "TXN_00045",
+        "status": "TAX_MISMATCH",
+        "confidence_score": 99,
+        "matched_sources": [
+          "pg",
+          "bank",
+          "invoice"
+        ],
+        "tax_verified": false,
+        "exception_code": "ERR_TDS_VARIANCE",
+        "reason_codes": [
+          "ERR_TDS_VARIANCE"
+        ],
+        "evidence": {
+          "matched_rule": "tds_mismatch",
+          "context": {
+            "no_candidates_found": false,
+            "is_ambiguous": false,
+            "low_confidence": false,
+            "missing_bank": false,
+            "missing_invoice": false,
+            "gst_mismatch": false,
+            "tds_mismatch": true,
+            "tax_unverifiable": false,
+            "fully_clean": false
+          },
+          "match_signals": {
+            "missing_bank": false,
+            "missing_invoice": false,
+            "txn_id_bank": {
+              "pg": "TXN_00045",
+              "bank": "TXN_00045",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "txn_id_invoice": {
+              "pg": "TXN_00045",
+              "invoice": "TXN_00045",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "amount_bank": {
+              "pg_expected_net": "3121.28",
+              "bank_amount": "3121.28",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "amount_invoice": {
+              "pg_expected_fee_plus_gst": "75.52",
+              "invoice_amount": "75.52",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "date_bank": {
+              "delta_days": 1,
+              "matched": true,
+              "points_if_used": 14
+            },
+            "date_invoice": {
+              "delta_days": 4,
+              "matched": false,
+              "points_if_used": 0
+            },
+            "date_points_awarded": 14,
+            "utr": {
+              "pg": "UTR589036921",
+              "bank": "UTR589036921",
+              "matched": true,
+              "points_awarded": 10
+            },
+            "fee_consistency": {
+              "pg_fee": "64.00",
+              "invoice_fee": "64.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 5
+            }
+          },
+          "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn"
+        }
+      }
+    },
+    {
+      "case_id": "E2E_045",
+      "category": "MATCHED",
+      "authority": "deterministic",
+      "model_role": "read_only_assistance",
+      "input": {
+        "txn_id": "TXN_00016"
+      },
+      "gold_decision": {
+        "txn_id": "TXN_00016",
+        "status": "MATCHED",
+        "confidence_score": 99,
+        "matched_sources": [
+          "pg",
+          "bank",
+          "invoice"
+        ],
+        "tax_verified": true,
+        "exception_code": "NONE",
+        "reason_codes": [
+          "NONE"
+        ],
+        "evidence": {
+          "matched_rule": "fully_clean_match",
+          "context": {
+            "no_candidates_found": false,
+            "is_ambiguous": false,
+            "low_confidence": false,
+            "missing_bank": false,
+            "missing_invoice": false,
+            "gst_mismatch": false,
+            "tds_mismatch": false,
+            "tax_unverifiable": false,
+            "fully_clean": true
+          },
+          "match_signals": {
+            "missing_bank": false,
+            "missing_invoice": false,
+            "txn_id_bank": {
+              "pg": "TXN_00016",
+              "bank": "TXN_00016",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "txn_id_invoice": {
+              "pg": "TXN_00016",
+              "invoice": "TXN_00016",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "amount_bank": {
+              "pg_expected_net": "975.40",
+              "bank_amount": "975.40",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "amount_invoice": {
+              "pg_expected_fee_plus_gst": "23.60",
+              "invoice_amount": "23.60",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "date_bank": {
+              "delta_days": 1,
+              "matched": true,
+              "points_if_used": 14
+            },
+            "date_invoice": {
+              "delta_days": 15,
+              "matched": false,
+              "points_if_used": 0
+            },
+            "date_points_awarded": 14,
+            "utr": {
+              "pg": "UTR767705360",
+              "bank": "UTR767705360",
+              "matched": true,
+              "points_awarded": 10
+            },
+            "fee_consistency": {
+              "pg_fee": "20.00",
+              "invoice_fee": "20.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 5
+            }
+          },
+          "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn"
+        }
+      }
+    },
+    {
+      "case_id": "E2E_046",
+      "category": "HUMAN_REVIEW",
+      "authority": "deterministic",
+      "model_role": "read_only_assistance",
+      "input": {
+        "txn_id": "TXN_00062"
+      },
+      "gold_decision": {
+        "txn_id": "TXN_00062",
+        "status": "HUMAN_REVIEW",
+        "confidence_score": 60,
+        "matched_sources": [
+          "pg",
+          "bank",
+          "invoice"
+        ],
+        "tax_verified": true,
+        "exception_code": "REFERENCE_MISMATCH",
+        "reason_codes": [
+          "NONE"
+        ],
+        "evidence": {
+          "matched_rule": "low_confidence_requires_human_review",
+          "context": {
+            "no_candidates_found": false,
+            "is_ambiguous": false,
+            "low_confidence": true,
+            "missing_bank": false,
+            "missing_invoice": false,
+            "gst_mismatch": false,
+            "tds_mismatch": false,
+            "tax_unverifiable": false,
+            "fully_clean": false
+          },
+          "match_signals": {
+            "missing_bank": false,
+            "missing_invoice": false,
+            "txn_id_bank": {
+              "pg": "TXN_00062",
+              "bank": "TXN_00062",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "txn_id_invoice": {
+              "pg": "TXN_00062",
+              "invoice": "TXN_00062",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "amount_bank": {
+              "pg_expected_net": "869.00",
+              "bank_amount": "819.00",
+              "delta": "50.00",
+              "matched": false,
+              "points_awarded": 0
+            },
+            "amount_invoice": {
+              "pg_expected_fee_plus_gst": "21.00",
+              "invoice_amount": "21.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "date_bank": {
+              "delta_days": 9,
+              "matched": false,
+              "points_if_used": 0
+            },
+            "date_invoice": {
+              "delta_days": 18,
+              "matched": false,
+              "points_if_used": 0
+            },
+            "date_points_awarded": 0,
+            "utr": {
+              "pg": "UTR199534136",
+              "bank": null,
+              "matched": false,
+              "points_awarded": 0
+            },
+            "fee_consistency": {
+              "pg_fee": "17.80",
+              "invoice_fee": "17.80",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 5
+            }
+          },
+          "selection_reason": "bank: only candidate found via exact_txn; invoice: only candidate found via exact_txn"
+        }
+      }
+    },
+    {
+      "case_id": "E2E_047",
+      "category": "MATCHED",
+      "authority": "deterministic",
+      "model_role": "read_only_assistance",
+      "input": {
+        "txn_id": "TXN_00003"
+      },
+      "gold_decision": {
+        "txn_id": "TXN_00003",
+        "status": "MATCHED",
+        "confidence_score": 99,
+        "matched_sources": [
+          "pg",
+          "bank",
+          "invoice"
+        ],
+        "tax_verified": true,
+        "exception_code": "NONE",
+        "reason_codes": [
+          "NONE"
+        ],
+        "evidence": {
+          "matched_rule": "fully_clean_match",
+          "context": {
+            "no_candidates_found": false,
+            "is_ambiguous": false,
+            "low_confidence": false,
+            "missing_bank": false,
+            "missing_invoice": false,
+            "gst_mismatch": false,
+            "tds_mismatch": false,
+            "tax_unverifiable": false,
+            "fully_clean": true
+          },
+          "match_signals": {
+            "missing_bank": false,
+            "missing_invoice": false,
+            "txn_id_bank": {
+              "pg": "TXN_00003",
+              "bank": "TXN_00003",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "txn_id_invoice": {
+              "pg": "TXN_00003",
+              "invoice": "TXN_00003",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "amount_bank": {
+              "pg_expected_net": "12205.00",
+              "bank_amount": "12205.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "amount_invoice": {
+              "pg_expected_fee_plus_gst": "295.00",
+              "invoice_amount": "295.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "date_bank": {
+              "delta_days": 1,
+              "matched": true,
+              "points_if_used": 14
+            },
+            "date_invoice": {
+              "delta_days": 2,
+              "matched": true,
+              "points_if_used": 13
+            },
+            "date_points_awarded": 14,
+            "utr": {
+              "pg": "UTR287199970",
+              "bank": "UTR287199970",
+              "matched": true,
+              "points_awarded": 10
+            },
+            "fee_consistency": {
+              "pg_fee": "250.00",
+              "invoice_fee": "250.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 5
+            }
+          },
+          "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn"
+        }
+      }
+    },
+    {
+      "case_id": "E2E_048",
+      "category": "MATCHED",
+      "authority": "deterministic",
+      "model_role": "read_only_assistance",
+      "input": {
+        "txn_id": "TXN_00028"
+      },
+      "gold_decision": {
+        "txn_id": "TXN_00028",
+        "status": "MATCHED",
+        "confidence_score": 89,
+        "matched_sources": [
+          "pg",
+          "bank",
+          "invoice"
+        ],
+        "tax_verified": true,
+        "exception_code": "NONE",
+        "reason_codes": [
+          "NONE"
+        ],
+        "evidence": {
+          "matched_rule": "fully_clean_match",
+          "context": {
+            "no_candidates_found": false,
+            "is_ambiguous": false,
+            "low_confidence": false,
+            "missing_bank": false,
+            "missing_invoice": false,
+            "gst_mismatch": false,
+            "tds_mismatch": false,
+            "tax_unverifiable": false,
+            "fully_clean": true
+          },
+          "match_signals": {
+            "missing_bank": false,
+            "missing_invoice": false,
+            "txn_id_bank": {
+              "pg": "TXN_00028",
+              "bank": "TXN_00028",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "txn_id_invoice": {
+              "pg": "TXN_00028",
+              "invoice": "TXN_00028",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "amount_bank": {
+              "pg_expected_net": "3124.48",
+              "bank_amount": "3124.48",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "amount_invoice": {
+              "pg_expected_fee_plus_gst": "75.52",
+              "invoice_amount": "75.52",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "date_bank": {
+              "delta_days": 1,
+              "matched": true,
+              "points_if_used": 14
+            },
+            "date_invoice": {
+              "delta_days": 7,
+              "matched": false,
+              "points_if_used": 0
+            },
+            "date_points_awarded": 14,
+            "utr": {
+              "pg": "UTR836481039",
+              "bank": "UTR836481439",
+              "matched": false,
+              "points_awarded": 0
+            },
+            "fee_consistency": {
+              "pg_fee": "64.00",
+              "invoice_fee": "64.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 5
+            }
+          },
+          "selection_reason": "bank: only candidate found via exact_txn; invoice: only candidate found via exact_txn"
+        }
+      }
+    },
+    {
+      "case_id": "E2E_049",
+      "category": "AMBIGUOUS",
+      "authority": "deterministic",
+      "model_role": "read_only_assistance",
+      "input": {
+        "txn_id": "TXN_00053"
+      },
+      "gold_decision": {
+        "txn_id": "TXN_00053",
+        "status": "AMBIGUOUS",
+        "confidence_score": 99,
+        "matched_sources": [
+          "pg",
+          "bank",
+          "invoice"
+        ],
+        "tax_verified": true,
+        "exception_code": "AMBIGUOUS_MATCH",
+        "reason_codes": [
+          "AMBIGUOUS_MATCH"
+        ],
+        "evidence": {
+          "matched_rule": "ambiguous_takes_priority_over_tax_state",
+          "context": {
+            "no_candidates_found": false,
+            "is_ambiguous": true,
+            "low_confidence": false,
+            "missing_bank": false,
+            "missing_invoice": false,
+            "gst_mismatch": false,
+            "tds_mismatch": false,
+            "tax_unverifiable": false,
+            "fully_clean": false
+          },
+          "match_signals": {
+            "missing_bank": false,
+            "missing_invoice": false,
+            "txn_id_bank": {
+              "pg": "TXN_00053",
+              "bank": "TXN_00053",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "txn_id_invoice": {
+              "pg": "TXN_00053",
+              "invoice": "TXN_00053",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "amount_bank": {
+              "pg_expected_net": "3124.48",
+              "bank_amount": "3124.48",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "amount_invoice": {
+              "pg_expected_fee_plus_gst": "75.52",
+              "invoice_amount": "75.52",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "date_bank": {
+              "delta_days": 1,
+              "matched": true,
+              "points_if_used": 14
+            },
+            "date_invoice": {
+              "delta_days": 12,
+              "matched": false,
+              "points_if_used": 0
+            },
+            "date_points_awarded": 14,
+            "utr": {
+              "pg": "UTR130197839",
+              "bank": "UTR130197839",
+              "matched": true,
+              "points_awarded": 10
+            },
+            "fee_consistency": {
+              "pg_fee": "64.00",
+              "invoice_fee": "64.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 5
+            }
+          },
+          "selection_reason": "bank: selected from 2 candidates via exact_utr tier; tie-broken by lowest date delta, then amount delta, then utr; invoice: only candidate found via exact_txn"
+        }
+      }
+    },
+    {
+      "case_id": "E2E_050",
+      "category": "TAX_MISMATCH",
+      "authority": "deterministic",
+      "model_role": "read_only_assistance",
+      "input": {
+        "txn_id": "TXN_00039"
+      },
+      "gold_decision": {
+        "txn_id": "TXN_00039",
+        "status": "TAX_MISMATCH",
+        "confidence_score": 94,
+        "matched_sources": [
+          "pg",
+          "bank",
+          "invoice"
+        ],
+        "tax_verified": false,
+        "exception_code": "ERR_GST_MISMATCH",
+        "reason_codes": [
+          "ERR_GST_MISMATCH"
+        ],
+        "evidence": {
+          "matched_rule": "gst_mismatch_takes_priority_over_tds",
+          "context": {
+            "no_candidates_found": false,
+            "is_ambiguous": false,
+            "low_confidence": false,
+            "missing_bank": false,
+            "missing_invoice": false,
+            "gst_mismatch": true,
+            "tds_mismatch": false,
+            "tax_unverifiable": false,
+            "fully_clean": false
+          },
+          "match_signals": {
+            "missing_bank": false,
+            "missing_invoice": false,
+            "txn_id_bank": {
+              "pg": "TXN_00039",
+              "bank": "TXN_00039",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "txn_id_invoice": {
+              "pg": "TXN_00039",
+              "invoice": "TXN_00039",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "amount_bank": {
+              "pg_expected_net": "3121.28",
+              "bank_amount": "3121.28",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "amount_invoice": {
+              "pg_expected_fee_plus_gst": "75.52",
+              "invoice_amount": "75.52",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "date_bank": {
+              "delta_days": 1,
+              "matched": true,
+              "points_if_used": 14
+            },
+            "date_invoice": {
+              "delta_days": 18,
+              "matched": false,
+              "points_if_used": 0
+            },
+            "date_points_awarded": 14,
+            "utr": {
+              "pg": "UTR806552748",
+              "bank": "UTR806552748",
+              "matched": true,
+              "points_awarded": 10
+            },
+            "fee_consistency": {
+              "pg_fee": "64.00",
+              "invoice_fee": "67.84",
+              "delta": "3.84",
+              "matched": false,
+              "points_awarded": 0
+            }
+          },
+          "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn"
+        }
+      }
+    },
+    {
+      "case_id": "E2E_051",
+      "category": "TAX_MISMATCH",
+      "authority": "deterministic",
+      "model_role": "read_only_assistance",
+      "input": {
+        "txn_id": "TXN_00041"
+      },
+      "gold_decision": {
+        "txn_id": "TXN_00041",
+        "status": "TAX_MISMATCH",
+        "confidence_score": 100,
+        "matched_sources": [
+          "pg",
+          "bank",
+          "invoice"
+        ],
+        "tax_verified": false,
+        "exception_code": "ERR_TDS_VARIANCE",
+        "reason_codes": [
+          "ERR_TDS_VARIANCE"
+        ],
+        "evidence": {
+          "matched_rule": "tds_mismatch",
+          "context": {
+            "no_candidates_found": false,
+            "is_ambiguous": false,
+            "low_confidence": false,
+            "missing_bank": false,
+            "missing_invoice": false,
+            "gst_mismatch": false,
+            "tds_mismatch": true,
+            "tax_unverifiable": false,
+            "fully_clean": false
+          },
+          "match_signals": {
+            "missing_bank": false,
+            "missing_invoice": false,
+            "txn_id_bank": {
+              "pg": "TXN_00041",
+              "bank": "TXN_00041",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "txn_id_invoice": {
+              "pg": "TXN_00041",
+              "invoice": "TXN_00041",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "amount_bank": {
+              "pg_expected_net": "976.40",
+              "bank_amount": "976.40",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "amount_invoice": {
+              "pg_expected_fee_plus_gst": "23.60",
+              "invoice_amount": "23.60",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "date_bank": {
+              "delta_days": 1,
+              "matched": true,
+              "points_if_used": 14
+            },
+            "date_invoice": {
+              "delta_days": 0,
+              "matched": true,
+              "points_if_used": 15
+            },
+            "date_points_awarded": 15,
+            "utr": {
+              "pg": "UTR227450142",
+              "bank": "UTR227450142",
+              "matched": true,
+              "points_awarded": 10
+            },
+            "fee_consistency": {
+              "pg_fee": "20.00",
+              "invoice_fee": "20.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 5
+            }
+          },
+          "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn"
+        }
+      }
+    },
+    {
+      "case_id": "E2E_052",
+      "category": "MATCHED",
+      "authority": "deterministic",
+      "model_role": "read_only_assistance",
+      "input": {
+        "txn_id": "TXN_00021"
+      },
+      "gold_decision": {
+        "txn_id": "TXN_00021",
+        "status": "MATCHED",
+        "confidence_score": 100,
+        "matched_sources": [
+          "pg",
+          "bank",
+          "invoice"
+        ],
+        "tax_verified": true,
+        "exception_code": "NONE",
+        "reason_codes": [
+          "NONE"
+        ],
+        "evidence": {
+          "matched_rule": "fully_clean_match",
+          "context": {
+            "no_candidates_found": false,
+            "is_ambiguous": false,
+            "low_confidence": false,
+            "missing_bank": false,
+            "missing_invoice": false,
+            "gst_mismatch": false,
+            "tds_mismatch": false,
+            "tax_unverifiable": false,
+            "fully_clean": true
+          },
+          "match_signals": {
+            "missing_bank": false,
+            "missing_invoice": false,
+            "txn_id_bank": {
+              "pg": "TXN_00021",
+              "bank": "TXN_00021",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "txn_id_invoice": {
+              "pg": "TXN_00021",
+              "invoice": "TXN_00021",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "amount_bank": {
+              "pg_expected_net": "12205.00",
+              "bank_amount": "12205.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "amount_invoice": {
+              "pg_expected_fee_plus_gst": "295.00",
+              "invoice_amount": "295.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "date_bank": {
+              "delta_days": 3,
+              "matched": true,
+              "points_if_used": 12
+            },
+            "date_invoice": {
+              "delta_days": 0,
+              "matched": true,
+              "points_if_used": 15
+            },
+            "date_points_awarded": 15,
+            "utr": {
+              "pg": "UTR383767074",
+              "bank": "UTR383767074",
+              "matched": true,
+              "points_awarded": 10
+            },
+            "fee_consistency": {
+              "pg_fee": "250.00",
+              "invoice_fee": "250.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 5
+            }
+          },
+          "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn"
+        }
+      }
+    },
+    {
+      "case_id": "E2E_053",
+      "category": "MATCHED",
+      "authority": "deterministic",
+      "model_role": "read_only_assistance",
+      "input": {
+        "txn_id": "TXN_00020"
+      },
+      "gold_decision": {
+        "txn_id": "TXN_00020",
+        "status": "MATCHED",
+        "confidence_score": 98,
+        "matched_sources": [
+          "pg",
+          "bank",
+          "invoice"
+        ],
+        "tax_verified": true,
+        "exception_code": "NONE",
+        "reason_codes": [
+          "NONE"
+        ],
+        "evidence": {
+          "matched_rule": "fully_clean_match",
+          "context": {
+            "no_candidates_found": false,
+            "is_ambiguous": false,
+            "low_confidence": false,
+            "missing_bank": false,
+            "missing_invoice": false,
+            "gst_mismatch": false,
+            "tds_mismatch": false,
+            "tax_unverifiable": false,
+            "fully_clean": true
+          },
+          "match_signals": {
+            "missing_bank": false,
+            "missing_invoice": false,
+            "txn_id_bank": {
+              "pg": "TXN_00020",
+              "bank": "TXN_00020",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "txn_id_invoice": {
+              "pg": "TXN_00020",
+              "invoice": "TXN_00020",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "amount_bank": {
+              "pg_expected_net": "3124.48",
+              "bank_amount": "3124.48",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "amount_invoice": {
+              "pg_expected_fee_plus_gst": "75.52",
+              "invoice_amount": "75.52",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "date_bank": {
+              "delta_days": 2,
+              "matched": true,
+              "points_if_used": 13
+            },
+            "date_invoice": {
+              "delta_days": 19,
+              "matched": false,
+              "points_if_used": 0
+            },
+            "date_points_awarded": 13,
+            "utr": {
+              "pg": "UTR257347812",
+              "bank": "UTR257347812",
+              "matched": true,
+              "points_awarded": 10
+            },
+            "fee_consistency": {
+              "pg_fee": "64.00",
+              "invoice_fee": "64.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 5
+            }
+          },
+          "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn"
+        }
+      }
+    },
+    {
+      "case_id": "E2E_054",
+      "category": "MATCHED",
+      "authority": "deterministic",
+      "model_role": "read_only_assistance",
+      "input": {
+        "txn_id": "TXN_00025"
+      },
+      "gold_decision": {
+        "txn_id": "TXN_00025",
+        "status": "MATCHED",
+        "confidence_score": 89,
+        "matched_sources": [
+          "pg",
+          "bank",
+          "invoice"
+        ],
+        "tax_verified": true,
+        "exception_code": "NONE",
+        "reason_codes": [
+          "NONE"
+        ],
+        "evidence": {
+          "matched_rule": "fully_clean_match",
+          "context": {
+            "no_candidates_found": false,
+            "is_ambiguous": false,
+            "low_confidence": false,
+            "missing_bank": false,
+            "missing_invoice": false,
+            "gst_mismatch": false,
+            "tds_mismatch": false,
+            "tax_unverifiable": false,
+            "fully_clean": true
+          },
+          "match_signals": {
+            "missing_bank": false,
+            "missing_invoice": false,
+            "txn_id_bank": {
+              "pg": "TXN_00025",
+              "bank": "TXN_00025",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "txn_id_invoice": {
+              "pg": "TXN_00025",
+              "invoice": "TXN_00025",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "amount_bank": {
+              "pg_expected_net": "2441.00",
+              "bank_amount": "2441.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "amount_invoice": {
+              "pg_expected_fee_plus_gst": "59.00",
+              "invoice_amount": "59.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "date_bank": {
+              "delta_days": 1,
+              "matched": true,
+              "points_if_used": 14
+            },
+            "date_invoice": {
+              "delta_days": 4,
+              "matched": false,
+              "points_if_used": 0
+            },
+            "date_points_awarded": 14,
+            "utr": {
+              "pg": "UTR350439841",
+              "bank": "UTR350438841",
+              "matched": false,
+              "points_awarded": 0
+            },
+            "fee_consistency": {
+              "pg_fee": "50.00",
+              "invoice_fee": "50.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 5
+            }
+          },
+          "selection_reason": "bank: only candidate found via exact_txn; invoice: only candidate found via exact_txn"
+        }
+      }
+    },
+    {
+      "case_id": "E2E_055",
+      "category": "MATCHED",
+      "authority": "deterministic",
+      "model_role": "read_only_assistance",
+      "input": {
+        "txn_id": "TXN_00010"
+      },
+      "gold_decision": {
+        "txn_id": "TXN_00010",
+        "status": "MATCHED",
+        "confidence_score": 99,
+        "matched_sources": [
+          "pg",
+          "bank",
+          "invoice"
+        ],
+        "tax_verified": true,
+        "exception_code": "NONE",
+        "reason_codes": [
+          "NONE"
+        ],
+        "evidence": {
+          "matched_rule": "fully_clean_match",
+          "context": {
+            "no_candidates_found": false,
+            "is_ambiguous": false,
+            "low_confidence": false,
+            "missing_bank": false,
+            "missing_invoice": false,
+            "gst_mismatch": false,
+            "tds_mismatch": false,
+            "tax_unverifiable": false,
+            "fully_clean": true
+          },
+          "match_signals": {
+            "missing_bank": false,
+            "missing_invoice": false,
+            "txn_id_bank": {
+              "pg": "TXN_00010",
+              "bank": "TXN_00010",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "txn_id_invoice": {
+              "pg": "TXN_00010",
+              "invoice": "TXN_00010",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "amount_bank": {
+              "pg_expected_net": "976.40",
+              "bank_amount": "976.40",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "amount_invoice": {
+              "pg_expected_fee_plus_gst": "23.60",
+              "invoice_amount": "23.60",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "date_bank": {
+              "delta_days": 1,
+              "matched": true,
+              "points_if_used": 14
+            },
+            "date_invoice": {
+              "delta_days": 9,
+              "matched": false,
+              "points_if_used": 0
+            },
+            "date_points_awarded": 14,
+            "utr": {
+              "pg": "UTR228636726",
+              "bank": "UTR228636726",
+              "matched": true,
+              "points_awarded": 10
+            },
+            "fee_consistency": {
+              "pg_fee": "20.00",
+              "invoice_fee": "20.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 5
+            }
+          },
+          "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn"
+        }
+      }
+    },
+    {
+      "case_id": "E2E_056",
+      "category": "MATCHED",
+      "authority": "deterministic",
+      "model_role": "read_only_assistance",
+      "input": {
+        "txn_id": "TXN_00018"
+      },
+      "gold_decision": {
+        "txn_id": "TXN_00018",
+        "status": "MATCHED",
+        "confidence_score": 99,
+        "matched_sources": [
+          "pg",
+          "bank",
+          "invoice"
+        ],
+        "tax_verified": true,
+        "exception_code": "NONE",
+        "reason_codes": [
+          "NONE"
+        ],
+        "evidence": {
+          "matched_rule": "fully_clean_match",
+          "context": {
+            "no_candidates_found": false,
+            "is_ambiguous": false,
+            "low_confidence": false,
+            "missing_bank": false,
+            "missing_invoice": false,
+            "gst_mismatch": false,
+            "tds_mismatch": false,
+            "tax_unverifiable": false,
+            "fully_clean": true
+          },
+          "match_signals": {
+            "missing_bank": false,
+            "missing_invoice": false,
+            "txn_id_bank": {
+              "pg": "TXN_00018",
+              "bank": "TXN_00018",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "txn_id_invoice": {
+              "pg": "TXN_00018",
+              "invoice": "TXN_00018",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "amount_bank": {
+              "pg_expected_net": "976.40",
+              "bank_amount": "976.40",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "amount_invoice": {
+              "pg_expected_fee_plus_gst": "23.60",
+              "invoice_amount": "23.60",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "date_bank": {
+              "delta_days": 1,
+              "matched": true,
+              "points_if_used": 14
+            },
+            "date_invoice": {
+              "delta_days": 17,
+              "matched": false,
+              "points_if_used": 0
+            },
+            "date_points_awarded": 14,
+            "utr": {
+              "pg": "UTR260695646",
+              "bank": "UTR260695646",
+              "matched": true,
+              "points_awarded": 10
+            },
+            "fee_consistency": {
+              "pg_fee": "20.00",
+              "invoice_fee": "20.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 5
+            }
+          },
+          "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn"
+        }
+      }
+    },
+    {
+      "case_id": "E2E_057",
+      "category": "TAX_MISMATCH",
+      "authority": "deterministic",
+      "model_role": "read_only_assistance",
+      "input": {
+        "txn_id": "TXN_00044"
+      },
+      "gold_decision": {
+        "txn_id": "TXN_00044",
+        "status": "TAX_MISMATCH",
+        "confidence_score": 99,
+        "matched_sources": [
+          "pg",
+          "bank",
+          "invoice"
+        ],
+        "tax_verified": false,
+        "exception_code": "ERR_TDS_VARIANCE",
+        "reason_codes": [
+          "ERR_TDS_VARIANCE"
+        ],
+        "evidence": {
+          "matched_rule": "tds_mismatch",
+          "context": {
+            "no_candidates_found": false,
+            "is_ambiguous": false,
+            "low_confidence": false,
+            "missing_bank": false,
+            "missing_invoice": false,
+            "gst_mismatch": false,
+            "tds_mismatch": true,
+            "tax_unverifiable": false,
+            "fully_clean": false
+          },
+          "match_signals": {
+            "missing_bank": false,
+            "missing_invoice": false,
+            "txn_id_bank": {
+              "pg": "TXN_00044",
+              "bank": "TXN_00044",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "txn_id_invoice": {
+              "pg": "TXN_00044",
+              "invoice": "TXN_00044",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "amount_bank": {
+              "pg_expected_net": "869.00",
+              "bank_amount": "869.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "amount_invoice": {
+              "pg_expected_fee_plus_gst": "21.00",
+              "invoice_amount": "21.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "date_bank": {
+              "delta_days": 1,
+              "matched": true,
+              "points_if_used": 14
+            },
+            "date_invoice": {
+              "delta_days": 3,
+              "matched": true,
+              "points_if_used": 12
+            },
+            "date_points_awarded": 14,
+            "utr": {
+              "pg": "UTR323841641",
+              "bank": "UTR323841641",
+              "matched": true,
+              "points_awarded": 10
+            },
+            "fee_consistency": {
+              "pg_fee": "17.80",
+              "invoice_fee": "17.80",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 5
+            }
+          },
+          "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn"
+        }
+      }
+    },
+    {
+      "case_id": "E2E_058",
+      "category": "MATCHED",
+      "authority": "deterministic",
+      "model_role": "read_only_assistance",
+      "input": {
+        "txn_id": "TXN_00054"
+      },
+      "gold_decision": {
+        "txn_id": "TXN_00054",
+        "status": "MATCHED",
+        "confidence_score": 99,
+        "matched_sources": [
+          "pg",
+          "bank",
+          "invoice"
+        ],
+        "tax_verified": true,
+        "exception_code": "NONE",
+        "reason_codes": [
+          "NONE"
+        ],
+        "evidence": {
+          "matched_rule": "fully_clean_match",
+          "context": {
+            "no_candidates_found": false,
+            "is_ambiguous": false,
+            "low_confidence": false,
+            "missing_bank": false,
+            "missing_invoice": false,
+            "gst_mismatch": false,
+            "tds_mismatch": false,
+            "tax_unverifiable": false,
+            "fully_clean": true
+          },
+          "match_signals": {
+            "missing_bank": false,
+            "missing_invoice": false,
+            "txn_id_bank": {
+              "pg": "TXN_00054",
+              "bank": "TXN_00054",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "txn_id_invoice": {
+              "pg": "TXN_00054",
+              "invoice": "TXN_00054",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "amount_bank": {
+              "pg_expected_net": "12205.00",
+              "bank_amount": "12205.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "amount_invoice": {
+              "pg_expected_fee_plus_gst": "295.00",
+              "invoice_amount": "295.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "date_bank": {
+              "delta_days": 1,
+              "matched": true,
+              "points_if_used": 14
+            },
+            "date_invoice": {
+              "delta_days": 13,
+              "matched": false,
+              "points_if_used": 0
+            },
+            "date_points_awarded": 14,
+            "utr": {
+              "pg": "UTR347439911",
+              "bank": "UTR347439911",
+              "matched": true,
+              "points_awarded": 10
+            },
+            "fee_consistency": {
+              "pg_fee": "250.00",
+              "invoice_fee": "250.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 5
+            }
+          },
+          "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn"
+        }
+      }
+    },
+    {
+      "case_id": "E2E_059",
+      "category": "MATCHED",
+      "authority": "deterministic",
+      "model_role": "read_only_assistance",
+      "input": {
+        "txn_id": "TXN_00011"
+      },
+      "gold_decision": {
+        "txn_id": "TXN_00011",
+        "status": "MATCHED",
+        "confidence_score": 99,
+        "matched_sources": [
+          "pg",
+          "bank",
+          "invoice"
+        ],
+        "tax_verified": true,
+        "exception_code": "NONE",
+        "reason_codes": [
+          "NONE"
+        ],
+        "evidence": {
+          "matched_rule": "fully_clean_match",
+          "context": {
+            "no_candidates_found": false,
+            "is_ambiguous": false,
+            "low_confidence": false,
+            "missing_bank": false,
+            "missing_invoice": false,
+            "gst_mismatch": false,
+            "tds_mismatch": false,
+            "tax_unverifiable": false,
+            "fully_clean": true
+          },
+          "match_signals": {
+            "missing_bank": false,
+            "missing_invoice": false,
+            "txn_id_bank": {
+              "pg": "TXN_00011",
+              "bank": "TXN_00011",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "txn_id_invoice": {
+              "pg": "TXN_00011",
+              "invoice": "TXN_00011",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "amount_bank": {
+              "pg_expected_net": "12205.00",
+              "bank_amount": "12205.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "amount_invoice": {
+              "pg_expected_fee_plus_gst": "295.00",
+              "invoice_amount": "295.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "date_bank": {
+              "delta_days": 1,
+              "matched": true,
+              "points_if_used": 14
+            },
+            "date_invoice": {
+              "delta_days": 10,
+              "matched": false,
+              "points_if_used": 0
+            },
+            "date_points_awarded": 14,
+            "utr": {
+              "pg": "UTR299531684",
+              "bank": "UTR299531684",
+              "matched": true,
+              "points_awarded": 10
+            },
+            "fee_consistency": {
+              "pg_fee": "250.00",
+              "invoice_fee": "250.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 5
+            }
+          },
+          "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn"
+        }
+      }
+    },
+    {
+      "case_id": "E2E_060",
+      "category": "MATCHED",
+      "authority": "deterministic",
+      "model_role": "read_only_assistance",
+      "input": {
+        "txn_id": "TXN_00023"
+      },
+      "gold_decision": {
+        "txn_id": "TXN_00023",
+        "status": "MATCHED",
+        "confidence_score": 98,
+        "matched_sources": [
+          "pg",
+          "bank",
+          "invoice"
+        ],
+        "tax_verified": true,
+        "exception_code": "NONE",
+        "reason_codes": [
+          "NONE"
+        ],
+        "evidence": {
+          "matched_rule": "fully_clean_match",
+          "context": {
+            "no_candidates_found": false,
+            "is_ambiguous": false,
+            "low_confidence": false,
+            "missing_bank": false,
+            "missing_invoice": false,
+            "gst_mismatch": false,
+            "tds_mismatch": false,
+            "tax_unverifiable": false,
+            "fully_clean": true
+          },
+          "match_signals": {
+            "missing_bank": false,
+            "missing_invoice": false,
+            "txn_id_bank": {
+              "pg": "TXN_00023",
+              "bank": "TXN_00023",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "txn_id_invoice": {
+              "pg": "TXN_00023",
+              "invoice": "TXN_00023",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "amount_bank": {
+              "pg_expected_net": "2438.50",
+              "bank_amount": "2438.50",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "amount_invoice": {
+              "pg_expected_fee_plus_gst": "59.00",
+              "invoice_amount": "59.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "date_bank": {
+              "delta_days": 3,
+              "matched": true,
+              "points_if_used": 12
+            },
+            "date_invoice": {
+              "delta_days": 2,
+              "matched": true,
+              "points_if_used": 13
+            },
+            "date_points_awarded": 13,
+            "utr": {
+              "pg": "UTR830074512",
+              "bank": "UTR830074512",
+              "matched": true,
+              "points_awarded": 10
+            },
+            "fee_consistency": {
+              "pg_fee": "50.00",
+              "invoice_fee": "50.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 5
+            }
+          },
+          "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn"
+        }
+      }
+    },
+    {
+      "case_id": "E2E_061",
+      "category": "MATCHED",
+      "authority": "deterministic",
+      "model_role": "read_only_assistance",
+      "input": {
+        "txn_id": "TXN_00001"
+      },
+      "gold_decision": {
+        "txn_id": "TXN_00001",
+        "status": "MATCHED",
+        "confidence_score": 100,
+        "matched_sources": [
+          "pg",
+          "bank",
+          "invoice"
+        ],
+        "tax_verified": true,
+        "exception_code": "NONE",
+        "reason_codes": [
+          "NONE"
+        ],
+        "evidence": {
+          "matched_rule": "fully_clean_match",
+          "context": {
+            "no_candidates_found": false,
+            "is_ambiguous": false,
+            "low_confidence": false,
+            "missing_bank": false,
+            "missing_invoice": false,
+            "gst_mismatch": false,
+            "tds_mismatch": false,
+            "tax_unverifiable": false,
+            "fully_clean": true
+          },
+          "match_signals": {
+            "missing_bank": false,
+            "missing_invoice": false,
+            "txn_id_bank": {
+              "pg": "TXN_00001",
+              "bank": "TXN_00001",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "txn_id_invoice": {
+              "pg": "TXN_00001",
+              "invoice": "TXN_00001",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "amount_bank": {
+              "pg_expected_net": "3124.48",
+              "bank_amount": "3124.48",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "amount_invoice": {
+              "pg_expected_fee_plus_gst": "75.52",
+              "invoice_amount": "75.52",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "date_bank": {
+              "delta_days": 1,
+              "matched": true,
+              "points_if_used": 14
+            },
+            "date_invoice": {
+              "delta_days": 0,
+              "matched": true,
+              "points_if_used": 15
+            },
+            "date_points_awarded": 15,
+            "utr": {
+              "pg": "UTR980655899",
+              "bank": "UTR980655899",
+              "matched": true,
+              "points_awarded": 10
+            },
+            "fee_consistency": {
+              "pg_fee": "64.00",
+              "invoice_fee": "64.00",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 5
+            }
+          },
+          "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn"
+        }
+      }
+    }
+  ]
+}
