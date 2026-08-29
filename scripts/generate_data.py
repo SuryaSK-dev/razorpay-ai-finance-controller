@@ -36,6 +36,15 @@ The decision table's actual mapping, for reference:
     missing_bank                                  -> UNMATCHED
     missing_invoice                               -> PARTIAL_MATCH
     amount_mismatch                               -> HUMAN_REVIEW
+
+DATA-REALISM RULE
+-----------------
+The generator must not make the reconciliation problem artificially
+easy OR artificially hard. See FIX (A1) in _draw_gross(): an earlier
+version drew gross from six fixed values, which manufactured exact
+net collisions throughout the batch and caused the fuzzy tier to
+measure 0.13 precision. That number described the generator, not the
+engine.
 """
 
 from __future__ import annotations
@@ -143,28 +152,105 @@ def pick_high_volume_merchant():
 
 
 def pick_zero_base_merchant():
-    """Merchants 4-15 start at zero cumulative gross. With a max
-    per-transaction gross of INR 12,500 and a batch this size, they
-    cannot cross the INR 500,000 TDS threshold.
+    """Merchants 4-15 start at zero cumulative gross and, across a
+    batch this size, cannot accumulate the INR 500,000 needed to cross
+    the TDS threshold.
 
     This matters specifically for the ambiguous pair. Ambiguity is
     detected by comparing a PG record's EXPECTED NET against candidate
     bank amounts, and AMOUNT_TOLERANCE is INR 0.01. If one member of
     the pair withheld TDS and the other did not, their nets would
-    differ by ~0.1% of gross (INR 12.50 on a 12,500 transaction) --
-    1,250x the tolerance -- and the amount collision that CREATES the
-    ambiguity would silently fail to exist.
+    differ by 0.1% of gross -- orders of magnitude above the tolerance
+    -- and the amount collision that CREATES the ambiguity would
+    silently fail to exist.
 
     Drawing both members from the zero-base cohort guarantees TDS == 0
     on both sides, so identical gross yields identical net. The pair
     therefore genuinely collides, which is the whole point of the
-    category. TDS is exercised by other categories, not this one."""
+    category. TDS is exercised by other categories, not this one.
+
+    ACKNOWLEDGED CONSTRAINT: this is the generator being shaped to fit
+    the measurement. It is defensible -- isolating one variable is
+    normal test design -- but it does mean the ambiguous category can
+    never exercise TDS. Recorded in FAILURE_LOG.md rather than left
+    implicit."""
     return rng.choice(ZERO_BASE_MERCHANTS)
 
 
 def next_txn_id(counter: list[int]) -> str:
     counter[0] += 1
     return f"TXN_{counter[0]:05d}"
+
+
+# =======================================================================
+# AMOUNT DISTRIBUTION
+# =======================================================================
+
+def _draw_gross() -> Decimal:
+    """
+    Draw a transaction gross amount to paise precision.
+
+    FIX (A1) -- WHY NOT A FIXED SET OF VALUES
+    -----------------------------------------
+    An earlier version drew gross from six fixed amounts:
+
+        ["1000.00", "2500.00", "5400.00", "890.00", "12500.00", "3200.00"]
+
+    With 63 records that placed roughly ten transactions on each value.
+    Because pg_fee and GST are fixed percentages of gross, identical
+    gross produced an IDENTICAL EXPECTED NET -- so exact net collisions
+    were everywhere by construction, not by accident:
+
+        - nine bank rows landed on exactly 12205.00
+        - the fuzzy tier measured precision 0.13 at threshold 85,
+          with 41 false positives against 6 true positives
+        - the date window was doing nearly all the discriminating work
+          in ambiguity detection, because the amount guard could not
+          separate anything
+        - unrelated categories supplied accidental ambiguity evidence
+          to each other
+
+    Every one of those numbers described the GENERATOR, not the engine.
+    Documenting 0.13 as a fuzzy-matching limitation understated the
+    matching layer and mis-attributed a data artifact to the code.
+
+    LOG-UNIFORM, NOT FLAT
+    ---------------------
+    Real transaction values cluster at the low end with a long tail. A
+    flat uniform draw across the full range would over-represent large
+    amounts and misrepresent the distribution a matcher actually faces.
+    Drawing the order of magnitude first -- weighted toward thousands
+    -- then a mantissa within it, approximates that shape cheaply and
+    deterministically.
+
+    PAISE PRECISION IS THE POINT
+    ----------------------------
+    AMOUNT_TOLERANCE is INR 0.01. Drawing to paise rather than whole
+    rupees is what makes accidental collision within tolerance go from
+    routine to vanishingly unlikely. Rounding to rupees would leave a
+    weaker version of the same artifact.
+
+    DELIBERATE COLLISION IS UNAFFECTED
+    ----------------------------------
+    The two categories that REQUIRE collision still get it, because
+    both copy rather than redraw:
+
+        ambiguous  -- build_ambiguous_sibling() copies the
+                      counterpart's gross_amount explicitly
+        duplicate  -- the duplicate bank row is dict(bank)
+
+    What disappears is only ACCIDENTAL collision, which was
+    contaminating the measurements.
+    """
+    # Weighted toward thousands; hundreds and ten-thousands present so
+    # the matcher sees genuine order-of-magnitude spread rather than
+    # one narrow band.
+    magnitude = rng.choice([2, 3, 3, 3, 4])
+
+    low_paise = (10 ** magnitude) * 100
+    high_paise = (10 ** (magnitude + 1)) * 100 - 1
+
+    return money(Decimal(rng.randint(low_paise, high_paise)) / Decimal(100))
 
 
 # =======================================================================
@@ -176,8 +262,7 @@ txn_counter = [0]
 
 def build_clean_transaction(merchant, txn_id, date_offset_days):
     """Baseline: a fully correct, fully matchable transaction."""
-    gross = Decimal(rng.choice(["1000.00", "2500.00", "5400.00",
-                                 "890.00", "12500.00", "3200.00"]))
+    gross = _draw_gross()
     fee = money(gross * Decimal("0.02"))
     gst = money(fee * GST_RATE_ON_FEE)
 
@@ -276,6 +361,16 @@ def build_reference_mismatch(merchant, txn_id, date_offset_days):
 
 
 def build_amount_discrepancy(merchant, txn_id, date_offset_days):
+    """
+    Bank credits less than the expected net.
+
+    Drift values are all far above AMOUNT_TOLERANCE (0.01), so these
+    are genuine discrepancies rather than rounding noise. They remain
+    fixed rather than scaled to gross: a flat INR 5 short-credit is a
+    realistic operational error regardless of transaction size, and
+    keeping it absolute means the check is exercised at both ends of
+    the amount distribution.
+    """
     pg, bank, invoice, gt = build_clean_transaction(merchant, txn_id, date_offset_days)
     drift = Decimal(rng.choice(["5.00", "12.50", "0.75", "20.00"]))
     bank["credited_amount"] = str(money(Decimal(bank["credited_amount"]) - drift))
@@ -412,7 +507,7 @@ def build_unresolvable(merchant, txn_id, date_offset_days):
 
     The two statuses mean different things operationally:
 
-        UNMATCHED     -- no counterpart exists; go find it
+        UNMATCHED       -- no counterpart exists; go find it
         AMOUNT_MISMATCH -- counterpart found, short by INR 50; go
                            reconcile it
 
@@ -470,6 +565,11 @@ def build_ambiguous_sibling(merchant, txn_id, counterpart_pg, counterpart_bank):
     zero-base cohort so TDS is zero on both sides (see
     pick_zero_base_merchant for why AMOUNT_TOLERANCE makes this
     mandatory).
+
+    NOTE ON FIX (A1): this function copies gross rather than calling
+    _draw_gross(), which is precisely why widening the amount
+    distribution does not weaken the ambiguous category. Deliberate
+    collision is constructed; only accidental collision was removed.
     """
     gross = Decimal(counterpart_pg["gross_amount"])
     fee = money(gross * Decimal("0.02"))
@@ -640,6 +740,10 @@ def print_summary(category_counts: dict, ground_truth: list, pg_records: list):
     # decision table cannot produce for the data as emitted.
     _verify_label_reachability(ground_truth)
 
+    # FIX (A1) instrumentation: report how much ACCIDENTAL net
+    # collision the amount distribution is producing.
+    _report_accidental_net_collisions(ground_truth, pg_records)
+
 
 def _verify_ambiguous_pairs_collide(ground_truth: list, pg_records: list):
     """Fail loudly at generation time if an ambiguous pair does not
@@ -665,6 +769,41 @@ def _verify_ambiguous_pairs_collide(ground_truth: list, pg_records: list):
             print(f"    {ids}")
     else:
         print(f"  ambiguous pairs verified colliding: {len(nets)}")
+
+
+def _report_accidental_net_collisions(ground_truth: list, pg_records: list):
+    """
+    Count net-amount collisions OUTSIDE the ambiguous category.
+
+    This is the metric FIX (A1) exists to move. Under the old six-value
+    distribution this number was large -- roughly ten records shared
+    each gross, so nearly every record collided with several others,
+    and the fuzzy tier had no amount signal left to discriminate on.
+
+    A small number here is healthy and realistic: real batches DO
+    contain occasional equal amounts. A large number means the
+    generator is manufacturing the difficulty it then measures.
+    """
+    category_by_id = {g["txn_id"]: g["category"] for g in ground_truth}
+
+    nets: dict[str, list[str]] = {}
+    for record in pg_records:
+        if record["gross_amount"] == "NOT_A_NUMBER":
+            continue
+        if category_by_id.get(record["txn_id"]) == "ambiguous":
+            continue          # deliberate collision, not accidental
+        nets.setdefault(record["net_payout"], []).append(record["txn_id"])
+
+    colliding = {net: ids for net, ids in nets.items() if len(ids) > 1}
+    collided_records = sum(len(ids) for ids in colliding.values())
+
+    print(f"  accidental net collisions (non-ambiguous): "
+          f"{collided_records} record(s) across {len(colliding)} amount(s)")
+
+    if collided_records > len(pg_records) // 4:
+        print("    WARNING: heavy accidental collision -- the amount "
+              "distribution may be too narrow to measure the fuzzy "
+              "tier honestly.")
 
 
 # The status each category is expected to produce, per the decision
