@@ -15,4 +15,11 @@ __pycache__/
 # Environment / secrets
 .env
 .env.*
-!.env.example
+!.env.exampletest_output.txt
+*.log
+data/_benchmark_tmp/
+
+# Test/benchmark artifacts
+test_output.txt
+*.log
+data/_benchmark_tmp/
