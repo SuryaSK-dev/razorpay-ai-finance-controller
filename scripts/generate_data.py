@@ -15,6 +15,27 @@ Run:
 Reproducibility:
     The random seed is fixed in config.py (RANDOM_SEED). Re-running
     this script produces an identical dataset every time.
+
+GROUND-TRUTH LABELLING RULE
+---------------------------
+expected_status must describe what the DECISION TABLE will actually
+produce for the data this builder emits -- not what the category name
+suggests, and not what a human would informally call the situation.
+
+Two labels violated that rule and were corrected (see FIX (L1) and
+FIX (L2) below). Both made a correct engine look broken. Ground truth
+that disagrees with a correct engine is worse than no ground truth:
+it burns review time on phantom defects and trains the team to ignore
+the harness.
+
+The decision table's actual mapping, for reference:
+
+    no_candidates_found (bank AND invoice absent) -> UNMATCHED
+    duplicate_detected                            -> HUMAN_REVIEW
+    is_ambiguous                                  -> AMBIGUOUS
+    missing_bank                                  -> UNMATCHED
+    missing_invoice                               -> PARTIAL_MATCH
+    amount_mismatch                               -> HUMAN_REVIEW
 """
 
 from __future__ import annotations
@@ -105,6 +126,10 @@ MERCHANTS = [
     for i in range(1, 16)
 ]
 
+# Merchants 1-3 are the seeded near-threshold cohort.
+NEAR_THRESHOLD_MERCHANTS = MERCHANTS[:3]
+ZERO_BASE_MERCHANTS = MERCHANTS[3:]
+
 
 def pick_merchant():
     return rng.choice(MERCHANTS)
@@ -114,7 +139,27 @@ def pick_high_volume_merchant():
     """Used to bias a few clean transactions toward the seeded
     near-threshold merchants, increasing the odds the threshold is
     actually crossed within this batch."""
-    return rng.choice(MERCHANTS[:3])
+    return rng.choice(NEAR_THRESHOLD_MERCHANTS)
+
+
+def pick_zero_base_merchant():
+    """Merchants 4-15 start at zero cumulative gross. With a max
+    per-transaction gross of INR 12,500 and a batch this size, they
+    cannot cross the INR 500,000 TDS threshold.
+
+    This matters specifically for the ambiguous pair. Ambiguity is
+    detected by comparing a PG record's EXPECTED NET against candidate
+    bank amounts, and AMOUNT_TOLERANCE is INR 0.01. If one member of
+    the pair withheld TDS and the other did not, their nets would
+    differ by ~0.1% of gross (INR 12.50 on a 12,500 transaction) --
+    1,250x the tolerance -- and the amount collision that CREATES the
+    ambiguity would silently fail to exist.
+
+    Drawing both members from the zero-base cohort guarantees TDS == 0
+    on both sides, so identical gross yields identical net. The pair
+    therefore genuinely collides, which is the whole point of the
+    category. TDS is exercised by other categories, not this one."""
+    return rng.choice(ZERO_BASE_MERCHANTS)
 
 
 def next_txn_id(counter: list[int]) -> str:
@@ -136,17 +181,11 @@ def build_clean_transaction(merchant, txn_id, date_offset_days):
     fee = money(gross * Decimal("0.02"))
     gst = money(fee * GST_RATE_ON_FEE)
 
-    opening_gross = merchant["annual_gross_so_far"]  # captured BEFORE
-                                                        # this transaction
-                                                        # is applied --
-                                                        # this is the
-                                                        # merchant's true
-                                                        # starting point,
-                                                        # written into
-                                                        # the record so
-                                                        # it's real data,
-                                                        # not private
-                                                        # generator state
+    # Captured BEFORE this transaction is applied -- this is the
+    # merchant's true starting point, written into the record so it is
+    # real data rather than private generator state.
+    opening_gross = merchant["annual_gross_so_far"]
+
     merchant["annual_gross_so_far"] += gross
     tds = (money(gross * TDS_RATE_SECTION_393)
            if merchant["annual_gross_so_far"] > TDS_ANNUAL_THRESHOLD
@@ -268,6 +307,20 @@ def build_tax_mismatch(merchant, txn_id, date_offset_days):
 
 
 def build_missing_in_source(merchant, txn_id, date_offset_days):
+    """
+    One source is dropped entirely.
+
+    Both labels here are correct as written and were verified against
+    the decision table:
+
+        bank dropped    -> missing_bank_unmatched   -> UNMATCHED
+        invoice dropped -> missing_invoice_...      -> PARTIAL_MATCH
+
+    Note that UNMATCHED is reachable here via the dedicated
+    `missing_bank` rule (priority 4), NOT via `no_candidates_found`
+    (priority 0) -- the invoice is still present, so the transaction is
+    not source-less. Two different rules, same status.
+    """
     pg, bank, invoice, gt = build_clean_transaction(merchant, txn_id, date_offset_days)
     dropped = rng.choice(["bank", "invoice"])
     gt["category"] = "missing_in_source"
@@ -284,15 +337,38 @@ def build_missing_in_source(merchant, txn_id, date_offset_days):
 
 
 def build_duplicate(merchant, txn_id, date_offset_days):
+    """
+    The same settlement is credited twice in the bank feed.
+
+    FIX (L1): expected_status was "AMBIGUOUS". The decision table maps
+    `duplicate_detected` to HUMAN_REVIEW / DUPLICATE_DETECTED at
+    priority 1 -- it has never produced AMBIGUOUS for a duplicate, and
+    should not: a duplicate is not an ambiguity.
+
+    Ambiguity means "two DIFFERENT plausible transactions compete for
+    one record". Duplication means "one transaction appears twice".
+    The operational response differs: ambiguity needs disambiguation,
+    duplication needs one row reversed. Collapsing them into one status
+    would lose that distinction for the finance operator.
+
+    The exception code was already correct, so this divergence showed
+    up as a status-only mismatch -- the clearest possible signal that
+    the label, not the engine, was wrong.
+    """
     pg, bank, invoice, gt = build_clean_transaction(merchant, txn_id, date_offset_days)
     gt["category"] = "duplicate"
     gt["expected_exception_code"] = "DUPLICATE_DETECTED"
-    gt["expected_status"] = "AMBIGUOUS"
-    gt["notes"] = "Same transaction credited twice in the bank feed; duplicate row injected at batch assembly."
+    gt["expected_status"] = "HUMAN_REVIEW"
+    gt["notes"] = ("Same transaction credited twice in the bank feed; "
+                   "duplicate row injected at batch assembly. Routed to "
+                   "human review for reversal, not treated as ambiguity.")
     return pg, bank, invoice, gt
 
 
 def build_ambiguous(merchant, txn_id, date_offset_days):
+    """First member of an ambiguous pair. Its sibling is injected at
+    batch assembly by build_ambiguous_sibling(), which reuses this
+    record's gross_amount and timestamp to create the collision."""
     pg, bank, invoice, gt = build_clean_transaction(merchant, txn_id, date_offset_days)
     gt["category"] = "ambiguous"
     gt["expected_exception_code"] = "AMBIGUOUS_MATCH"
@@ -302,6 +378,15 @@ def build_ambiguous(merchant, txn_id, date_offset_days):
 
 
 def build_corrupted(merchant, txn_id, date_offset_days):
+    """
+    Malformed gross_amount; must be rejected at ingestion.
+
+    UNMATCHED / CORRUPTED_RECORD is produced by the ingestion terminal
+    path in run_e2e_deterministic.py, not by the decision table -- the
+    record never reaches normalization, matching, or decisioning. That
+    is why this label is correct despite UNMATCHED normally requiring
+    no_candidates_found.
+    """
     pg, bank, invoice, gt = build_clean_transaction(merchant, txn_id, date_offset_days)
     pg["gross_amount"] = "NOT_A_NUMBER"
     gt["category"] = "corrupted"
@@ -312,10 +397,36 @@ def build_corrupted(merchant, txn_id, date_offset_days):
 
 
 def build_unresolvable(merchant, txn_id, date_offset_days):
-    """No defensible automated resolution. The bank record is still
-    linked via bank_ref for referential-integrity purposes, but its UTR
-    is nulled and its amount/date both drift -- simulating a case where
-    every individual signal is degraded simultaneously."""
+    """
+    Every individual signal is degraded simultaneously: the amount
+    drifts by INR 50, the value date drifts by 9 days, and the UTR is
+    nulled. The bank_ref linkage is deliberately LEFT INTACT.
+
+    FIX (L2): expected_status was "UNMATCHED" / HUMAN_REVIEW_REQUIRED.
+
+    That was self-contradictory. UNMATCHED requires
+    `no_candidates_found`, which requires BOTH bank and invoice to be
+    absent. This builder emits all three sources and keeps bank_ref
+    resolvable, so a counterpart IS found -- the engine then correctly
+    reports the INR 50 shortfall as AMOUNT_MISMATCH / HUMAN_REVIEW.
+
+    The two statuses mean different things operationally:
+
+        UNMATCHED     -- no counterpart exists; go find it
+        AMOUNT_MISMATCH -- counterpart found, short by INR 50; go
+                           reconcile it
+
+    The second is strictly more actionable and is what actually
+    happened. Widening UNMATCHED to cover found-but-discrepant records
+    would make the status semantically meaningless and break the
+    decision table's 512-combination coverage.
+
+    NAMING NOTE: the category is called "unresolvable" but is, by
+    construction, resolvable by identity -- only irreconcilable without
+    a human. "degraded_signals" would be more accurate. Renaming is
+    deferred to avoid churning case IDs mid-submission; recorded in
+    FAILURE_LOG.md.
+    """
     pg, bank, invoice, gt = build_clean_transaction(merchant, txn_id, date_offset_days)
     bank["credited_amount"] = str(money(Decimal(bank["credited_amount"]) - Decimal("50.00")))
     bank["value_date"] = (
@@ -323,12 +434,15 @@ def build_unresolvable(merchant, txn_id, date_offset_days):
     ).date().isoformat()
     bank["utr"] = None
     gt["category"] = "unresolvable"
-    gt["expected_exception_code"] = "HUMAN_REVIEW_REQUIRED"
-    gt["expected_status"] = "UNMATCHED"
-    gt["notes"] = "Amount, date, and UTR all diverge simultaneously; no defensible automated resolution."
+    gt["expected_exception_code"] = "AMOUNT_MISMATCH"
+    gt["expected_status"] = "HUMAN_REVIEW"
+    gt["notes"] = ("Amount, date, and UTR all diverge simultaneously "
+                   "while bank_ref linkage survives; resolvable by "
+                   "identity but not reconcilable without a human.")
     return pg, bank, invoice, gt
 
-def build_ambiguous_sibling(merchant, txn_id, counterpart_pg):
+
+def build_ambiguous_sibling(merchant, txn_id, counterpart_pg, counterpart_bank):
     """
     Build a sibling PG/bank/invoice triplet that intentionally shares
     gross_amount and timestamp with its ambiguous counterpart -- that
@@ -337,6 +451,25 @@ def build_ambiguous_sibling(merchant, txn_id, counterpart_pg):
     credited_amount/invoice amounts are all derived from the SAME
     gross_amount used for the collision, computed once, rather than
     generated for an unrelated amount and overwritten afterward.
+
+    WHY THE BANK RECORD MATTERS MOST
+    --------------------------------
+    Ambiguity detection (find_bank_ambiguity_candidates) compares the
+    anchor PG record's EXPECTED NET against candidate BANK amounts and
+    dates. Copying only the PG-side gross/timestamp -- as an earlier
+    version of this generator did -- produced ground truth asserting
+    AMBIGUOUS while emitting no bank record the engine could ever
+    detect as competing. Every unit test still passed, because
+    "ambiguous results are never auto-matched" was never violated:
+    nothing was ever flagged ambiguous in the first place. The result
+    was six fail-open cases that only a full-batch regression harness
+    surfaced.
+
+    Both bank rows must therefore land on the same net amount and the
+    same value_date. Callers must draw BOTH merchants from the
+    zero-base cohort so TDS is zero on both sides (see
+    pick_zero_base_merchant for why AMOUNT_TOLERANCE makes this
+    mandatory).
     """
     gross = Decimal(counterpart_pg["gross_amount"])
     fee = money(gross * Decimal("0.02"))
@@ -374,7 +507,11 @@ def build_ambiguous_sibling(merchant, txn_id, counterpart_pg):
         "bank_ref": f"BANKREF_{txn_id}",
         "utr": utr,
         "credited_amount": str(net),
-        "value_date": (ts + timedelta(days=1)).date().isoformat(),
+        # Explicitly mirror the counterpart's value_date rather than
+        # recomputing ts + 1 day. Both are identical today, but pinning
+        # it here means a future change to the counterpart's settlement
+        # lag cannot silently break the date half of the collision.
+        "value_date": counterpart_bank["value_date"],
         "narration": f"{narration_method} CR {utr} {merchant['id']}",
         "bank_charges": "0.00",
     }
@@ -393,11 +530,12 @@ def build_ambiguous_sibling(merchant, txn_id, counterpart_pg):
         "expected_status": "AMBIGUOUS",
         "expected_exception_code": "AMBIGUOUS_MATCH",
         "category": "ambiguous",
-        "notes": ("Sibling of an ambiguous pair; same amount and date "
-                  "as its counterpart, internally consistent on its "
-                  "own financial fields."),
+        "notes": ("Sibling of an ambiguous pair; same net amount and "
+                  "value date as its counterpart, internally consistent "
+                  "on its own financial fields."),
     }
     return pg, bank, invoice, ground_truth
+
 
 # =======================================================================
 # BATCH ASSEMBLY
@@ -429,10 +567,14 @@ def generate_batch():
     for category, count in BATCH_DISTRIBUTION.items():
         builder = BUILDERS[category]
         for i in range(count):
-            # bias roughly 1-in-3 of certain categories toward the
-            # near-threshold merchants so the TDS threshold actually
-            # gets exercised somewhere in the batch
-            if category in HIGH_VOLUME_BIAS_CATEGORIES and i % 3 == 0:
+            if category == "ambiguous":
+                # Both members of an ambiguous pair must withhold zero
+                # TDS so their nets collide within AMOUNT_TOLERANCE.
+                merchant = pick_zero_base_merchant()
+            elif category in HIGH_VOLUME_BIAS_CATEGORIES and i % 3 == 0:
+                # bias roughly 1-in-3 of certain categories toward the
+                # near-threshold merchants so the TDS threshold actually
+                # gets exercised somewhere in the batch
                 merchant = pick_high_volume_merchant()
             else:
                 merchant = pick_merchant()
@@ -455,11 +597,11 @@ def generate_batch():
                 dup["bank_ref"] = bank["bank_ref"] + "_DUP"
                 bank_records.append(dup)
 
-            if category == "ambiguous" and pg is not None:
-                sibling_merchant = pick_merchant()
+            if category == "ambiguous" and pg is not None and bank is not None:
+                sibling_merchant = pick_zero_base_merchant()
                 sibling_txn_id = next_txn_id(txn_counter)
                 s_pg, s_bank, s_invoice, s_gt = build_ambiguous_sibling(
-                    sibling_merchant, sibling_txn_id, pg
+                    sibling_merchant, sibling_txn_id, pg, bank
                 )
                 pg_records.append(s_pg)
                 bank_records.append(s_bank)
@@ -488,6 +630,89 @@ def print_summary(category_counts: dict, ground_truth: list, pg_records: list):
                         if r["gross_amount"] != "NOT_A_NUMBER"
                         and Decimal(r["tds_withheld"]) > 0)
     print(f"\n  records with TDS > 0 (threshold genuinely crossed): {tds_positive}")
+
+    # Self-check: every ambiguous pair must actually collide on net
+    # amount and value date, otherwise the category is asserting a
+    # condition the data does not contain.
+    _verify_ambiguous_pairs_collide(ground_truth, pg_records)
+
+    # Self-check: no ground-truth label may assert a status the
+    # decision table cannot produce for the data as emitted.
+    _verify_label_reachability(ground_truth)
+
+
+def _verify_ambiguous_pairs_collide(ground_truth: list, pg_records: list):
+    """Fail loudly at generation time if an ambiguous pair does not
+    genuinely collide. Ground truth that asserts AMBIGUOUS without a
+    detectable collision is worse than no ground truth at all: it makes
+    a correct engine look broken, or hides a fail-open bug."""
+    pg_by_id = {r["txn_id"]: r for r in pg_records}
+    ambiguous_ids = [g["txn_id"] for g in ground_truth
+                     if g["category"] == "ambiguous"]
+
+    nets = {}
+    for txn_id in ambiguous_ids:
+        record = pg_by_id.get(txn_id)
+        if record is None:
+            continue
+        key = (record["net_payout"], record["timestamp"])
+        nets.setdefault(key, []).append(txn_id)
+
+    orphans = [ids for ids in nets.values() if len(ids) < 2]
+    if orphans:
+        print("\n  WARNING: ambiguous records with no colliding sibling:")
+        for ids in orphans:
+            print(f"    {ids}")
+    else:
+        print(f"  ambiguous pairs verified colliding: {len(nets)}")
+
+
+# The status each category is expected to produce, per the decision
+# table. Kept here as the generator's own declaration of intent so a
+# label change cannot silently drift from the policy it describes.
+EXPECTED_STATUS_BY_CATEGORY = {
+    "exact_match": "MATCHED",
+    "timing_difference": "MATCHED",
+    "reference_mismatch_fuzzy": "MATCHED",
+    "amount_fee_discrepancy": "HUMAN_REVIEW",
+    "tax_mismatch": "TAX_MISMATCH",
+    "missing_in_source": {"UNMATCHED", "PARTIAL_MATCH"},
+    "duplicate": "HUMAN_REVIEW",
+    "ambiguous": "AMBIGUOUS",
+    "corrupted": "UNMATCHED",
+    "unresolvable": "HUMAN_REVIEW",
+}
+
+
+def _verify_label_reachability(ground_truth: list):
+    """Fail loudly if a category emits a status outside its declared
+    set. This is the guard that would have caught FIX (L1) and
+    FIX (L2) at generation time rather than three harness runs later."""
+    problems = []
+
+    for entry in ground_truth:
+        category = entry["category"]
+        status = entry["expected_status"]
+        allowed = EXPECTED_STATUS_BY_CATEGORY.get(category)
+
+        if allowed is None:
+            problems.append(f"{entry['txn_id']}: unknown category {category!r}")
+            continue
+
+        allowed_set = allowed if isinstance(allowed, set) else {allowed}
+
+        if status not in allowed_set:
+            problems.append(
+                f"{entry['txn_id']} ({category}): expected_status "
+                f"{status!r} not in {sorted(allowed_set)}"
+            )
+
+    if problems:
+        print("\n  WARNING: ground-truth labels disagree with declared policy:")
+        for problem in problems:
+            print(f"    {problem}")
+    else:
+        print(f"  label reachability verified: {len(ground_truth)} entries")
 
 
 def main():

@@ -1,7 +1,7 @@
 {
   "report_version": "5C.5.3-v1",
   "evaluation_stage": "5C.5.3",
-  "generated_at_utc": "2026-08-29T00:30:32.221471+00:00",
+  "generated_at_utc": "2026-08-29T01:54:35.670617+00:00",
   "authority": "deterministic",
   "model_role": "read_only_candidate_and_explanation",
   "benchmark": {
@@ -134,6 +134,7 @@
             }
           },
           "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn",
+          "tax_evaluated": true,
           "authoritative_match": true
         }
       },
@@ -249,6 +250,7 @@
             }
           },
           "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn",
+          "tax_evaluated": true,
           "authoritative_match": true
         }
       },
@@ -364,6 +366,7 @@
             }
           },
           "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn",
+          "tax_evaluated": true,
           "authoritative_match": true
         }
       },
@@ -479,6 +482,7 @@
             }
           },
           "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn",
+          "tax_evaluated": true,
           "authoritative_match": true
         }
       },
@@ -594,6 +598,7 @@
             }
           },
           "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn",
+          "tax_evaluated": true,
           "authoritative_match": true
         }
       },
@@ -709,6 +714,7 @@
             }
           },
           "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn",
+          "tax_evaluated": true,
           "authoritative_match": true
         }
       },
@@ -824,6 +830,7 @@
             }
           },
           "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn",
+          "tax_evaluated": true,
           "authoritative_match": true
         }
       },
@@ -939,6 +946,7 @@
             }
           },
           "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn",
+          "tax_evaluated": true,
           "authoritative_match": true
         }
       },
@@ -1054,6 +1062,7 @@
             }
           },
           "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn",
+          "tax_evaluated": true,
           "authoritative_match": true
         }
       },
@@ -1169,6 +1178,7 @@
             }
           },
           "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn",
+          "tax_evaluated": true,
           "authoritative_match": true
         }
       },
@@ -1284,6 +1294,7 @@
             }
           },
           "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn",
+          "tax_evaluated": true,
           "authoritative_match": true
         }
       },
@@ -1399,6 +1410,7 @@
             }
           },
           "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn",
+          "tax_evaluated": true,
           "authoritative_match": true
         }
       },
@@ -1514,6 +1526,7 @@
             }
           },
           "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn",
+          "tax_evaluated": true,
           "authoritative_match": true
         }
       },
@@ -1629,6 +1642,7 @@
             }
           },
           "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn",
+          "tax_evaluated": true,
           "authoritative_match": true
         }
       },
@@ -1744,6 +1758,7 @@
             }
           },
           "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn",
+          "tax_evaluated": true,
           "authoritative_match": true
         }
       },
@@ -1859,6 +1874,7 @@
             }
           },
           "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn",
+          "tax_evaluated": true,
           "authoritative_match": true
         }
       },
@@ -1974,6 +1990,7 @@
             }
           },
           "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn",
+          "tax_evaluated": true,
           "authoritative_match": true
         }
       },
@@ -2089,6 +2106,7 @@
             }
           },
           "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn",
+          "tax_evaluated": true,
           "authoritative_match": true
         }
       },
@@ -2204,6 +2222,7 @@
             }
           },
           "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn",
+          "tax_evaluated": true,
           "authoritative_match": true
         }
       },
@@ -2319,6 +2338,7 @@
             }
           },
           "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn",
+          "tax_evaluated": true,
           "authoritative_match": true
         }
       },
@@ -2434,6 +2454,7 @@
             }
           },
           "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn",
+          "tax_evaluated": true,
           "authoritative_match": true
         }
       },
@@ -2549,6 +2570,7 @@
             }
           },
           "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn",
+          "tax_evaluated": true,
           "authoritative_match": true
         }
       },
@@ -2664,6 +2686,7 @@
             }
           },
           "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn",
+          "tax_evaluated": true,
           "authoritative_match": true
         }
       },
@@ -2779,6 +2802,7 @@
             }
           },
           "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn",
+          "tax_evaluated": true,
           "authoritative_match": true
         }
       },
@@ -2894,6 +2918,7 @@
             }
           },
           "selection_reason": "bank: only candidate found via exact_txn; invoice: only candidate found via exact_txn",
+          "tax_evaluated": true,
           "authoritative_match": true
         }
       },
@@ -3009,6 +3034,7 @@
             }
           },
           "selection_reason": "bank: only candidate found via exact_txn; invoice: only candidate found via exact_txn",
+          "tax_evaluated": true,
           "authoritative_match": true
         }
       },
@@ -3124,6 +3150,7 @@
             }
           },
           "selection_reason": "bank: only candidate found via exact_txn; invoice: only candidate found via exact_txn",
+          "tax_evaluated": true,
           "authoritative_match": true
         }
       },
@@ -3239,6 +3266,7 @@
             }
           },
           "selection_reason": "bank: only candidate found via exact_txn; invoice: only candidate found via exact_txn",
+          "tax_evaluated": true,
           "authoritative_match": true
         }
       },
@@ -3354,6 +3382,7 @@
             }
           },
           "selection_reason": "bank: only candidate found via exact_txn; invoice: only candidate found via exact_txn",
+          "tax_evaluated": true,
           "authoritative_match": true
         }
       },
@@ -3469,6 +3498,7 @@
             }
           },
           "selection_reason": "bank: only candidate found via exact_txn; invoice: only candidate found via exact_txn",
+          "tax_evaluated": true,
           "authoritative_match": true
         }
       },
@@ -3584,6 +3614,7 @@
             }
           },
           "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn",
+          "tax_evaluated": true,
           "authoritative_match": true
         }
       },
@@ -3699,6 +3730,7 @@
             }
           },
           "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn",
+          "tax_evaluated": true,
           "authoritative_match": true
         }
       },
@@ -3814,6 +3846,7 @@
             }
           },
           "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn",
+          "tax_evaluated": true,
           "authoritative_match": true
         }
       },
@@ -3929,6 +3962,7 @@
             }
           },
           "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn",
+          "tax_evaluated": true,
           "authoritative_match": true
         }
       },
@@ -4044,6 +4078,7 @@
             }
           },
           "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn",
+          "tax_evaluated": true,
           "authoritative_match": true
         }
       },
@@ -4159,6 +4194,7 @@
             }
           },
           "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn",
+          "tax_evaluated": true,
           "authoritative_match": true
         }
       },
@@ -4274,6 +4310,7 @@
             }
           },
           "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn",
+          "tax_evaluated": true,
           "authoritative_match": true
         }
       },
@@ -4389,6 +4426,7 @@
             }
           },
           "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn",
+          "tax_evaluated": true,
           "authoritative_match": true
         }
       },
@@ -4504,6 +4542,7 @@
             }
           },
           "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn",
+          "tax_evaluated": true,
           "authoritative_match": true
         }
       },
@@ -4619,6 +4658,7 @@
             }
           },
           "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn",
+          "tax_evaluated": true,
           "authoritative_match": true
         }
       },
@@ -4734,6 +4774,7 @@
             }
           },
           "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn",
+          "tax_evaluated": true,
           "authoritative_match": true
         }
       },
@@ -4849,6 +4890,7 @@
             }
           },
           "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn",
+          "tax_evaluated": true,
           "authoritative_match": true
         }
       },
@@ -4964,6 +5006,7 @@
             }
           },
           "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn",
+          "tax_evaluated": true,
           "authoritative_match": true
         }
       },
@@ -5079,6 +5122,7 @@
             }
           },
           "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn",
+          "tax_evaluated": true,
           "authoritative_match": true
         }
       },
@@ -5194,6 +5238,7 @@
             }
           },
           "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn",
+          "tax_evaluated": true,
           "authoritative_match": true
         }
       },
@@ -5233,7 +5278,7 @@
           "pg",
           "bank"
         ],
-        "tax_verified": true,
+        "tax_verified": null,
         "exception_code": "MISSING_IN_INVOICE",
         "reason_codes": [
           "MISSING_IN_INVOICE"
@@ -5283,6 +5328,7 @@
             }
           },
           "selection_reason": "bank: only candidate found via exact_utr; invoice: no candidates found",
+          "tax_evaluated": false,
           "authoritative_match": true
         }
       },
@@ -5372,6 +5418,7 @@
             }
           },
           "selection_reason": "bank: no candidates found; invoice: only candidate found via exact_txn",
+          "tax_evaluated": true,
           "authoritative_match": true
         }
       },
@@ -5410,7 +5457,7 @@
           "pg",
           "bank"
         ],
-        "tax_verified": true,
+        "tax_verified": null,
         "exception_code": "MISSING_IN_INVOICE",
         "reason_codes": [
           "MISSING_IN_INVOICE"
@@ -5460,6 +5507,7 @@
             }
           },
           "selection_reason": "bank: only candidate found via exact_utr; invoice: no candidates found",
+          "tax_evaluated": false,
           "authoritative_match": true
         }
       },
@@ -5498,7 +5546,7 @@
           "pg",
           "bank"
         ],
-        "tax_verified": true,
+        "tax_verified": null,
         "exception_code": "MISSING_IN_INVOICE",
         "reason_codes": [
           "MISSING_IN_INVOICE"
@@ -5548,6 +5596,7 @@
             }
           },
           "selection_reason": "bank: only candidate found via exact_utr; invoice: no candidates found",
+          "tax_evaluated": false,
           "authoritative_match": true
         }
       },
@@ -5586,7 +5635,7 @@
           "pg",
           "bank"
         ],
-        "tax_verified": true,
+        "tax_verified": null,
         "exception_code": "MISSING_IN_INVOICE",
         "reason_codes": [
           "MISSING_IN_INVOICE"
@@ -5636,6 +5685,7 @@
             }
           },
           "selection_reason": "bank: only candidate found via exact_utr; invoice: no candidates found",
+          "tax_evaluated": false,
           "authoritative_match": true
         }
       },
@@ -5675,7 +5725,7 @@
           "bank",
           "invoice"
         ],
-        "tax_verified": true,
+        "tax_verified": null,
         "exception_code": "DUPLICATE_DETECTED",
         "reason_codes": [
           "DUPLICATE_DETECTED"
@@ -5750,6 +5800,7 @@
             }
           },
           "selection_reason": "bank: selected from 2 candidates via exact_utr tier; tie-broken by lowest date delta, then expected-net amount delta, then utr; invoice: only candidate found via exact_txn; duplicate candidate set detected; selected pairing is non-authoritative for downstream financial reconciliation",
+          "tax_evaluated": false,
           "authoritative_match": false
         }
       },
@@ -5790,7 +5841,7 @@
           "bank",
           "invoice"
         ],
-        "tax_verified": true,
+        "tax_verified": null,
         "exception_code": "DUPLICATE_DETECTED",
         "reason_codes": [
           "DUPLICATE_DETECTED"
@@ -5865,6 +5916,7 @@
             }
           },
           "selection_reason": "bank: selected from 2 candidates via exact_utr tier; tie-broken by lowest date delta, then expected-net amount delta, then utr; invoice: only candidate found via exact_txn; duplicate candidate set detected; selected pairing is non-authoritative for downstream financial reconciliation",
+          "tax_evaluated": false,
           "authoritative_match": false
         }
       },
@@ -5905,7 +5957,7 @@
           "bank",
           "invoice"
         ],
-        "tax_verified": true,
+        "tax_verified": null,
         "exception_code": "DUPLICATE_DETECTED",
         "reason_codes": [
           "DUPLICATE_DETECTED"
@@ -5980,6 +6032,7 @@
             }
           },
           "selection_reason": "bank: selected from 2 candidates via exact_utr tier; tie-broken by lowest date delta, then expected-net amount delta, then utr; invoice: only candidate found via exact_txn; duplicate candidate set detected; selected pairing is non-authoritative for downstream financial reconciliation",
+          "tax_evaluated": false,
           "authoritative_match": false
         }
       },
@@ -6056,15 +6109,15 @@
               "points_awarded": 20
             },
             "amount_bank": {
-              "pg_expected_net": "12205.00",
-              "bank_amount": "12205.00",
+              "pg_expected_net": "5272.56",
+              "bank_amount": "5272.56",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
             },
             "amount_invoice": {
-              "pg_expected_fee_plus_gst": "295.00",
-              "invoice_amount": "295.00",
+              "pg_expected_fee_plus_gst": "127.44",
+              "invoice_amount": "127.44",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
@@ -6081,20 +6134,21 @@
             },
             "date_points_awarded": 14,
             "utr": {
-              "pg": "UTR347439911",
-              "bank": "UTR347439911",
+              "pg": "UTR199085795",
+              "bank": "UTR199085795",
               "matched": true,
               "points_awarded": 10
             },
             "fee_consistency": {
-              "pg_fee": "250.00",
-              "invoice_fee": "250.00",
+              "pg_fee": "108.00",
+              "invoice_fee": "108.00",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 5
             }
           },
           "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn",
+          "tax_evaluated": true,
           "authoritative_match": true
         }
       },
@@ -6171,15 +6225,15 @@
               "points_awarded": 20
             },
             "amount_bank": {
-              "pg_expected_net": "12205.00",
-              "bank_amount": "12205.00",
+              "pg_expected_net": "5272.56",
+              "bank_amount": "5272.56",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
             },
             "amount_invoice": {
-              "pg_expected_fee_plus_gst": "295.00",
-              "invoice_amount": "295.00",
+              "pg_expected_fee_plus_gst": "127.44",
+              "invoice_amount": "127.44",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
@@ -6196,20 +6250,21 @@
             },
             "date_points_awarded": 14,
             "utr": {
-              "pg": "UTR106280914",
-              "bank": "UTR106280914",
+              "pg": "UTR117768840",
+              "bank": "UTR117768840",
               "matched": true,
               "points_awarded": 10
             },
             "fee_consistency": {
-              "pg_fee": "250.00",
-              "invoice_fee": "250.00",
+              "pg_fee": "108.00",
+              "invoice_fee": "108.00",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 5
             }
           },
           "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn",
+          "tax_evaluated": true,
           "authoritative_match": true
         }
       },
@@ -6286,15 +6341,15 @@
               "points_awarded": 20
             },
             "amount_bank": {
-              "pg_expected_net": "2441.00",
-              "bank_amount": "2441.00",
+              "pg_expected_net": "5272.56",
+              "bank_amount": "5272.56",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
             },
             "amount_invoice": {
-              "pg_expected_fee_plus_gst": "59.00",
-              "invoice_amount": "59.00",
+              "pg_expected_fee_plus_gst": "127.44",
+              "invoice_amount": "127.44",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
@@ -6311,20 +6366,21 @@
             },
             "date_points_awarded": 14,
             "utr": {
-              "pg": "UTR328910784",
-              "bank": "UTR328910784",
+              "pg": "UTR237872754",
+              "bank": "UTR237872754",
               "matched": true,
               "points_awarded": 10
             },
             "fee_consistency": {
-              "pg_fee": "50.00",
-              "invoice_fee": "50.00",
+              "pg_fee": "108.00",
+              "invoice_fee": "108.00",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 5
             }
           },
           "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn",
+          "tax_evaluated": true,
           "authoritative_match": true
         }
       },
@@ -6401,15 +6457,15 @@
               "points_awarded": 20
             },
             "amount_bank": {
-              "pg_expected_net": "2441.00",
-              "bank_amount": "2441.00",
+              "pg_expected_net": "5272.56",
+              "bank_amount": "5272.56",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
             },
             "amount_invoice": {
-              "pg_expected_fee_plus_gst": "59.00",
-              "invoice_amount": "59.00",
+              "pg_expected_fee_plus_gst": "127.44",
+              "invoice_amount": "127.44",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
@@ -6426,20 +6482,21 @@
             },
             "date_points_awarded": 14,
             "utr": {
-              "pg": "UTR406893072",
-              "bank": "UTR406893072",
+              "pg": "UTR131133326",
+              "bank": "UTR131133326",
               "matched": true,
               "points_awarded": 10
             },
             "fee_consistency": {
-              "pg_fee": "50.00",
-              "invoice_fee": "50.00",
+              "pg_fee": "108.00",
+              "invoice_fee": "108.00",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 5
             }
           },
           "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn",
+          "tax_evaluated": true,
           "authoritative_match": true
         }
       },
@@ -6516,15 +6573,15 @@
               "points_awarded": 20
             },
             "amount_bank": {
-              "pg_expected_net": "3124.48",
-              "bank_amount": "3124.48",
+              "pg_expected_net": "12205.00",
+              "bank_amount": "12205.00",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
             },
             "amount_invoice": {
-              "pg_expected_fee_plus_gst": "75.52",
-              "invoice_amount": "75.52",
+              "pg_expected_fee_plus_gst": "295.00",
+              "invoice_amount": "295.00",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
@@ -6541,20 +6598,21 @@
             },
             "date_points_awarded": 14,
             "utr": {
-              "pg": "UTR531153970",
-              "bank": "UTR531153970",
+              "pg": "UTR949300219",
+              "bank": "UTR949300219",
               "matched": true,
               "points_awarded": 10
             },
             "fee_consistency": {
-              "pg_fee": "64.00",
-              "invoice_fee": "64.00",
+              "pg_fee": "250.00",
+              "invoice_fee": "250.00",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 5
             }
           },
           "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn",
+          "tax_evaluated": true,
           "authoritative_match": true
         }
       },
@@ -6631,15 +6689,15 @@
               "points_awarded": 20
             },
             "amount_bank": {
-              "pg_expected_net": "3124.48",
-              "bank_amount": "3124.48",
+              "pg_expected_net": "12205.00",
+              "bank_amount": "12205.00",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
             },
             "amount_invoice": {
-              "pg_expected_fee_plus_gst": "75.52",
-              "invoice_amount": "75.52",
+              "pg_expected_fee_plus_gst": "295.00",
+              "invoice_amount": "295.00",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
@@ -6656,20 +6714,21 @@
             },
             "date_points_awarded": 14,
             "utr": {
-              "pg": "UTR572616741",
-              "bank": "UTR572616741",
+              "pg": "UTR712882239",
+              "bank": "UTR712882239",
               "matched": true,
               "points_awarded": 10
             },
             "fee_consistency": {
-              "pg_fee": "64.00",
-              "invoice_fee": "64.00",
+              "pg_fee": "250.00",
+              "invoice_fee": "250.00",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 5
             }
           },
           "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn",
+          "tax_evaluated": true,
           "authoritative_match": true
         }
       },
@@ -6812,15 +6871,15 @@
               "points_awarded": 20
             },
             "amount_bank": {
-              "pg_expected_net": "976.40",
-              "bank_amount": "926.40",
+              "pg_expected_net": "5267.16",
+              "bank_amount": "5217.16",
               "delta": "50.00",
               "matched": false,
               "points_awarded": 0
             },
             "amount_invoice": {
-              "pg_expected_fee_plus_gst": "23.60",
-              "invoice_amount": "23.60",
+              "pg_expected_fee_plus_gst": "127.44",
+              "invoice_amount": "127.44",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
@@ -6837,20 +6896,21 @@
             },
             "date_points_awarded": 0,
             "utr": {
-              "pg": "UTR812408287",
+              "pg": "UTR437924120",
               "bank": null,
               "matched": false,
               "points_awarded": 0
             },
             "fee_consistency": {
-              "pg_fee": "20.00",
-              "invoice_fee": "20.00",
+              "pg_fee": "108.00",
+              "invoice_fee": "108.00",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 5
             }
           },
           "selection_reason": "bank: only candidate found via exact_txn; invoice: only candidate found via exact_txn; selected pairing is non-authoritative for downstream financial reconciliation",
+          "tax_evaluated": true,
           "authoritative_match": false
         }
       },
@@ -6927,15 +6987,15 @@
               "points_awarded": 20
             },
             "amount_bank": {
-              "pg_expected_net": "976.40",
-              "bank_amount": "926.40",
+              "pg_expected_net": "868.11",
+              "bank_amount": "818.11",
               "delta": "50.00",
               "matched": false,
               "points_awarded": 0
             },
             "amount_invoice": {
-              "pg_expected_fee_plus_gst": "23.60",
-              "invoice_amount": "23.60",
+              "pg_expected_fee_plus_gst": "21.00",
+              "invoice_amount": "21.00",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
@@ -6952,20 +7012,21 @@
             },
             "date_points_awarded": 0,
             "utr": {
-              "pg": "UTR839148362",
+              "pg": "UTR789759261",
               "bank": null,
               "matched": false,
               "points_awarded": 0
             },
             "fee_consistency": {
-              "pg_fee": "20.00",
-              "invoice_fee": "20.00",
+              "pg_fee": "17.80",
+              "invoice_fee": "17.80",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 5
             }
           },
           "selection_reason": "bank: only candidate found via exact_txn; invoice: only candidate found via exact_txn; selected pairing is non-authoritative for downstream financial reconciliation",
+          "tax_evaluated": true,
           "authoritative_match": false
         }
       },

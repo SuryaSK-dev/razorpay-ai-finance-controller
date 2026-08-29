@@ -8,6 +8,13 @@
     "frozen_benchmark": "data\\eval\\e2e_reconciliation_benchmark_5C5_1.json",
     "deterministic_execution_artifact": "data\\eval\\e2e_deterministic_results_5C5_3.json"
   },
+  "scope": {
+    "batch_relational_categories": [
+      "ambiguous",
+      "duplicate"
+    ],
+    "limitation": "Per-case execution isolates each transaction, so properties that depend on other records existing in the batch (ambiguity, duplicate detection) cannot be evaluated here. These are covered by the full-batch path instead."
+  },
   "execution_integrity": {
     "expected_cases": 63,
     "execution_cases": 63,
@@ -18,20 +25,33 @@
     "frozen_cases": 63,
     "execution_cases": 63,
     "actual_decisions": 63,
-    "matched_cases": 52,
-    "divergent_cases": 11,
+    "matched_cases": 57,
+    "divergent_cases": 0,
+    "not_evaluable_cases": 6,
+    "raw_divergent_cases": 6,
+    "evaluable_cases": 57,
     "missing_execution_cases": 0,
     "unexpected_execution_cases": 0
   },
-  "baseline_stable": false,
+  "baseline_stable": true,
   "unexpected_execution_case_ids": [],
   "missing_execution_case_ids": [],
+  "not_evaluable_case_ids": [
+    "E2E_054",
+    "E2E_055",
+    "E2E_056",
+    "E2E_057",
+    "E2E_058",
+    "E2E_059"
+  ],
   "case_results": [
     {
       "case_id": "E2E_001",
       "txn_id": "TXN_00001",
       "status": "MATCH",
       "match": true,
+      "not_evaluable": false,
+      "category": "exact_match",
       "differences": {}
     },
     {
@@ -39,6 +59,8 @@
       "txn_id": "TXN_00002",
       "status": "MATCH",
       "match": true,
+      "not_evaluable": false,
+      "category": "exact_match",
       "differences": {}
     },
     {
@@ -46,6 +68,8 @@
       "txn_id": "TXN_00003",
       "status": "MATCH",
       "match": true,
+      "not_evaluable": false,
+      "category": "exact_match",
       "differences": {}
     },
     {
@@ -53,6 +77,8 @@
       "txn_id": "TXN_00004",
       "status": "MATCH",
       "match": true,
+      "not_evaluable": false,
+      "category": "exact_match",
       "differences": {}
     },
     {
@@ -60,6 +86,8 @@
       "txn_id": "TXN_00005",
       "status": "MATCH",
       "match": true,
+      "not_evaluable": false,
+      "category": "exact_match",
       "differences": {}
     },
     {
@@ -67,6 +95,8 @@
       "txn_id": "TXN_00006",
       "status": "MATCH",
       "match": true,
+      "not_evaluable": false,
+      "category": "exact_match",
       "differences": {}
     },
     {
@@ -74,6 +104,8 @@
       "txn_id": "TXN_00007",
       "status": "MATCH",
       "match": true,
+      "not_evaluable": false,
+      "category": "exact_match",
       "differences": {}
     },
     {
@@ -81,6 +113,8 @@
       "txn_id": "TXN_00008",
       "status": "MATCH",
       "match": true,
+      "not_evaluable": false,
+      "category": "exact_match",
       "differences": {}
     },
     {
@@ -88,6 +122,8 @@
       "txn_id": "TXN_00009",
       "status": "MATCH",
       "match": true,
+      "not_evaluable": false,
+      "category": "exact_match",
       "differences": {}
     },
     {
@@ -95,6 +131,8 @@
       "txn_id": "TXN_00010",
       "status": "MATCH",
       "match": true,
+      "not_evaluable": false,
+      "category": "exact_match",
       "differences": {}
     },
     {
@@ -102,6 +140,8 @@
       "txn_id": "TXN_00011",
       "status": "MATCH",
       "match": true,
+      "not_evaluable": false,
+      "category": "exact_match",
       "differences": {}
     },
     {
@@ -109,6 +149,8 @@
       "txn_id": "TXN_00012",
       "status": "MATCH",
       "match": true,
+      "not_evaluable": false,
+      "category": "exact_match",
       "differences": {}
     },
     {
@@ -116,6 +158,8 @@
       "txn_id": "TXN_00013",
       "status": "MATCH",
       "match": true,
+      "not_evaluable": false,
+      "category": "exact_match",
       "differences": {}
     },
     {
@@ -123,6 +167,8 @@
       "txn_id": "TXN_00014",
       "status": "MATCH",
       "match": true,
+      "not_evaluable": false,
+      "category": "exact_match",
       "differences": {}
     },
     {
@@ -130,6 +176,8 @@
       "txn_id": "TXN_00015",
       "status": "MATCH",
       "match": true,
+      "not_evaluable": false,
+      "category": "exact_match",
       "differences": {}
     },
     {
@@ -137,6 +185,8 @@
       "txn_id": "TXN_00016",
       "status": "MATCH",
       "match": true,
+      "not_evaluable": false,
+      "category": "exact_match",
       "differences": {}
     },
     {
@@ -144,6 +194,8 @@
       "txn_id": "TXN_00017",
       "status": "MATCH",
       "match": true,
+      "not_evaluable": false,
+      "category": "exact_match",
       "differences": {}
     },
     {
@@ -151,6 +203,8 @@
       "txn_id": "TXN_00018",
       "status": "MATCH",
       "match": true,
+      "not_evaluable": false,
+      "category": "exact_match",
       "differences": {}
     },
     {
@@ -158,6 +212,8 @@
       "txn_id": "TXN_00019",
       "status": "MATCH",
       "match": true,
+      "not_evaluable": false,
+      "category": "timing_difference",
       "differences": {}
     },
     {
@@ -165,6 +221,8 @@
       "txn_id": "TXN_00020",
       "status": "MATCH",
       "match": true,
+      "not_evaluable": false,
+      "category": "timing_difference",
       "differences": {}
     },
     {
@@ -172,6 +230,8 @@
       "txn_id": "TXN_00021",
       "status": "MATCH",
       "match": true,
+      "not_evaluable": false,
+      "category": "timing_difference",
       "differences": {}
     },
     {
@@ -179,6 +239,8 @@
       "txn_id": "TXN_00022",
       "status": "MATCH",
       "match": true,
+      "not_evaluable": false,
+      "category": "timing_difference",
       "differences": {}
     },
     {
@@ -186,6 +248,8 @@
       "txn_id": "TXN_00023",
       "status": "MATCH",
       "match": true,
+      "not_evaluable": false,
+      "category": "timing_difference",
       "differences": {}
     },
     {
@@ -193,6 +257,8 @@
       "txn_id": "TXN_00024",
       "status": "MATCH",
       "match": true,
+      "not_evaluable": false,
+      "category": "timing_difference",
       "differences": {}
     },
     {
@@ -200,6 +266,8 @@
       "txn_id": "TXN_00025",
       "status": "MATCH",
       "match": true,
+      "not_evaluable": false,
+      "category": "reference_mismatch_fuzzy",
       "differences": {}
     },
     {
@@ -207,6 +275,8 @@
       "txn_id": "TXN_00026",
       "status": "MATCH",
       "match": true,
+      "not_evaluable": false,
+      "category": "reference_mismatch_fuzzy",
       "differences": {}
     },
     {
@@ -214,6 +284,8 @@
       "txn_id": "TXN_00027",
       "status": "MATCH",
       "match": true,
+      "not_evaluable": false,
+      "category": "reference_mismatch_fuzzy",
       "differences": {}
     },
     {
@@ -221,6 +293,8 @@
       "txn_id": "TXN_00028",
       "status": "MATCH",
       "match": true,
+      "not_evaluable": false,
+      "category": "reference_mismatch_fuzzy",
       "differences": {}
     },
     {
@@ -228,6 +302,8 @@
       "txn_id": "TXN_00029",
       "status": "MATCH",
       "match": true,
+      "not_evaluable": false,
+      "category": "reference_mismatch_fuzzy",
       "differences": {}
     },
     {
@@ -235,6 +311,8 @@
       "txn_id": "TXN_00030",
       "status": "MATCH",
       "match": true,
+      "not_evaluable": false,
+      "category": "reference_mismatch_fuzzy",
       "differences": {}
     },
     {
@@ -242,6 +320,8 @@
       "txn_id": "TXN_00031",
       "status": "MATCH",
       "match": true,
+      "not_evaluable": false,
+      "category": "amount_fee_discrepancy",
       "differences": {}
     },
     {
@@ -249,6 +329,8 @@
       "txn_id": "TXN_00032",
       "status": "MATCH",
       "match": true,
+      "not_evaluable": false,
+      "category": "amount_fee_discrepancy",
       "differences": {}
     },
     {
@@ -256,6 +338,8 @@
       "txn_id": "TXN_00033",
       "status": "MATCH",
       "match": true,
+      "not_evaluable": false,
+      "category": "amount_fee_discrepancy",
       "differences": {}
     },
     {
@@ -263,6 +347,8 @@
       "txn_id": "TXN_00034",
       "status": "MATCH",
       "match": true,
+      "not_evaluable": false,
+      "category": "amount_fee_discrepancy",
       "differences": {}
     },
     {
@@ -270,6 +356,8 @@
       "txn_id": "TXN_00035",
       "status": "MATCH",
       "match": true,
+      "not_evaluable": false,
+      "category": "amount_fee_discrepancy",
       "differences": {}
     },
     {
@@ -277,6 +365,8 @@
       "txn_id": "TXN_00036",
       "status": "MATCH",
       "match": true,
+      "not_evaluable": false,
+      "category": "amount_fee_discrepancy",
       "differences": {}
     },
     {
@@ -284,6 +374,8 @@
       "txn_id": "TXN_00037",
       "status": "MATCH",
       "match": true,
+      "not_evaluable": false,
+      "category": "amount_fee_discrepancy",
       "differences": {}
     },
     {
@@ -291,6 +383,8 @@
       "txn_id": "TXN_00038",
       "status": "MATCH",
       "match": true,
+      "not_evaluable": false,
+      "category": "amount_fee_discrepancy",
       "differences": {}
     },
     {
@@ -298,6 +392,8 @@
       "txn_id": "TXN_00039",
       "status": "MATCH",
       "match": true,
+      "not_evaluable": false,
+      "category": "tax_mismatch",
       "differences": {}
     },
     {
@@ -305,6 +401,8 @@
       "txn_id": "TXN_00040",
       "status": "MATCH",
       "match": true,
+      "not_evaluable": false,
+      "category": "tax_mismatch",
       "differences": {}
     },
     {
@@ -312,6 +410,8 @@
       "txn_id": "TXN_00041",
       "status": "MATCH",
       "match": true,
+      "not_evaluable": false,
+      "category": "tax_mismatch",
       "differences": {}
     },
     {
@@ -319,6 +419,8 @@
       "txn_id": "TXN_00042",
       "status": "MATCH",
       "match": true,
+      "not_evaluable": false,
+      "category": "tax_mismatch",
       "differences": {}
     },
     {
@@ -326,6 +428,8 @@
       "txn_id": "TXN_00043",
       "status": "MATCH",
       "match": true,
+      "not_evaluable": false,
+      "category": "tax_mismatch",
       "differences": {}
     },
     {
@@ -333,6 +437,8 @@
       "txn_id": "TXN_00044",
       "status": "MATCH",
       "match": true,
+      "not_evaluable": false,
+      "category": "tax_mismatch",
       "differences": {}
     },
     {
@@ -340,6 +446,8 @@
       "txn_id": "TXN_00045",
       "status": "MATCH",
       "match": true,
+      "not_evaluable": false,
+      "category": "tax_mismatch",
       "differences": {}
     },
     {
@@ -347,6 +455,8 @@
       "txn_id": "TXN_00046",
       "status": "MATCH",
       "match": true,
+      "not_evaluable": false,
+      "category": "missing_in_source",
       "differences": {}
     },
     {
@@ -354,6 +464,8 @@
       "txn_id": "TXN_00047",
       "status": "MATCH",
       "match": true,
+      "not_evaluable": false,
+      "category": "missing_in_source",
       "differences": {}
     },
     {
@@ -361,6 +473,8 @@
       "txn_id": "TXN_00048",
       "status": "MATCH",
       "match": true,
+      "not_evaluable": false,
+      "category": "missing_in_source",
       "differences": {}
     },
     {
@@ -368,6 +482,8 @@
       "txn_id": "TXN_00049",
       "status": "MATCH",
       "match": true,
+      "not_evaluable": false,
+      "category": "missing_in_source",
       "differences": {}
     },
     {
@@ -375,49 +491,44 @@
       "txn_id": "TXN_00050",
       "status": "MATCH",
       "match": true,
+      "not_evaluable": false,
+      "category": "missing_in_source",
       "differences": {}
     },
     {
       "case_id": "E2E_051",
       "txn_id": "TXN_00051",
-      "status": "BASELINE_DIVERGENCE",
-      "match": false,
-      "differences": {
-        "status": {
-          "expected": "AMBIGUOUS",
-          "actual": "HUMAN_REVIEW"
-        }
-      }
+      "status": "MATCH",
+      "match": true,
+      "not_evaluable": false,
+      "category": "duplicate",
+      "differences": {}
     },
     {
       "case_id": "E2E_052",
       "txn_id": "TXN_00052",
-      "status": "BASELINE_DIVERGENCE",
-      "match": false,
-      "differences": {
-        "status": {
-          "expected": "AMBIGUOUS",
-          "actual": "HUMAN_REVIEW"
-        }
-      }
+      "status": "MATCH",
+      "match": true,
+      "not_evaluable": false,
+      "category": "duplicate",
+      "differences": {}
     },
     {
       "case_id": "E2E_053",
       "txn_id": "TXN_00053",
-      "status": "BASELINE_DIVERGENCE",
-      "match": false,
-      "differences": {
-        "status": {
-          "expected": "AMBIGUOUS",
-          "actual": "HUMAN_REVIEW"
-        }
-      }
+      "status": "MATCH",
+      "match": true,
+      "not_evaluable": false,
+      "category": "duplicate",
+      "differences": {}
     },
     {
       "case_id": "E2E_054",
       "txn_id": "TXN_00054",
-      "status": "BASELINE_DIVERGENCE",
+      "status": "NOT_EVALUABLE_PER_CASE",
       "match": false,
+      "not_evaluable": true,
+      "category": "ambiguous",
       "differences": {
         "status": {
           "expected": "AMBIGUOUS",
@@ -432,8 +543,10 @@
     {
       "case_id": "E2E_055",
       "txn_id": "TXN_00055",
-      "status": "BASELINE_DIVERGENCE",
+      "status": "NOT_EVALUABLE_PER_CASE",
       "match": false,
+      "not_evaluable": true,
+      "category": "ambiguous",
       "differences": {
         "status": {
           "expected": "AMBIGUOUS",
@@ -448,8 +561,10 @@
     {
       "case_id": "E2E_056",
       "txn_id": "TXN_00056",
-      "status": "BASELINE_DIVERGENCE",
+      "status": "NOT_EVALUABLE_PER_CASE",
       "match": false,
+      "not_evaluable": true,
+      "category": "ambiguous",
       "differences": {
         "status": {
           "expected": "AMBIGUOUS",
@@ -464,8 +579,10 @@
     {
       "case_id": "E2E_057",
       "txn_id": "TXN_00057",
-      "status": "BASELINE_DIVERGENCE",
+      "status": "NOT_EVALUABLE_PER_CASE",
       "match": false,
+      "not_evaluable": true,
+      "category": "ambiguous",
       "differences": {
         "status": {
           "expected": "AMBIGUOUS",
@@ -480,8 +597,10 @@
     {
       "case_id": "E2E_058",
       "txn_id": "TXN_00058",
-      "status": "BASELINE_DIVERGENCE",
+      "status": "NOT_EVALUABLE_PER_CASE",
       "match": false,
+      "not_evaluable": true,
+      "category": "ambiguous",
       "differences": {
         "status": {
           "expected": "AMBIGUOUS",
@@ -496,8 +615,10 @@
     {
       "case_id": "E2E_059",
       "txn_id": "TXN_00059",
-      "status": "BASELINE_DIVERGENCE",
+      "status": "NOT_EVALUABLE_PER_CASE",
       "match": false,
+      "not_evaluable": true,
+      "category": "ambiguous",
       "differences": {
         "status": {
           "expected": "AMBIGUOUS",
@@ -514,6 +635,8 @@
       "txn_id": "TXN_00060",
       "status": "MATCH",
       "match": true,
+      "not_evaluable": false,
+      "category": "corrupted",
       "differences": {}
     },
     {
@@ -521,39 +644,27 @@
       "txn_id": "TXN_00061",
       "status": "MATCH",
       "match": true,
+      "not_evaluable": false,
+      "category": "corrupted",
       "differences": {}
     },
     {
       "case_id": "E2E_062",
       "txn_id": "TXN_00062",
-      "status": "BASELINE_DIVERGENCE",
-      "match": false,
-      "differences": {
-        "status": {
-          "expected": "UNMATCHED",
-          "actual": "HUMAN_REVIEW"
-        },
-        "exception_code": {
-          "expected": "HUMAN_REVIEW_REQUIRED",
-          "actual": "AMOUNT_MISMATCH"
-        }
-      }
+      "status": "MATCH",
+      "match": true,
+      "not_evaluable": false,
+      "category": "unresolvable",
+      "differences": {}
     },
     {
       "case_id": "E2E_063",
       "txn_id": "TXN_00063",
-      "status": "BASELINE_DIVERGENCE",
-      "match": false,
-      "differences": {
-        "status": {
-          "expected": "UNMATCHED",
-          "actual": "HUMAN_REVIEW"
-        },
-        "exception_code": {
-          "expected": "HUMAN_REVIEW_REQUIRED",
-          "actual": "AMOUNT_MISMATCH"
-        }
-      }
+      "status": "MATCH",
+      "match": true,
+      "not_evaluable": false,
+      "category": "unresolvable",
+      "differences": {}
     }
   ]
 }

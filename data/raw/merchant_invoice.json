@@ -12,10 +12,10 @@
   {
     "invoice_id": "INV_TXN_00059",
     "txn_id": "TXN_00059",
-    "irn": "000000000000000000000000000000000000000000000000000c8318a24be67a",
-    "gstin": "29AAAAA0013A1Z5",
-    "invoice_amount": "75.52",
-    "claimed_gst": "11.52",
+    "irn": "000000000000000000000000000000000000000000000000000c977c254e648a",
+    "gstin": "29AAAAA0011A1Z5",
+    "invoice_amount": "295.00",
+    "claimed_gst": "45.00",
     "claimed_tds": "0.00",
     "period": "2026-08"
   },
@@ -42,10 +42,10 @@
   {
     "invoice_id": "INV_TXN_00056",
     "txn_id": "TXN_00056",
-    "irn": "000000000000000000000000000000000000000000000000000d5c674442854d",
-    "gstin": "29AAAAA0013A1Z5",
-    "invoice_amount": "59.00",
-    "claimed_gst": "9.00",
+    "irn": "0000000000000000000000000000000000000000000000000013e110f33dc658",
+    "gstin": "29AAAAA0006A1Z5",
+    "invoice_amount": "127.44",
+    "claimed_gst": "19.44",
     "claimed_tds": "0.00",
     "period": "2026-08"
   },
@@ -82,10 +82,10 @@
   {
     "invoice_id": "INV_TXN_00055",
     "txn_id": "TXN_00055",
-    "irn": "00000000000000000000000000000000000000000000000000162d87350593f6",
-    "gstin": "29AAAAA0009A1Z5",
-    "invoice_amount": "295.00",
-    "claimed_gst": "45.00",
+    "irn": "000000000000000000000000000000000000000000000000001ccf0739c6c140",
+    "gstin": "29AAAAA0004A1Z5",
+    "invoice_amount": "127.44",
+    "claimed_gst": "19.44",
     "claimed_tds": "0.00",
     "period": "2026-08"
   },
@@ -132,11 +132,11 @@
   {
     "invoice_id": "INV_TXN_00062",
     "txn_id": "TXN_00062",
-    "irn": "00000000000000000000000000000000000000000000000000101bc46027bf0c",
-    "gstin": "29AAAAA0012A1Z5",
-    "invoice_amount": "23.60",
-    "claimed_gst": "3.60",
-    "claimed_tds": "0.00",
+    "irn": "0000000000000000000000000000000000000000000000000012cf7f0938ac12",
+    "gstin": "29AAAAA0002A1Z5",
+    "invoice_amount": "127.44",
+    "claimed_gst": "19.44",
+    "claimed_tds": "5.40",
     "period": "2026-08"
   },
   {
@@ -243,19 +243,19 @@
     "invoice_id": "INV_TXN_00058",
     "txn_id": "TXN_00058",
     "irn": "0000000000000000000000000000000000000000000000000018b05c5f193147",
-    "gstin": "29AAAAA0015A1Z5",
-    "invoice_amount": "75.52",
-    "claimed_gst": "11.52",
+    "gstin": "29AAAAA0014A1Z5",
+    "invoice_amount": "295.00",
+    "claimed_gst": "45.00",
     "claimed_tds": "0.00",
     "period": "2026-08"
   },
   {
     "invoice_id": "INV_TXN_00060",
     "txn_id": "TXN_00060",
-    "irn": "000000000000000000000000000000000000000000000000001ebdc09d6deffd",
+    "irn": "000000000000000000000000000000000000000000000000001851828f7c1d63",
     "gstin": "29AAAAA0009A1Z5",
-    "invoice_amount": "127.44",
-    "claimed_gst": "19.44",
+    "invoice_amount": "23.60",
+    "claimed_gst": "3.60",
     "claimed_tds": "0.00",
     "period": "2026-08"
   },
@@ -432,10 +432,10 @@
   {
     "invoice_id": "INV_TXN_00054",
     "txn_id": "TXN_00054",
-    "irn": "0000000000000000000000000000000000000000000000000020f00de519d59f",
-    "gstin": "29AAAAA0015A1Z5",
-    "invoice_amount": "295.00",
-    "claimed_gst": "45.00",
+    "irn": "000000000000000000000000000000000000000000000000001576a48fdafd31",
+    "gstin": "29AAAAA0012A1Z5",
+    "invoice_amount": "127.44",
+    "claimed_gst": "19.44",
     "claimed_tds": "0.00",
     "period": "2026-08"
   },
@@ -452,20 +452,20 @@
   {
     "invoice_id": "INV_TXN_00063",
     "txn_id": "TXN_00063",
-    "irn": "0000000000000000000000000000000000000000000000000011576e62146cd4",
-    "gstin": "29AAAAA0008A1Z5",
-    "invoice_amount": "23.60",
-    "claimed_gst": "3.60",
-    "claimed_tds": "0.00",
+    "irn": "000000000000000000000000000000000000000000000000000ae8a31315f825",
+    "gstin": "29AAAAA0002A1Z5",
+    "invoice_amount": "21.00",
+    "claimed_gst": "3.20",
+    "claimed_tds": "0.89",
     "period": "2026-08"
   },
   {
     "invoice_id": "INV_TXN_00057",
     "txn_id": "TXN_00057",
-    "irn": "00000000000000000000000000000000000000000000000000102396128809f6",
-    "gstin": "29AAAAA0009A1Z5",
-    "invoice_amount": "59.00",
-    "claimed_gst": "9.00",
+    "irn": "00000000000000000000000000000000000000000000000000210acb09773ca6",
+    "gstin": "29AAAAA0008A1Z5",
+    "invoice_amount": "127.44",
+    "claimed_gst": "19.44",
     "claimed_tds": "0.00",
     "period": "2026-08"
   },
@@ -522,11 +522,11 @@
   {
     "invoice_id": "INV_TXN_00061",
     "txn_id": "TXN_00061",
-    "irn": "0000000000000000000000000000000000000000000000000006b2ff58dffa6f",
-    "gstin": "29AAAAA0012A1Z5",
+    "irn": "000000000000000000000000000000000000000000000000001e1d028b2a686a",
+    "gstin": "29AAAAA0003A1Z5",
     "invoice_amount": "21.00",
     "claimed_gst": "3.20",
-    "claimed_tds": "0.00",
+    "claimed_tds": "0.89",
     "period": "2026-08"
   },
   {

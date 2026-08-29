@@ -60,6 +60,43 @@ from src.exceptions.decision_table import DecisionContext, evaluate
 _MONEY_TOLERANCE = Decimal("0.01")
 
 
+def _tax_was_evaluated(context: DecisionContext) -> bool:
+    """
+    Whether deterministic tax verification actually executed.
+
+    This mirrors the `tax_evaluable` gate inside _build_context()
+    exactly. It is factored out as a named predicate because two
+    separate consumers need it and they must never drift apart:
+
+        1. _build_context() -- decides whether to CALL verify_tax()
+        2. decide()         -- decides whether tax_verified is a
+                               meaningful boolean or None
+
+    FIX (C4): previously only `no_candidates_found` produced
+    tax_verified=None. Every other non-evaluated path -- missing
+    invoice, ambiguous identity, duplicate identity -- left
+    gst_mismatch/tds_mismatch/tax_unverifiable at their False defaults,
+    which then read as "verified clean" downstream.
+
+    A PARTIAL_MATCH transaction with no invoice at all therefore
+    reported tax_verified=True, asserting that tax had been checked and
+    passed when verify_tax() was never called. That is a fail-open in
+    the reporting layer, and it feeds the explanation contracts -- so
+    the agent could tell a finance operator that tax is verified on a
+    transaction that has no invoice to verify against.
+
+    None is the honest third state: not verified, not failed, not
+    evaluated.
+    """
+
+    return not (
+        context.no_candidates_found
+        or context.missing_invoice
+        or context.is_ambiguous
+        or context.duplicate_detected
+    )
+
+
 def _build_context(
     match_result: MatchResult,
     seller_annual_gross: Optional[Decimal],
@@ -417,8 +454,25 @@ def decide(
     # ------------------------------------------------------------------
     # TAX VERIFIED OUTPUT
     # ------------------------------------------------------------------
+    #
+    # FIX (C4): tax_verified is a THREE-state field.
+    #
+    #     True  -- verify_tax() ran and every control passed
+    #     False -- verify_tax() ran and at least one control failed
+    #     None  -- verify_tax() never ran; nothing is claimed
+    #
+    # Deriving it purely from the mismatch flags was wrong, because
+    # those flags default to False when tax verification is skipped.
+    # "No mismatch was recorded" is not the same fact as "tax was
+    # checked and is correct", and conflating them let a transaction
+    # with no invoice report tax_verified=True.
+    #
+    # _tax_was_evaluated() mirrors the tax_evaluable gate in
+    # _build_context() so the two can never disagree about whether
+    # verification actually happened.
+    # ------------------------------------------------------------------
 
-    if context.no_candidates_found:
+    if not _tax_was_evaluated(context):
         tax_verified: Optional[bool] = None
     else:
         tax_verified = (
@@ -444,6 +498,11 @@ def decide(
             "context": context.__dict__,
             "match_signals": match_result.score.signals,
             "selection_reason": match_result.selection_reason,
+
+            # Explicit audit trail for the three-state tax field. A
+            # reviewer must be able to tell "not evaluated" apart from
+            # "evaluated and clean" without re-deriving the gate.
+            "tax_evaluated": _tax_was_evaluated(context),
 
             # Preserve the engine's authority signal as audit evidence
             # without using it as a second decision gate.

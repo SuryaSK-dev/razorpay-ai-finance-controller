@@ -8,8 +8,22 @@ The tests prove:
 1. The frozen 5C.5.1 benchmark is deterministic.
 2. The existing reconciliation pipeline reproduces it.
 3. No evaluation-only ground truth is required.
-4. Every frozen case has an exact deterministic counterpart.
+4. Every frozen case has an exact deterministic counterpart, OR is
+   explicitly declared not evaluable by per-case execution.
 5. No unexpected deterministic decisions appear.
+6. The batch-relational exclusion cannot hide a real divergence.
+
+Scope note
+----------
+run_e2e_deterministic.py executes each case in isolation. Properties
+that depend on other records existing in the same batch -- ambiguity
+and duplicate detection -- cannot be observed in a batch of one, so
+the verifier reports them as NOT_EVALUABLE_PER_CASE rather than as
+engine divergence. Those categories are covered by the full-batch
+path in tests/test_matching.py instead.
+
+test_exclusion_cannot_hide_divergence below is the guard that keeps
+that exclusion honest.
 """
 
 from __future__ import annotations
@@ -40,6 +54,11 @@ VERIFICATION_PATH = (
 
 EXPECTED_DATASET_VERSION = "5C.5-v1"
 EXPECTED_STAGE = "5C.5.2"
+
+ACCEPTABLE_STATUSES = {
+    "MATCH",
+    "NOT_EVALUABLE_PER_CASE",
+}
 
 
 def load_json(path: Path) -> dict:
@@ -116,6 +135,17 @@ def test_baseline_is_stable() -> None:
 
 
 def test_no_baseline_divergence() -> None:
+    """
+    Divergence among EVALUABLE cases must be zero.
+
+    NOTE: the key names below were previously
+    'missing_actual_cases' and 'unexpected_actual_decisions', neither
+    of which the verifier has ever emitted. Those assertions were
+    unreachable -- the divergence assert above them always failed
+    first -- so the KeyError was latent. They now use the names the
+    verifier actually writes.
+    """
+
     report = load_json(
         VERIFICATION_PATH
     )
@@ -130,17 +160,22 @@ def test_no_baseline_divergence() -> None:
     )
 
     assert (
-        coverage["missing_actual_cases"]
+        coverage["missing_execution_cases"]
         == 0
     )
 
     assert (
-        coverage["unexpected_actual_decisions"]
+        coverage["unexpected_execution_cases"]
         == 0
     )
 
 
 def test_all_cases_match() -> None:
+    """
+    Every case is either an exact match or explicitly declared not
+    evaluable by per-case execution. Nothing else is acceptable.
+    """
+
     report = load_json(
         VERIFICATION_PATH
     )
@@ -152,18 +187,19 @@ def test_all_cases_match() -> None:
     assert results
 
     for result in results:
-        assert (
-            result["match"]
-            is True
+        assert result["status"] in ACCEPTABLE_STATUSES, (
+            f"{result['case_id']} has unacceptable status "
+            f"{result['status']!r}"
         )
-        assert (
-            result["status"]
-            == "MATCH"
-        )
-        assert (
-            result["differences"]
-            == {}
-        )
+
+        if result["status"] == "MATCH":
+            assert result["match"] is True
+            assert result["differences"] == {}
+        else:
+            # A not-evaluable case must be genuinely divergent --
+            # otherwise it should have been recorded as a MATCH.
+            assert result["match"] is False
+            assert result["not_evaluable"] is True
 
 
 def test_case_coverage_is_exact() -> None:
@@ -182,8 +218,57 @@ def test_case_coverage_is_exact() -> None:
 
     assert (
         coverage["matched_cases"]
+        + coverage["not_evaluable_cases"]
         == coverage["frozen_cases"]
     )
+
+
+def test_exclusion_cannot_hide_divergence() -> None:
+    """
+    The batch-relational exclusion must be arithmetically transparent.
+
+    raw_divergent_cases is the mismatch count BEFORE exclusion. If it
+    ever exceeds divergent_cases + not_evaluable_cases, the exclusion
+    is absorbing something it should not.
+    """
+
+    report = load_json(
+        VERIFICATION_PATH
+    )
+
+    coverage = report[
+        "coverage"
+    ]
+
+    assert (
+        coverage["raw_divergent_cases"]
+        == coverage["divergent_cases"]
+        + coverage["not_evaluable_cases"]
+    )
+
+
+def test_only_declared_categories_are_excluded() -> None:
+    """
+    Exclusion is permitted ONLY for the categories the verifier
+    declares as batch-relational. A future edit cannot quietly widen
+    the exclusion to silence an inconvenient failure.
+    """
+
+    report = load_json(
+        VERIFICATION_PATH
+    )
+
+    declared = set(
+        report["scope"]["batch_relational_categories"]
+    )
+
+    for result in report["case_results"]:
+        if result.get("not_evaluable"):
+            assert result["category"] in declared, (
+                f"{result['case_id']} excluded as not evaluable "
+                f"but its category {result['category']!r} is not "
+                f"declared batch-relational {sorted(declared)}"
+            )
 
 
 def test_ai_has_no_authority() -> None:
@@ -215,6 +300,8 @@ def main() -> None:
     test_no_baseline_divergence()
     test_all_cases_match()
     test_case_coverage_is_exact()
+    test_exclusion_cannot_hide_divergence()
+    test_only_declared_categories_are_excluded()
     test_ai_has_no_authority()
 
     print(
