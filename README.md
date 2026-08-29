@@ -207,6 +207,30 @@ happened, it was the harness. See below.
 adversarial: ten anomaly categories with only 18 clean records by construction. **A high
 match rate here would mean the exceptions were not being caught.**
 
+### Measured accuracy — against independent ground truth
+
+| Measure | Result |
+|---|---|
+| Status accuracy | **61/61 (100%)** |
+| Exception-code accuracy | **61/61 (100%)** |
+| Records rejected at ingestion | 2 (corrupted — counted, not dropped) |
+| Divergences | 0 |
+
+Every category at 100%, including the six ambiguous cases the per-case
+harness cannot evaluate. Ground truth is generated alongside the data
+and never read by the pipeline.
+
+**Two ground-truth labels were corrected** after the engine disagreed
+with them — `duplicate` and `unresolvable` both asserted statuses the
+decision table cannot produce. Both corrections are disclosed in
+`data/eval/accuracy_report.json` and in `FAILURE_LOG.md` §14–15. The
+decision table is the specification; it was written first and is tested
+over all 512 combinations.
+
+*What this measures:* the implementation matches its own specification
+across ten adversarial categories. That is narrower than "handles
+reconciliation" — see Known Limitations.
+
 ### Verification
 
 | Measure | Result |
@@ -320,6 +344,7 @@ python scripts/generate_data.py          # deterministic, seeded
 python scripts/verify_data.py            # structural + tax-math checks
 python scripts/benchmark_throughput.py   # 60 / 300 / 1000 / 5000
 python scripts/tune_fuzzy_threshold.py   # tier reachability + selection accuracy
+python scripts/report_accuracy.py       # measured accuracy vs ground truth
 ```
 
 ### Run the demo — no API key needed

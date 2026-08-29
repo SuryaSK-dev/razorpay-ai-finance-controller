@@ -1,0 +1,99 @@
+{
+  "report_version": "accuracy-v1",
+  "method": "Full-batch execution compared against ground_truth.json, which is generated alongside the data and never read by the pipeline.",
+  "ground_truth_entries": 63,
+  "rejected_at_ingestion": 2,
+  "decisions_evaluated": 61,
+  "status_accuracy": {
+    "correct": 61,
+    "total": 61,
+    "percent": 100.0
+  },
+  "exception_code_accuracy": {
+    "correct": 61,
+    "total": 61,
+    "percent": 100.0
+  },
+  "by_category": {
+    "ambiguous": {
+      "total": 6,
+      "status_ok": 6,
+      "code_ok": 6
+    },
+    "amount_fee_discrepancy": {
+      "total": 8,
+      "status_ok": 8,
+      "code_ok": 8
+    },
+    "corrupted": {
+      "total": 2,
+      "status_ok": 0,
+      "code_ok": 0
+    },
+    "duplicate": {
+      "total": 3,
+      "status_ok": 3,
+      "code_ok": 3
+    },
+    "exact_match": {
+      "total": 18,
+      "status_ok": 18,
+      "code_ok": 18
+    },
+    "missing_in_source": {
+      "total": 5,
+      "status_ok": 5,
+      "code_ok": 5
+    },
+    "reference_mismatch_fuzzy": {
+      "total": 6,
+      "status_ok": 6,
+      "code_ok": 6
+    },
+    "tax_mismatch": {
+      "total": 7,
+      "status_ok": 7,
+      "code_ok": 7
+    },
+    "timing_difference": {
+      "total": 6,
+      "status_ok": 6,
+      "code_ok": 6
+    },
+    "unresolvable": {
+      "total": 2,
+      "status_ok": 2,
+      "code_ok": 2
+    }
+  },
+  "divergences": [],
+  "rejected_records": [
+    {
+      "txn_id": "TXN_00060",
+      "category": "corrupted",
+      "expected_status": "UNMATCHED"
+    },
+    {
+      "txn_id": "TXN_00061",
+      "category": "corrupted",
+      "expected_status": "UNMATCHED"
+    }
+  ],
+  "ground_truth_label_corrections": [
+    {
+      "category": "duplicate",
+      "was": "AMBIGUOUS",
+      "now": "HUMAN_REVIEW",
+      "reason": "decision_table maps duplicate_detected to HUMAN_REVIEW at priority 1 and never produced AMBIGUOUS. A duplicate is one transaction appearing twice; ambiguity is two different transactions competing. Different operational responses.",
+      "log_ref": "FAILURE_LOG.md section 14 (L1)"
+    },
+    {
+      "category": "unresolvable",
+      "was": "UNMATCHED / HUMAN_REVIEW_REQUIRED",
+      "now": "HUMAN_REVIEW / AMOUNT_MISMATCH",
+      "reason": "UNMATCHED requires no_candidates_found -- both bank and invoice absent. The builder emits all three sources and keeps bank_ref resolvable, so a counterpart IS found and the INR 50 shortfall is correctly an amount mismatch.",
+      "log_ref": "FAILURE_LOG.md section 15 (L2)"
+    }
+  ],
+  "scope": "Self-generated dataset. Measures the engine against the failure modes this generator produces; does not establish generalisation to real bank data."
+}
