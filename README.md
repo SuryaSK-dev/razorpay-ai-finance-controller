@@ -7,7 +7,7 @@
 ![Python](https://img.shields.io/badge/python-3.11-blue)
 ![Pydantic](https://img.shields.io/badge/contracts-Pydantic%20v2-e92063)
 ![Gemini](https://img.shields.io/badge/model-Gemini%203.1%20Flash--Lite-4285F4)
-![Tests](https://img.shields.io/badge/tests-272%20passing-brightgreen)
+![Tests](https://img.shields.io/badge/tests-287%20passing-brightgreen)
 ![Status](https://img.shields.io/badge/status-phase%206%20complete-brightgreen)
 ![Track](https://img.shields.io/badge/Razorpay%20Buildathon-Track%2004-002970)
 
@@ -109,7 +109,7 @@ razorpay-ai-finance-controller/
 │           └── candidate_lookup.py   Read-only index consumer
 │
 ├── scripts/                          Generation, verification, evaluation, demo (19 files)
-├── tests/                            272 tests across 23 files
+├── tests/                            287 tests across 24 files
 ├── data/
 │   ├── raw/                          Generated PG / bank / invoice sources
 │   ├── ground_truth.json             Never read by the pipeline — evaluation only
@@ -235,7 +235,7 @@ reconciliation" — see Known Limitations.
 
 | Measure | Result |
 |---|---|
-| Test suite | **272 passing** across 23 files |
+| Test suite | **287 passing** across 24 files |
 | Decision policy coverage | **512/512** boolean combinations resolve deterministically |
 | Gold baseline (per-case E2E) | **0 divergences**, 57 exact matches, 6 declared not-evaluable |
 | Throughput | **1,113.9 records/sec** at batch 60; swept across 60/300/1000/5000 |
