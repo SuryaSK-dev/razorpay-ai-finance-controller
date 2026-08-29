@@ -608,7 +608,211 @@ same thing happened again to the document that recorded it.
 
 ---
 
-# 30. Corrections to earlier entries in this log
+# FAILURE_LOG.md — Phase 6 section
+
+Insert these sections **after section 29** ("This log fell a milestone
+behind the code") and **before section 30** ("Corrections to earlier
+entries in this log").
+
+Then renumber the existing sections 30–38 to 36–44, or leave them and
+accept a numbering gap — the content matters more than the sequence.
+
+---
+
+```markdown
+# Phase 6 — the agent
+
+## 30. What was actually missing
+
+Everything up to Phase 5C was a reconciliation engine with a model
+attached to one narrow task: rephrasing a decision that had already
+been made. There was no orchestration, no tool selection, and no way
+for a person to ask a question. A human ran six shell scripts and read
+JSON.
+
+Track 04 asks for "an agent that closes one finance-ops loop... reporting
+its match rate and the exceptions it could not resolve." What existed
+was a model call inside a guardrail, which is not the same thing.
+
+Recording this as a failure rather than a roadmap item because it went
+unstated for a long time while the surrounding work got more and more
+polished. The gap was not technical difficulty. It was that the
+interesting problems were all in the deterministic core, so that is
+where the effort went.
+
+## 31. What Phase 6 built
+
+Five steps:
+
+    query_tools.py    four read-only tools over decide_batch() output
+    registry.py       tool specs, strict argument validation, envelopes
+    tool_selection.py frozen ToolSelection contract and strict parser
+    controller.ask()  select -> dispatch -> phrase
+    demo_agent.py     the real demo path
+
+Two model calls per question, neither able to produce a number:
+
+    1. SELECTION -- the model reads the question and the tool
+       catalogue. It has no access to the data. It cannot answer; it
+       can only choose which question to ask the deterministic layer.
+
+    2. PHRASING -- the model receives the real tool output and writes
+       it in English, instructed to use only the numbers given.
+
+Between them sits dispatch(), which runs the real tool. Every number in
+an answer comes from decide_batch() via BatchQueryContext.
+
+The raw tool result is returned alongside the prose in
+`AgentAnswer.data`, so the phrasing can always be checked against the
+numbers it claims to describe.
+
+Verified against a real model: six questions through Gemini 3.1
+Flash-Lite, data invariant held 6/6, tool selection matched expectation
+6/6. Also re-verified live inside the demo after every answer.
+
+## 32. The tool answered a question nobody asked
+
+The best finding of Phase 6, and it came from the real model rather
+than from a test.
+
+Asked "How fast did the pipeline process this batch?", the agent
+selected `get_throughput_report` -- correct -- and then answered:
+
+> The provided data does not contain a live timing for the current
+> batch of 61 records. It only provides a benchmark for a batch size of
+> 60 records...
+
+The model was right. `get_throughput_report()` returned a sweep across
+60/300/1000/5000 records with a peak figure. The operator asked about
+THIS batch of 61. Nothing in the payload addressed that.
+
+The tool did not answer the question its own description claimed it
+answered, and 287 tests did not notice, because every one of them
+checked that the tool returned the data it was written to return. None
+checked whether that data answered anything.
+
+**Fix: the tool, not the prompt.** `get_throughput_report()` now leads
+with the recorded run closest in size to the loaded batch, then the
+sweep as scaling context. Prompting the model to be less honest about
+a gap in its evidence would have been the wrong direction entirely.
+
+The general shape is worth keeping: a model with no stake in the answer
+looked at a payload and said it did not contain what was asked for. A
+test suite cannot do that, because a test asserts what the author
+already believed.
+
+## 33. The demo script demonstrated nothing for a long time
+
+`scripts/demo_agent.py` -- the most obviously-named file in the
+repository, the one anyone opens first -- called a hardcoded
+`mock_llm()` returning a canned string, under a docstring describing a
+"GPT call when wiring in credentials."
+
+That was accurate when written. It stayed in place through the entire
+Gemini integration and the whole evaluation framework. For that period
+the repository contained a working real-model provider, recorded live
+runs, and a demo that used neither.
+
+Nothing about it was hidden. It was simply never revisited, because it
+was not blocking anything.
+
+Now rewritten: real provider, real batch, five questions, and the data
+invariant re-verified after every answer. An `--offline` mode runs the
+same loop with a keyword stub for anyone without credentials, labelled
+as a stub at every point the distinction could be misread.
+
+## 34. The tests are hermetic; the scripts are not
+
+Phase 5B deliberately made the test suite runnable without credentials
+(section 23). 287 tests pass with `GEMINI_API_KEY` unset.
+
+The scripts were never given the same treatment, and nothing says so.
+Running `verify_agent_ask_real_model.py` without exporting `.env`
+produces:
+
+    RuntimeError: GEMINI_API_KEY is not configured.
+
+with no indication that `.env` exists and needs sourcing. We hit this
+ourselves immediately after writing the script.
+
+Partly addressed: `demo_agent.py` now falls back to offline mode and
+prints the export command. The other real-model scripts still fail
+bluntly, and the README documents the requirement rather than the code
+handling it.
+
+Recorded rather than fixed, because adding `load_dotenv()` would put a
+dependency and a behaviour change into Phase 5 files that are otherwise
+frozen and green.
+
+## 35. Measured accuracy, and what it does not mean
+
+`scripts/report_accuracy.py` compares full-batch `decide_batch()` output
+against `ground_truth.json`, which the pipeline never reads:
+
+    Ground-truth entries    : 63
+    Rejected at ingestion   : 2 (corrupted, never decisioned)
+    Decisions evaluated     : 61
+
+    STATUS accuracy         : 61/61 (100%)
+    EXCEPTION-CODE accuracy : 61/61 (100%)
+
+Every category at 100%, including the six ambiguous cases the per-case
+E2E harness structurally cannot evaluate (section 26).
+
+**A 100% figure deserves more scrutiny than a lower one, so:**
+
+The two corrupted records are counted as `rejected_at_ingestion`, not
+dropped. Dropping them would have inflated the percentage against a
+smaller denominator, and a test asserts the accounting adds up.
+
+Ground truth and the engine both derive from the same specification --
+the decision table. Two labels disagreed with it and were corrected
+(sections 14-15), and both corrections are printed with the result and
+stored in the artifact rather than left to be discovered.
+
+What this measures is that the implementation matches its own
+specification across ten adversarial categories. That is a real result
+and it is narrower than "the engine handles reconciliation". The
+dataset is self-generated, the settlement model is one transaction to
+one bank credit, and the narration formats are invented. Those limits
+are in README.md and they are not small.
+
+**Deliberately absent:** no test asserts a minimum accuracy. A test that
+failed when accuracy dropped would create pressure to adjust ground
+truth until it passed -- which is exactly the failure recorded twice
+already in this log.
+```
+
+---
+
+## Also update section 36 ("What is not done")
+
+The first bullet currently reads:
+
+```markdown
+- **The agent itself.** There is no orchestration loop, no tool
+  selection, no conversational surface...
+```
+
+**Replace with:**
+
+```markdown
+- **LLM-assisted candidate matching** -- built, not connected
+  (section 24). The model explains decisions and answers questions
+  about the batch. It does not participate in matching, so its
+  contribution to the financial outcome is still zero by design.
+- **Agent tool-selection accuracy is six questions.** A smoke test, not
+  an evaluation. A real measurement needs a held-out labelled question
+  set.
+```
+
+And in the milestone block, add:
+
+```
+phase-6-final        (agent tool layer, ask() loop, real-model demo)
+```
+
+# 36. Corrections to earlier entries in this log
 
 Two entries above — sections 3 and 11 in the original numbering, on fuzzy
 precision — reported this:
@@ -625,7 +829,7 @@ synthetic dataset.
 
 **Both the number and the explanation are withdrawn.**
 
-## 31. The stated cause was tested and disproven
+## 37. The stated cause was tested and disproven
 
 After fix A1 (section 16), accidental net collisions went to **zero**.
 Precision did not move. It stayed at 0.12.
@@ -633,7 +837,7 @@ Precision did not move. It stayed at 0.12.
 If narrow amount diversity had been the cause, removing it would have
 changed the number. It did not.
 
-## 32. The real cause — the metric counted correct matches as errors
+## 38. The real cause — the metric counted correct matches as errors
 
 The sweep computed, per record:
 
@@ -659,7 +863,7 @@ fall as the threshold rises. A flat count means the metric was
 independent of the variable it claimed to sweep. I looked at that table
 several times without noticing.
 
-## 33. The fuzzy tier is unreachable on this dataset
+## 39. The fuzzy tier is unreachable on this dataset
 
 Rewriting the benchmark to report tier reachability first gave:
 
@@ -708,7 +912,7 @@ recorded rather than hidden.
 
 ---
 
-# 34. The pattern across all of this
+# 40. The pattern across all of this
 
 Three separate things that looked like engine weaknesses were measurement
 defects:
@@ -734,7 +938,7 @@ does not measure what it says it measures.
 
 ---
 
-# 35. Current state
+# 41. Current state
 
 ```
 184 / 184 tests passing
@@ -764,7 +968,7 @@ tier reachability measurement.
 
 ---
 
-# 36. What is not done
+# 42. What is not done
 
 Listing these explicitly so nothing here is read as a completed claim.
 
@@ -787,7 +991,7 @@ Listing these explicitly so nothing here is read as a completed claim.
 
 ---
 
-# 37. Milestones
+# 43. Milestones
 
 ```
 phase-3-final
@@ -803,7 +1007,7 @@ These are architectural checkpoints, not version numbers.
 
 ---
 
-# 38. Closing
+# 44. Closing
 
 The most useful thing I built was not the reconciliation engine. It was
 the set of harnesses that kept disagreeing with it — and the discipline
