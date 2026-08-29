@@ -222,10 +222,12 @@ TOOL_REGISTRY: dict[str, ToolSpec] = {
     "get_throughput_report": ToolSpec(
         name="get_throughput_report",
         description=(
-            "Returns measured processing throughput from the recorded "
-            "benchmark: batch sizes tested, records per second, and "
-            "per-stage timings. Use for questions about speed, "
-            "performance, or how fast the batch ran."
+            "Returns measured processing throughput. Leads with the "
+            "recorded benchmark run closest in size to the current "
+            "batch (records per second, total seconds, and per-stage "
+            "timings), then the full scaling sweep across larger batch "
+            "sizes. Use for questions about speed, performance, or how "
+            "fast the batch ran."
         ),
         when_not_to_use=(
             "the question is about correctness or results rather than "

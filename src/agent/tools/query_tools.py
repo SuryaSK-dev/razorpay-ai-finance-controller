@@ -321,15 +321,47 @@ class BatchQueryContext:
 
         peak = max(runs, key=lambda r: r.get("records_per_second", 0))
 
+        # FIX (Q5): the run closest in size to the batch actually
+        # loaded, surfaced as the headline figure.
+        #
+        # Found by real-model verification: asked "how fast did the
+        # pipeline process THIS batch?", the model correctly answered
+        # that the data contained benchmark sweeps rather than a figure
+        # for the current batch. The tool did not answer the question
+        # it was described as answering.
+        #
+        # The sweep is still returned as scaling context, but the
+        # closest run now leads, so a question about the current batch
+        # gets a figure about a comparable batch.
+        batch_size = len(self.decisions)
+
+        closest = min(
+            runs,
+            key=lambda r: abs(r.get("n_records", 0) - batch_size),
+        )
+
         return {
             "available": True,
             "source": str(self.throughput_path.name),
+            "current_batch_records": batch_size,
+            "closest_benchmark_batch_size": closest.get("n_records"),
+            "closest_benchmark_records_per_second": closest.get(
+                "records_per_second"
+            ),
+            "closest_benchmark_total_seconds": closest.get("total_time_s"),
+            "closest_benchmark_stage_seconds": {
+                "load": closest.get("load_time_s"),
+                "normalize": closest.get("normalize_time_s"),
+                "match": closest.get("match_time_s"),
+                "decide": closest.get("decide_time_s"),
+            },
             "batch_sizes": [r.get("n_records") for r in runs],
             "peak_records_per_second": peak.get("records_per_second"),
             "peak_at_batch_size": peak.get("n_records"),
             "runs": runs,
             "caveat": (
-                "Benchmark on generated data on one machine. Not a "
+                "Recorded benchmark on generated data on one machine, "
+                "not a live timing of the current run and not a "
                 "production capacity guarantee."
             ),
         }

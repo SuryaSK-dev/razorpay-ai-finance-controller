@@ -441,10 +441,15 @@ def _render_fallback(tool_name: str, data: dict[str, Any]) -> str:
         if not data.get("available"):
             return f"No throughput benchmark available. {data.get('reason', '')}"
         return (
-            f"Peak throughput {data['peak_records_per_second']} "
-            f"records/second at batch size "
-            f"{data['peak_at_batch_size']}. "
-            f"Sizes tested: {data['batch_sizes']}. {data['caveat']}"
+            f"At the closest benchmarked batch size "
+            f"({data['closest_benchmark_batch_size']} records, current "
+            f"batch is {data['current_batch_records']}): "
+            f"{data['closest_benchmark_records_per_second']} "
+            f"records/second, "
+            f"{data['closest_benchmark_total_seconds']}s total. "
+            f"Peak across the sweep: "
+            f"{data['peak_records_per_second']} records/second at "
+            f"{data['peak_at_batch_size']} records. {data['caveat']}"
         )
 
     return json.dumps(data, indent=2, sort_keys=True)
