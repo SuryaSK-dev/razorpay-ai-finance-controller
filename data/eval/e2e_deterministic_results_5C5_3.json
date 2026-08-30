@@ -1,7 +1,7 @@
 {
   "report_version": "5C.5.3-v1",
   "evaluation_stage": "5C.5.3",
-  "generated_at_utc": "2026-08-30T01:00:10.648563+00:00",
+  "generated_at_utc": "2026-08-30T12:14:19.956233+00:00",
   "authority": "deterministic",
   "model_role": "read_only_candidate_and_explanation",
   "benchmark": {
@@ -2846,7 +2846,7 @@
         "tax_verified": true,
         "exception_code": "REFERENCE_MISMATCH",
         "reason_codes": [
-          "NONE"
+          "REFERENCE_MISMATCH"
         ],
         "evidence": {
           "matched_rule": "low_confidence_requires_human_review",
@@ -2962,7 +2962,7 @@
         "tax_verified": true,
         "exception_code": "REFERENCE_MISMATCH",
         "reason_codes": [
-          "NONE"
+          "REFERENCE_MISMATCH"
         ],
         "evidence": {
           "matched_rule": "low_confidence_requires_human_review",
@@ -3078,7 +3078,7 @@
         "tax_verified": true,
         "exception_code": "REFERENCE_MISMATCH",
         "reason_codes": [
-          "NONE"
+          "REFERENCE_MISMATCH"
         ],
         "evidence": {
           "matched_rule": "low_confidence_requires_human_review",
@@ -3194,7 +3194,7 @@
         "tax_verified": true,
         "exception_code": "REFERENCE_MISMATCH",
         "reason_codes": [
-          "NONE"
+          "REFERENCE_MISMATCH"
         ],
         "evidence": {
           "matched_rule": "low_confidence_requires_human_review",
@@ -3310,7 +3310,7 @@
         "tax_verified": true,
         "exception_code": "REFERENCE_MISMATCH",
         "reason_codes": [
-          "NONE"
+          "REFERENCE_MISMATCH"
         ],
         "evidence": {
           "matched_rule": "low_confidence_requires_human_review",
@@ -3426,7 +3426,7 @@
         "tax_verified": true,
         "exception_code": "REFERENCE_MISMATCH",
         "reason_codes": [
-          "NONE"
+          "REFERENCE_MISMATCH"
         ],
         "evidence": {
           "matched_rule": "low_confidence_requires_human_review",
@@ -3542,7 +3542,8 @@
         "tax_verified": true,
         "exception_code": "AMOUNT_MISMATCH",
         "reason_codes": [
-          "AMOUNT_MISMATCH"
+          "AMOUNT_MISMATCH",
+          "REFERENCE_MISMATCH"
         ],
         "evidence": {
           "matched_rule": "amount_mismatch",
@@ -3658,7 +3659,8 @@
         "tax_verified": true,
         "exception_code": "AMOUNT_MISMATCH",
         "reason_codes": [
-          "AMOUNT_MISMATCH"
+          "AMOUNT_MISMATCH",
+          "REFERENCE_MISMATCH"
         ],
         "evidence": {
           "matched_rule": "amount_mismatch",
@@ -3774,7 +3776,8 @@
         "tax_verified": true,
         "exception_code": "AMOUNT_MISMATCH",
         "reason_codes": [
-          "AMOUNT_MISMATCH"
+          "AMOUNT_MISMATCH",
+          "REFERENCE_MISMATCH"
         ],
         "evidence": {
           "matched_rule": "amount_mismatch",
@@ -3890,7 +3893,8 @@
         "tax_verified": true,
         "exception_code": "AMOUNT_MISMATCH",
         "reason_codes": [
-          "AMOUNT_MISMATCH"
+          "AMOUNT_MISMATCH",
+          "REFERENCE_MISMATCH"
         ],
         "evidence": {
           "matched_rule": "amount_mismatch",
@@ -4006,7 +4010,8 @@
         "tax_verified": true,
         "exception_code": "AMOUNT_MISMATCH",
         "reason_codes": [
-          "AMOUNT_MISMATCH"
+          "AMOUNT_MISMATCH",
+          "REFERENCE_MISMATCH"
         ],
         "evidence": {
           "matched_rule": "amount_mismatch",
@@ -4122,7 +4127,8 @@
         "tax_verified": true,
         "exception_code": "AMOUNT_MISMATCH",
         "reason_codes": [
-          "AMOUNT_MISMATCH"
+          "AMOUNT_MISMATCH",
+          "REFERENCE_MISMATCH"
         ],
         "evidence": {
           "matched_rule": "amount_mismatch",
@@ -4238,7 +4244,8 @@
         "tax_verified": true,
         "exception_code": "AMOUNT_MISMATCH",
         "reason_codes": [
-          "AMOUNT_MISMATCH"
+          "AMOUNT_MISMATCH",
+          "REFERENCE_MISMATCH"
         ],
         "evidence": {
           "matched_rule": "amount_mismatch",
@@ -4354,7 +4361,8 @@
         "tax_verified": true,
         "exception_code": "AMOUNT_MISMATCH",
         "reason_codes": [
-          "AMOUNT_MISMATCH"
+          "AMOUNT_MISMATCH",
+          "REFERENCE_MISMATCH"
         ],
         "evidence": {
           "matched_rule": "amount_mismatch",
@@ -6840,7 +6848,8 @@
         "tax_verified": true,
         "exception_code": "AMOUNT_MISMATCH",
         "reason_codes": [
-          "AMOUNT_MISMATCH"
+          "AMOUNT_MISMATCH",
+          "REFERENCE_MISMATCH"
         ],
         "evidence": {
           "matched_rule": "amount_mismatch",
@@ -6956,7 +6965,8 @@
         "tax_verified": true,
         "exception_code": "AMOUNT_MISMATCH",
         "reason_codes": [
-          "AMOUNT_MISMATCH"
+          "AMOUNT_MISMATCH",
+          "REFERENCE_MISMATCH"
         ],
         "evidence": {
           "matched_rule": "amount_mismatch",

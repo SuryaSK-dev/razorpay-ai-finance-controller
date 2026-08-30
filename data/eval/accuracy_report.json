@@ -77,7 +77,7 @@
       "status_matched": false,
       "code_matched": false,
       "reason_codes": [
-        "NONE"
+        "REFERENCE_MISMATCH"
       ]
     },
     {
@@ -90,7 +90,7 @@
       "status_matched": false,
       "code_matched": false,
       "reason_codes": [
-        "NONE"
+        "REFERENCE_MISMATCH"
       ]
     },
     {
@@ -103,7 +103,7 @@
       "status_matched": false,
       "code_matched": false,
       "reason_codes": [
-        "NONE"
+        "REFERENCE_MISMATCH"
       ]
     },
     {
@@ -116,7 +116,7 @@
       "status_matched": false,
       "code_matched": false,
       "reason_codes": [
-        "NONE"
+        "REFERENCE_MISMATCH"
       ]
     },
     {
@@ -129,7 +129,7 @@
       "status_matched": false,
       "code_matched": false,
       "reason_codes": [
-        "NONE"
+        "REFERENCE_MISMATCH"
       ]
     },
     {
@@ -142,7 +142,7 @@
       "status_matched": false,
       "code_matched": false,
       "reason_codes": [
-        "NONE"
+        "REFERENCE_MISMATCH"
       ]
     }
   ],

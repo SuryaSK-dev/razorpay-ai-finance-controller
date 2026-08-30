@@ -50,6 +50,7 @@ from decimal import Decimal
 from typing import Optional
 
 from src.models import MatchDecision, ExceptionCode
+from src.financial import settlement_expected_net
 from src.matching.engine import MatchResult
 from src.matching.scoring import is_auto_matchable
 from src.tax.validator import verify_tax
@@ -214,12 +215,7 @@ def _build_context(
         bank = match_result.bank_record
 
         if pg is not None and bank is not None:
-            expected_net = (
-                pg.amount
-                - (pg.fee or Decimal("0"))
-                - (pg.gst or Decimal("0"))
-                - (pg.tds or Decimal("0"))
-            )
+            expected_net = settlement_expected_net(pg)
 
             amount_mismatch = (
                 abs(bank.amount - expected_net)
@@ -378,6 +374,23 @@ def _all_violated_codes(
     if context.amount_mismatch:
         codes.append(
             ExceptionCode.AMOUNT_MISMATCH
+        )
+
+    # The decision table's low-confidence rule (priority 6) reports
+    # REFERENCE_MISMATCH as its primary exception code. Without this
+    # branch that classification never reached reason_codes, so a
+    # HUMAN_REVIEW / REFERENCE_MISMATCH decision carried
+    # reason_codes=[NONE] -- a record routed to a human with no
+    # machine-readable statement of what was wrong with it.
+    #
+    # It went unnoticed because low_confidence is mutually exclusive
+    # with every identity and source-presence flag (see the guard in
+    # _build_context), so these records have no OTHER violation to
+    # populate the list. The one code that should have been there was
+    # the only one missing.
+    if context.low_confidence:
+        codes.append(
+            ExceptionCode.REFERENCE_MISMATCH
         )
 
     if context.gst_mismatch:
