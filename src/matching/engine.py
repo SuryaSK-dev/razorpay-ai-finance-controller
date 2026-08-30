@@ -74,6 +74,10 @@ from decimal import Decimal
 from typing import Optional
 
 from src.models import NormalizedRecord
+from src.financial import (
+    expected_invoice_amount,
+    settlement_expected_net,
+)
 
 from src.matching.candidates import (
     CandidateSet,
@@ -290,15 +294,8 @@ def _select_best_bank_candidate(
             f"only candidate found via {match_type}",
         )
 
-    pg_fee = pg_record.fee or Decimal("0")
-    pg_gst = pg_record.gst or Decimal("0")
-    pg_tds = pg_record.tds or Decimal("0")
-
-    pg_expected_net = (
-        pg_record.amount
-        - pg_fee
-        - pg_gst
-        - pg_tds
+    pg_expected_net = settlement_expected_net(
+        pg_record
     )
 
     def sort_key(
@@ -381,11 +378,8 @@ def _select_best_invoice_candidate(
             f"only candidate found via {match_type}",
         )
 
-    pg_fee = pg_record.fee or Decimal("0")
-    pg_gst = pg_record.gst or Decimal("0")
-
-    pg_expected_invoice_amount = (
-        pg_fee + pg_gst
+    pg_expected_invoice_amount = expected_invoice_amount(
+        pg_record
     )
 
     def sort_key(

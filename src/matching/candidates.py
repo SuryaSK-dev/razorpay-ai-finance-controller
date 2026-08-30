@@ -39,6 +39,7 @@ from typing import Literal
 from rapidfuzz import fuzz
 
 from src.models import NormalizedRecord
+from src.financial import settlement_expected_net
 from src.config import (
     AMOUNT_TOLERANCE,
     DATE_TOLERANCE_DAYS,
@@ -223,49 +224,6 @@ def _within_amount_tolerance(
     return abs(a - b) <= tolerance
 
 
-def _pg_expected_net(
-    pg_record: NormalizedRecord,
-) -> Decimal:
-    """
-    Calculate the bank-side expected settlement amount.
-
-    PG amount is gross.
-
-    Bank amount is net.
-
-        expected_net =
-            gross
-            - fee
-            - GST
-            - TDS
-    """
-
-    pg_fee = (
-        pg_record.fee
-        if pg_record.fee is not None
-        else Decimal("0")
-    )
-
-    pg_gst = (
-        pg_record.gst
-        if pg_record.gst is not None
-        else Decimal("0")
-    )
-
-    pg_tds = (
-        pg_record.tds
-        if pg_record.tds is not None
-        else Decimal("0")
-    )
-
-    return (
-        pg_record.amount
-        - pg_fee
-        - pg_gst
-        - pg_tds
-    )
-
-
 # ======================================================================
 # BANK CANDIDATE GENERATION
 # ======================================================================
@@ -301,7 +259,7 @@ def find_bank_candidates(
     without incorrectly selecting the second record.
     """
 
-    pg_expected_net = _pg_expected_net(pg_record)
+    pg_expected_net = settlement_expected_net(pg_record)
 
     # ---------------------------------------------------------------
     # Tier 1: exact UTR
@@ -474,7 +432,7 @@ def find_bank_ambiguity_candidates(
     while still surfacing genuine competing records for human review.
     """
 
-    expected_net = _pg_expected_net(
+    expected_net = settlement_expected_net(
         pg_record
     )
 

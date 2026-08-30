@@ -25,6 +25,10 @@ from enum import Enum
 from typing import Optional
 
 from src.models import NormalizedRecord
+from src.financial import (
+    expected_invoice_amount,
+    settlement_expected_net,
+)
 from src.config import (
     SCORE_TXN_ID_BANK,
     SCORE_TXN_ID_INVOICE,
@@ -131,10 +135,7 @@ def score_candidate(pg_record: NormalizedRecord,
 
     amount_matched_bank = False
     if bank_present:
-        pg_fee = pg_record.fee if pg_record.fee is not None else Decimal("0")
-        pg_gst = pg_record.gst if pg_record.gst is not None else Decimal("0")
-        pg_tds = pg_record.tds if pg_record.tds is not None else Decimal("0")
-        pg_expected_net = pg_record.amount - pg_fee - pg_gst - pg_tds
+        pg_expected_net = settlement_expected_net(pg_record)
 
         delta = abs(pg_expected_net - bank_record.amount)
         amount_matched_bank = delta <= AMOUNT_TOLERANCE
@@ -147,9 +148,7 @@ def score_candidate(pg_record: NormalizedRecord,
 
     amount_matched_invoice = False
     if invoice_present:
-        pg_fee = pg_record.fee if pg_record.fee is not None else Decimal("0")
-        pg_gst = pg_record.gst if pg_record.gst is not None else Decimal("0")
-        pg_expected_invoice_amount = pg_fee + pg_gst
+        pg_expected_invoice_amount = expected_invoice_amount(pg_record)
 
         delta = abs(pg_expected_invoice_amount - invoice_record.amount)
         amount_matched_invoice = delta <= AMOUNT_TOLERANCE
