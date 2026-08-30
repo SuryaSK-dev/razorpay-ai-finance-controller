@@ -316,13 +316,19 @@ Stated plainly so none of the above is read as more than it is.
   doing no discriminating work. **Precision 1.00 means "the guards are selective here", not
   "narration matching works."** Making narration load-bearing needs amount collisions inside
   the guard window, which is a deliberate dataset change.
-- **One bank row carries no UTR at all** (UPI format, a UPI reference instead). No regex can
-  recover it. It is deliberately present as a case the deterministic path cannot solve.
-- **Held-out evaluation is 8 cases.** Real measurements, but closer to anecdote than
-  statistic.
+- **Every bank narration currently carries a recoverable UTR.** The narration format that
+  would carry no transaction reference at all — a UPI reference instead — exists in the
+  generator but is unreachable, because every caller passes a real UTR. So the dataset
+  contains no case the deterministic path genuinely cannot solve. That absence is why the
+  LLM extraction path has no job here; see `FAILURE_LOG.md` §50.
+- **Held-out explanation evaluation is 8 cases**, one per category. Real measurements, but
+  closer to anecdote than statistic. The held-out narration set has 20 cases across 10
+  adversarial categories including prompt injection, but it evaluates `TXN_` token
+  extraction — a format Upgrade B removed from bank narration, so it no longer reflects
+  production data.
 - **LLM-assisted candidate matching is built but not connected.**
-  `find_bank_candidates_with_llm_assist` exists and is deliberately off the live path until
-  its false-positive rate is measured.
+  `find_bank_candidates_with_llm_assist` exists and is deliberately off the live path. On
+  this dataset the deterministic tier recovers everything it would have, at precision 1.00.
 - **Agent tool-selection accuracy is six questions.** A smoke test, not an evaluation.
 - **Throughput is a recorded benchmark on one machine**, not a production capacity guarantee.
 - **The dataset is synthetic and self-generated.** Results characterise this dataset.
