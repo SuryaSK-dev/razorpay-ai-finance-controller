@@ -1,6 +1,6 @@
 # Failure Log
 
-## AI Finance Controller — Phases 0 through 5C
+## AI Finance Controller — Phases 0 through 6
 
 This is a record of things that went wrong while building this system, how
 they were found, and what was done about them.
@@ -26,9 +26,8 @@ Each entry has:
 - **Fix**
 - **Still open** (where anything remains)
 
-Entries are grouped by phase. Section 30 onward covers corrections to
-things recorded earlier in this same log that later turned out to be
-wrong.
+Entries are grouped by phase. Sections 36–40 correct things recorded
+earlier in this same log that later turned out to be wrong.
 
 ---
 
@@ -64,16 +63,15 @@ Since `_extract_txn_from_narration` returns `match.group(1)`, the PYT
 pattern returned `1234567` instead of `PYT_1234567`.
 
 **How it was found.** A held-out narration test. It never showed up in
-normal runs because `PYT_` appears nowhere in the generated data — zero
-occurrences in `bank_statement.json`, nothing in `generate_data.py`. The
+normal runs because `PYT_` appears nowhere in the generated data. The
 pattern has never fired in production.
 
 **Fix.** `r"(PYT_\d{7,8})"`.
 
-**Worth noting.** No result was ever affected by this, because the code
-path is dead against our own dataset. It was found only because a
-held-out test exercised something the main data does not. That is the
-clearest argument I have for keeping held-out tests around.
+**Worth noting.** No result was ever affected, because the code path is
+dead against our own dataset. It was found only because a held-out test
+exercised something the main data does not. That is the clearest
+argument I have for keeping held-out tests around.
 
 ---
 
@@ -93,9 +91,9 @@ credited amount.
 
 **After.** `TP = 6`, `FN = 0`, recall 1.00 on the six synthetic cases.
 
-Note: see section 31. The precision number reported alongside this was
-later found to be meaningless, and the tier turned out to be unreachable
-in practice. The gross/net fix itself was real and correct.
+The precision number reported alongside this was later found to be
+meaningless, and the tier turned out to be unreachable in practice —
+see sections 36–39 and 41. The gross/net fix itself was real and correct.
 
 ---
 
@@ -448,13 +446,7 @@ every call site.
 
 # Phase 5B — real model integration
 
-**This section supersedes what sections 31–33 of the earlier version of
-this log said.** Those sections stated that real-model integration was
-deliberately deferred and not yet done. That was true when written and is
-no longer true. The log fell a full milestone behind the code, which is
-worth recording as its own failure — see section 29.
-
-## 22. What is now built
+## 22. What is built
 
 - `src/agent/providers/base.py` — `LLMProvider` ABC, `ProviderResponse`
   with no financial fields
@@ -466,13 +458,13 @@ worth recording as its own failure — see section 29.
 Real recorded runs are in `data/eval/real_gemini_explanation_run_5C4.json`
 with genuine wall-clock latencies.
 
-**Measured.** On 8 held-out explanation cases: 75% full semantic
-faithfulness, 87.5% reason-code preservation, 0 unsupported claims, 0
+**Measured.** On 8 held-out explanation cases: 8/8 status preserved, 8/8
+amounts preserved, 8/8 tax preserved, 0 unsupported claims, 0
 safety-critical failures.
 
-**Honest limitation.** Eight cases is a small sample. 75% of 8 is 6. These
-are real measurements but they are closer to anecdotes than statistics.
-Expanding the held-out set is outstanding work.
+**Honest limitation.** Eight cases is a small sample. These are real
+measurements but closer to anecdotes than statistics. Expanding the
+held-out set is outstanding work.
 
 ---
 
@@ -493,13 +485,12 @@ the whole suite with `GEMINI_API_KEY=` unset — no test depends on it now.
 ## 24. LLM-assisted candidate matching is still not connected
 
 `find_bank_candidates_with_llm_assist()` exists in `candidates.py` and is
-**not on the live path**. `controller.py` only implements `.explain()` on
-an already-computed decision.
+**not on the live path**.
 
-So the honest summary of what the model does today: it rephrases a
-decision the deterministic engine already made. It does not affect any
-financial outcome. That is architecturally correct, and it is also a
-narrow use of the model.
+So the honest summary of what the model does today: it selects which
+question to answer, phrases results, and explains decisions. It does not
+participate in matching, so its contribution to any financial outcome is
+zero by design.
 
 Before connecting it, these need to hold:
 
@@ -508,6 +499,9 @@ Before connecting it, these need to hold:
 - amount and date guards still enforced
 - LLM failure produces an identical decision to LLM-off
 - false-positive rate measured on held-out narrations
+
+Upgrade B gave it something concrete to do: one bank row now carries a
+UPI reference and no UTR at all, which no regex can recover.
 
 **Still open.**
 
@@ -547,14 +541,11 @@ all six report `is_ambiguous=True` with 2–3 pieces of bank ambiguity
 evidence each. Same engine, same data, same code — only the pool size
 differs.
 
-**Fix.** Those categories are now reported as `NOT_EVALUABLE_PER_CASE`
-rather than counted as engine divergence, with `raw_divergent_cases` kept
-in the report so the exclusion is arithmetically transparent. Two tests
-guard it: one asserts `raw == divergent + not_evaluable`, the other
-asserts only declared categories can be excluded.
-
-Currently `raw = 6` and `not_evaluable = 6`, so the exclusion is carrying
-no weight at all — nothing is hidden behind it.
+**Fix.** Those categories are reported as `NOT_EVALUABLE_PER_CASE` rather
+than counted as engine divergence, with `raw_divergent_cases` kept in the
+report so the exclusion is arithmetically transparent. Tests assert that
+`raw == divergent + not_evaluable + known_policy`, and that only declared
+categories can be excluded.
 
 **Still open.** The proper fix is giving each case the rest of the batch
 as context. Deferred.
@@ -598,115 +589,109 @@ second would have found a direct contradiction.
 
 Related: version strings. Prose and code comments referred to `v0.6` and
 `v0.8` milestones that do not exist. The real git tags have always been
-`phase-3-final`, `phase-4-final`, `phase-5-boundary`, `phase-5-final`.
+`phase-3-final`, `phase-4-final`, `phase-5-boundary`, `phase-5-final`,
+`phase-6-final`.
 
-**Fix.** This rewrite. Tags now referenced consistently.
+**Fix.** Rewritten, twice now. Tags referenced consistently.
 
-Section 18 of the earlier version of this log recorded, as a lesson,
-*"documentation had to catch up with the engineering reality."* Then the
-same thing happened again to the document that recorded it.
-
----
-
-# FAILURE_LOG.md — Phase 6 section
-
-Insert these sections **after section 29** ("This log fell a milestone
-behind the code") and **before section 30** ("Corrections to earlier
-entries in this log").
-
-Then renumber the existing sections 30–38 to 36–44, or leave them and
-accept a numbering gap — the content matters more than the sequence.
+An earlier version of this log recorded, as a lesson, *"documentation had
+to catch up with the engineering reality."* Then the same thing happened
+again to the document that recorded it.
 
 ---
 
-```markdown
 # Phase 6 — the agent
 
 ## 30. What was actually missing
 
 Everything up to Phase 5C was a reconciliation engine with a model
-attached to one narrow task: rephrasing a decision that had already
-been made. There was no orchestration, no tool selection, and no way
-for a person to ask a question. A human ran six shell scripts and read
-JSON.
+attached to one narrow task: rephrasing a decision that had already been
+made. There was no orchestration, no tool selection, and no way for a
+person to ask a question. A human ran six shell scripts and read JSON.
 
-Track 04 asks for "an agent that closes one finance-ops loop... reporting
-its match rate and the exceptions it could not resolve." What existed
+Track 04 asks for *"an agent that closes one finance-ops loop… reporting
+its match rate and the exceptions it could not resolve."* What existed
 was a model call inside a guardrail, which is not the same thing.
 
 Recording this as a failure rather than a roadmap item because it went
 unstated for a long time while the surrounding work got more and more
 polished. The gap was not technical difficulty. It was that the
-interesting problems were all in the deterministic core, so that is
-where the effort went.
+interesting problems were all in the deterministic core, so that is where
+the effort went.
+
+---
 
 ## 31. What Phase 6 built
 
 Five steps:
 
-    query_tools.py    four read-only tools over decide_batch() output
-    registry.py       tool specs, strict argument validation, envelopes
-    tool_selection.py frozen ToolSelection contract and strict parser
-    controller.ask()  select -> dispatch -> phrase
-    demo_agent.py     the real demo path
+```
+query_tools.py     four read-only tools over decide_batch() output
+registry.py        tool specs, strict argument validation, envelopes
+tool_selection.py  frozen ToolSelection contract and strict parser
+controller.ask()   select -> dispatch -> phrase
+demo_agent.py      the real demo path
+```
 
 Two model calls per question, neither able to produce a number:
 
-    1. SELECTION -- the model reads the question and the tool
-       catalogue. It has no access to the data. It cannot answer; it
-       can only choose which question to ask the deterministic layer.
+1. **Selection** — the model reads the question and the tool catalogue.
+   It has no access to the data. It cannot answer; it can only choose
+   which question to ask the deterministic layer.
 
-    2. PHRASING -- the model receives the real tool output and writes
-       it in English, instructed to use only the numbers given.
+2. **Phrasing** — the model receives the real tool output and writes it
+   in English, instructed to use only the numbers given.
 
-Between them sits dispatch(), which runs the real tool. Every number in
-an answer comes from decide_batch() via BatchQueryContext.
-
-The raw tool result is returned alongside the prose in
-`AgentAnswer.data`, so the phrasing can always be checked against the
-numbers it claims to describe.
+Between them sits `dispatch()`, which runs the real tool. Every number in
+an answer comes from `decide_batch()` via `BatchQueryContext`. The raw
+result is returned alongside the prose in `AgentAnswer.data`, so the
+phrasing can always be checked against the numbers it describes.
 
 Verified against a real model: six questions through Gemini 3.1
 Flash-Lite, data invariant held 6/6, tool selection matched expectation
-6/6. Also re-verified live inside the demo after every answer.
+6/6. Re-verified live inside the demo after every answer.
+
+---
 
 ## 32. The tool answered a question nobody asked
 
-The best finding of Phase 6, and it came from the real model rather
-than from a test.
+The best finding of Phase 6, and it came from the real model rather than
+from a test.
 
-Asked "How fast did the pipeline process this batch?", the agent
-selected `get_throughput_report` -- correct -- and then answered:
+Asked *"How fast did the pipeline process this batch?"*, the agent
+selected `get_throughput_report` — correct — and then answered:
 
-> The provided data does not contain a live timing for the current
-> batch of 61 records. It only provides a benchmark for a batch size of
-> 60 records...
+> The provided data does not contain a live timing for the current batch
+> of 61 records. It only provides a benchmark for a batch size of 60
+> records…
 
 The model was right. `get_throughput_report()` returned a sweep across
 60/300/1000/5000 records with a peak figure. The operator asked about
-THIS batch of 61. Nothing in the payload addressed that.
+*this* batch of 61. Nothing in the payload addressed that.
 
 The tool did not answer the question its own description claimed it
-answered, and 287 tests did not notice, because every one of them
-checked that the tool returned the data it was written to return. None
-checked whether that data answered anything.
+answered, and 287 tests did not notice, because every one of them checked
+that the tool returned the data it was written to return. None checked
+whether that data answered anything.
 
 **Fix: the tool, not the prompt.** `get_throughput_report()` now leads
-with the recorded run closest in size to the loaded batch, then the
-sweep as scaling context. Prompting the model to be less honest about
-a gap in its evidence would have been the wrong direction entirely.
+with the recorded run closest in size to the loaded batch, then the sweep
+as scaling context. Prompting the model to be less honest about a gap in
+its evidence would have been the wrong direction entirely.
 
 The general shape is worth keeping: a model with no stake in the answer
 looked at a payload and said it did not contain what was asked for. A
-test suite cannot do that, because a test asserts what the author
-already believed.
+test suite cannot do that, because a test asserts what the author already
+believed.
+
+---
 
 ## 33. The demo script demonstrated nothing for a long time
 
-`scripts/demo_agent.py` -- the most obviously-named file in the
-repository, the one anyone opens first -- called a hardcoded
-`mock_llm()` returning a canned string, under a docstring describing a
-"GPT call when wiring in credentials."
+`scripts/demo_agent.py` — the most obviously-named file in the
+repository, the one anyone opens first — called a hardcoded `mock_llm()`
+returning a canned string, under a docstring describing a "GPT call when
+wiring in credentials."
 
 That was accurate when written. It stayed in place through the entire
 Gemini integration and the whole evaluation framework. For that period
@@ -718,19 +703,23 @@ was not blocking anything.
 
 Now rewritten: real provider, real batch, five questions, and the data
 invariant re-verified after every answer. An `--offline` mode runs the
-same loop with a keyword stub for anyone without credentials, labelled
-as a stub at every point the distinction could be misread.
+same loop with a keyword stub for anyone without credentials, labelled as
+a stub at every point the distinction could be misread.
+
+---
 
 ## 34. The tests are hermetic; the scripts are not
 
 Phase 5B deliberately made the test suite runnable without credentials
-(section 23). 287 tests pass with `GEMINI_API_KEY` unset.
+(section 23). All tests pass with `GEMINI_API_KEY` unset.
 
-The scripts were never given the same treatment, and nothing says so.
+The scripts were never given the same treatment, and nothing said so.
 Running `verify_agent_ask_real_model.py` without exporting `.env`
 produces:
 
-    RuntimeError: GEMINI_API_KEY is not configured.
+```
+RuntimeError: GEMINI_API_KEY is not configured.
+```
 
 with no indication that `.env` exists and needs sourcing. We hit this
 ourselves immediately after writing the script.
@@ -744,78 +733,59 @@ Recorded rather than fixed, because adding `load_dotenv()` would put a
 dependency and a behaviour change into Phase 5 files that are otherwise
 frozen and green.
 
+---
+
 ## 35. Measured accuracy, and what it does not mean
 
 `scripts/report_accuracy.py` compares full-batch `decide_batch()` output
-against `ground_truth.json`, which the pipeline never reads:
+against `ground_truth.json`, which the pipeline never reads.
 
-    Ground-truth entries    : 63
-    Rejected at ingestion   : 2 (corrupted, never decisioned)
-    Decisions evaluated     : 61
+Current result, after Upgrade B:
 
-    STATUS accuracy         : 61/61 (100%)
-    EXCEPTION-CODE accuracy : 61/61 (100%)
+```
+Ground-truth entries    : 63
+Rejected at ingestion   : 2 (corrupted, never decisioned)
+Decisions evaluated     : 61
 
-Every category at 100%, including the six ambiguous cases the per-case
-E2E harness structurally cannot evaluate (section 26).
+STATUS accuracy         : 55/61 (90.16%)
+EXCEPTION-CODE accuracy : 55/61 (90.16%)
+```
 
-**A 100% figure deserves more scrutiny than a lower one, so:**
+The six divergences are all in `reference_mismatch_fuzzy` and are all
+fail-closed. See section 44.
 
-The two corrupted records are counted as `rejected_at_ingestion`, not
-dropped. Dropping them would have inflated the percentage against a
-smaller denominator, and a test asserts the accounting adds up.
+**Before Upgrade B this figure was 61/61 (100%).** That number was real
+but it was measured on a dataset where the fuzzy tier never ran. Making
+the tier reachable exposed a policy question that had never been tested,
+and the accuracy fell as a result. A number that drops when you finally
+exercise a code path is more informative than one that never had to.
 
-Ground truth and the engine both derive from the same specification --
-the decision table. Two labels disagreed with it and were corrected
-(sections 14-15), and both corrections are printed with the result and
-stored in the artifact rather than left to be discovered.
+**On the denominator.** The two corrupted records are counted as
+`rejected_at_ingestion`, not dropped. Dropping them would inflate the
+percentage against a smaller denominator, and a test asserts the
+accounting adds up.
+
+**On independence.** Ground truth and the engine both derive from the
+same specification — the decision table. Two labels disagreed with it and
+were corrected (sections 14–15); both corrections are printed with the
+result and stored in the artifact rather than left to be discovered.
 
 What this measures is that the implementation matches its own
 specification across ten adversarial categories. That is a real result
-and it is narrower than "the engine handles reconciliation". The
-dataset is self-generated, the settlement model is one transaction to
-one bank credit, and the narration formats are invented. Those limits
-are in README.md and they are not small.
+and it is narrower than "the engine handles reconciliation."
 
 **Deliberately absent:** no test asserts a minimum accuracy. A test that
-failed when accuracy dropped would create pressure to adjust ground
-truth until it passed -- which is exactly the failure recorded twice
-already in this log.
-```
+failed when accuracy dropped would create pressure to adjust ground truth
+until it passed — which is exactly the failure recorded twice already in
+this log.
 
 ---
 
-## Also update section 36 ("What is not done")
+# Corrections to earlier entries
 
-The first bullet currently reads:
+## 36. The fuzzy precision figure is withdrawn
 
-```markdown
-- **The agent itself.** There is no orchestration loop, no tool
-  selection, no conversational surface...
-```
-
-**Replace with:**
-
-```markdown
-- **LLM-assisted candidate matching** -- built, not connected
-  (section 24). The model explains decisions and answers questions
-  about the batch. It does not participate in matching, so its
-  contribution to the financial outcome is still zero by design.
-- **Agent tool-selection accuracy is six questions.** A smoke test, not
-  an evaluation. A real measurement needs a held-out labelled question
-  set.
-```
-
-And in the milestone block, add:
-
-```
-phase-6-final        (agent tool layer, ask() loop, real-model demo)
-```
-
-# 36. Corrections to earlier entries in this log
-
-Two entries above — sections 3 and 11 in the original numbering, on fuzzy
-precision — reported this:
+Earlier versions of this log reported:
 
 ```
 Threshold 60 → Precision 0.12, Recall 1.00
@@ -829,6 +799,8 @@ synthetic dataset.
 
 **Both the number and the explanation are withdrawn.**
 
+---
+
 ## 37. The stated cause was tested and disproven
 
 After fix A1 (section 16), accidental net collisions went to **zero**.
@@ -836,6 +808,8 @@ Precision did not move. It stayed at 0.12.
 
 If narrow amount diversity had been the cause, removing it would have
 changed the number. It did not.
+
+---
 
 ## 38. The real cause — the metric counted correct matches as errors
 
@@ -848,9 +822,9 @@ FP          = (category != "reference_mismatch_fuzzy") and fuzzy_fired
 
 That asks *"did fuzzy fire?"* — not *"did fuzzy pick the wrong record?"*
 
-The generator writes narration as `"NEFT CR UTR123456789 MERCH_001"`. The
-narration **contains the UTR verbatim**. So for every clean transaction,
-`partial_ratio(pg.utr, narration)` returns 100. It cleared every
+The generator wrote narration as `"NEFT CR UTR123456789 MERCH_001"`. The
+narration **contained the UTR verbatim**, so for every clean transaction
+`partial_ratio(pg.utr, narration)` returned 100. It cleared every
 threshold, and because its category was not `reference_mismatch_fuzzy`,
 it was counted as a false positive.
 
@@ -863,65 +837,47 @@ fall as the threshold rises. A flat count means the metric was
 independent of the variable it claimed to sweep. I looked at that table
 several times without noticing.
 
-## 39. The fuzzy tier is unreachable on this dataset
+---
+
+## 39. The fuzzy tier was unreachable, and that was already documented
 
 Rewriting the benchmark to report tier reachability first gave:
 
 ```
-category                    exact_utr  exact_txn  fuzzy   none
-----------------------------------------------------------------
-reference_mismatch_fuzzy    0          6          0       0
-...
+reference_mismatch_fuzzy    exact_utr=0  exact_txn=6  fuzzy=0
 Records that genuinely reach the fuzzy tier: 0
 ```
 
-**Zero of 61 records reach the fuzzy tier.**
+**Zero of 61 records reached the fuzzy tier.**
+`build_reference_mismatch()` corrupted only `bank["utr"]` and left
+`bank_ref` as `BANKREF_<txn_id>`, so tier 2 resolved every one of those
+records before fuzzy was consulted.
 
-`find_bank_candidates()` tries exact UTR, then exact resolved txn_id, then
-guarded fuzzy. `build_reference_mismatch()` corrupts only `bank["utr"]`
-and leaves `bank_ref` as `BANKREF_<txn_id>`, so tier 2 resolves every one
-of those records before fuzzy is consulted.
-
-**This was already known.** `tests/test_matching.py:732` says:
+**This was not a discovery.** `tests/test_matching.py` already said:
 
 > "In our data, this typically resolves via exact_txn since bank_ref
 > still encodes the correct txn_id even when UTR is corrupted. The fuzzy
 > tier exists for the realistic case where no such structured convention
 > is available."
 
-So it was not a discovery. The design fact was written down in a test
-docstring and never reached the numbers published elsewhere in this
-document. I kept reporting a precision figure for a code path production
-does not take.
+The design fact was written down in a test docstring and never reached
+the numbers published elsewhere in this document. I kept reporting a
+precision figure for a code path production does not take.
 
-**Current position.** The fuzzy tier is a designed fallback for banks
-with no structured reference convention. Our data uses
-`BANKREF_<txn_id>`, so it is unexercised end-to-end. It has unit coverage
-in isolation and no end-to-end measurement. `tune_fuzzy_threshold.py` now
-reports tier reachability and refuses to print a sweep when the tier is
-unreachable, because a tier that never runs has no precision.
-
-**Why the fix was deferred.** Making it reachable means breaking
-`bank_ref`, which is one line in the generator but three files in
-practice — `verify_data.py` CHECK 4 and CHECK 6 both link bank rows
-through `bank_ref` precisely because UTR is unreliable in these
-categories, and `test_matching.py:732` is named for the signal being
-removed. That is a change to the verification harness in exchange for
-exercising a tier that is not on the primary path. Deferred deliberately,
-recorded rather than hidden.
+Fixed in Upgrade B — see section 41.
 
 ---
 
-# 40. The pattern across all of this
+## 40. The pattern across all of this
 
-Three separate things that looked like engine weaknesses were measurement
+Several things that looked like engine weaknesses were measurement
 defects:
 
 | Reported as | Actually was |
 |---|---|
 | Ground-truth divergence (L1, L2) | Labels asserting statuses the decision table cannot produce |
 | Six fail-open auto-matches | A per-case harness structurally unable to observe batch-relational properties |
-| Fuzzy precision 0.13 | A benchmark counting correct matches as false positives, on a tier that never runs |
+| Fuzzy precision 0.13 | A benchmark counting correct matches as false positives, on a tier that never ran |
 
 Every time, the deterministic engine was right and the instrument was
 wrong.
@@ -938,18 +894,172 @@ does not measure what it says it measures.
 
 ---
 
-# 41. Current state
+# Upgrade B — realistic narration, and a reachable fuzzy tier
+
+## 41. The tier is now reachable
+
+`build_reference_mismatch()` now emits a bank row with **no structured
+reference at all**:
+
+| Field | Was | Now |
+|---|---|---|
+| `bank_ref` | `BANKREF_TXN_00025` | `HDFC0004521N9921` (bank-native) |
+| `utr` | corrupted digit | `None` — the feed exposes no UTR field |
+| `narration` | one invented format | realistic format, UTR in free text |
+
+Tier 1 misses (no UTR), tier 2 misses (bank-native ref, no `TXN_` token
+in the narration), so tier 3 fires with amount and date agreement
+enforced.
 
 ```
-184 / 184 tests passing
-Gold baseline: stable
-Baseline divergences: 0
-Not evaluable (batch-relational): 6
-Raw mismatches before exclusion: 6
-Accidental net collisions: 0
+reference_mismatch_fuzzy    exact_utr=0  exact_txn=0  fuzzy=6
+Records that genuinely reach the fuzzy tier: 6
 ```
 
-**Deterministic core (Phases 0–4).** Decimal firewall, per-record fault
+Five narration formats replaced the single invented one, drawn from what
+Indian banks actually emit. One — the UPI form — carries a UPI reference
+and **no UTR at all**, deliberately unrecoverable by narration matching.
+Without at least one such case, "our fuzzy tier recovers narration" would
+be an untested claim about a dataset engineered to be easy.
+
+---
+
+## 42. `BANKREF_<txn_id>` was load-bearing in four files
+
+A convention introduced for generator convenience had quietly become an
+assumption everywhere downstream. Removing it broke, in order:
+
+1. `verify_data.py` — `index_bank_by_pg_txn` only indexed rows starting
+   with `BANKREF_`. CHECK 4 reported six rows as missing from the bank
+   feed; CHECK 6 asserted a UTR discrepancy that no longer exists in that
+   shape.
+2. `build_e2e_benchmark.py` — `get_txn_id()` raised for any bank row it
+   could not resolve. **Hard crash**, no benchmark built.
+3. `tune_fuzzy_threshold.py` — see section 43.
+
+Each needed a second linkage path, and each of those paths is documented
+as a *verification affordance*: the verifier may use fuzzy matching to
+answer "does a bank row for this transaction exist in the file?" The
+pipeline still has to answer the harder question — "which row, if any,
+may I safely link, given amount and date guards across the whole
+candidate pool?" — and nothing in the harness does that for it.
+
+Worth stating plainly: a shortcut taken once in a generator propagated
+silently into every downstream evaluator, and nobody noticed until the
+shortcut was removed.
+
+---
+
+## 43. The sweep's truth linkage broke for the same reason — twice
+
+The first version of `tune_fuzzy_threshold.py` asked *"did fuzzy fire?"*
+(section 38). The corrected version asked:
+
+```python
+best_record.txn_id == pg.txn_id
+```
+
+which is broken for exactly the records the sweep now evaluates. Upgrade
+B strips both the `bank_ref` convention and any `TXN_` token from the
+narration — that removal is what makes the tier reachable at all. So
+`bank_record.txn_id` is `None` **by construction**, `None == "TXN_00025"`
+is `False`, and every correct selection was counted as a false positive:
+
+```
+TP = 0, FP = 6, Recall = nan
+```
+
+The metric was identifying ground truth by the exact field the category
+exists to remove. Same defect class as section 38, in the corrected
+version of the same file.
+
+**Fix.** A named `is_correct()` predicate that prefers `txn_id` when one
+exists and falls back to exact net equality when it does not — valid only
+because accidental net collisions are measured at zero, with that
+dependency written into the docstring rather than left implicit.
+
+Corrected result:
+
+```
+Threshold   TP   FP   FN   Precision  Recall
+85          6    0    0    1.00       1.00
+95          3    0    3    1.00       0.50
+```
+
+**Caveat, printed with the number.** With zero accidental net collisions,
+any candidate surviving the amount and date guards is already the correct
+one. The fuzzy score is doing no discriminating work — it is a formality
+on top of a guard that has already decided. Precision 1.00 means "the
+guards are selective on this dataset", not "narration matching works".
+Making narration load-bearing would need amount collisions *inside* the
+guard window, which is a deliberate dataset change rather than a fix.
+
+---
+
+## 44. Fail-closed behaviour became visible only once the tier ran
+
+With the tier reachable, six records diverge from ground truth:
+
+```
+expected  MATCHED / NONE
+actual    HUMAN_REVIEW / REFERENCE_MISMATCH
+```
+
+The engine recovers all six by narration similarity, then declines to
+auto-match them. Scoring withholds `SCORE_UTR_EXACT` and
+`SCORE_TXN_ID_BANK` — neither is available — so confidence lands LOW and
+`low_confidence_requires_human_review` fires at priority 6.
+
+**We kept the engine.** A settlement whose only link to a transaction is
+a fuzzy string match, with no structured identifier agreeing anywhere, is
+not something a finance system should auto-approve. Routing it to a human
+is the fail-closed outcome this architecture claims to produce, and here
+it produced it without being asked.
+
+The ground-truth label was written while the fuzzy tier was unreachable,
+so it encoded an assumption that had never been tested. It is
+deliberately left as `MATCHED`.
+
+**Why not correct the label.** It would have restored 100%. It would also
+have been a third ground-truth edit, and a reviewer counting three starts
+asking whether the answer key follows the engine. A number that needed
+the target moved is worth less than one that did not.
+
+**How it is recorded.** `verify_e2e_gold_baseline.py` gained a third
+outcome, `KNOWN_POLICY_DIVERGENCE`, distinct from
+`NOT_EVALUABLE_PER_CASE`:
+
+- `NOT_EVALUABLE_PER_CASE` — the harness **cannot see** the property
+- `KNOWN_POLICY_DIVERGENCE` — the harness sees it clearly, and we decided
+  the engine is right
+
+Collapsing the two would use an honesty mechanism to hide a result. Two
+tests prevent that: every policy exclusion must carry a rationale over 60
+characters in the artifact, and the two buckets must stay disjoint. The
+arithmetic stays checkable:
+
+```
+raw (12) == divergent (0) + not_evaluable (6) + known_policy (6)
+```
+
+---
+
+# 45. Current state
+
+```
+289 / 289 tests passing
+
+Gold baseline:            stable
+Baseline divergences:     0
+Not evaluable:            6  (batch-relational)
+Known policy divergences: 6  (fail-closed, documented)
+Raw mismatches:           12
+Measured accuracy:        55/61 (90.16%)
+Fuzzy tier:               6 of 61 records reach it
+Accidental collisions:    0
+```
+
+**Deterministic core (0–4).** Decimal firewall, per-record fault
 isolation, three-tier matching with deterministic tie-breaking,
 independent GST/TDS validation, per-record seller ledger, priority
 decision table with 512/512 combination coverage, full reason-code
@@ -959,29 +1069,37 @@ preservation.
 financial vocabulary, deterministic fallback, invariance tests proving
 the decision is unchanged whether the model succeeds or fails.
 
-**Real model (5B).** Gemini 3.1 Flash-Lite behind that boundary,
-explanation only.
+**Real model (5B).** Gemini 3.1 Flash-Lite behind that boundary.
 
 **Evaluation (5C).** Held-out narration and explanation sets, semantic
 faithfulness scoring, E2E gold baseline harness, throughput benchmark,
-tier reachability measurement.
+tier reachability measurement, full-batch accuracy report.
+
+**Agent (6).** Four read-only tools, a registry with strict argument
+validation, a two-call `ask()` loop, and a demo that re-verifies the data
+invariant after every answer.
 
 ---
 
-# 42. What is not done
+# 46. What is not done
 
-Listing these explicitly so nothing here is read as a completed claim.
+Listing these explicitly so nothing above is read as a completed claim.
 
-- **The agent itself.** There is no orchestration loop, no tool
-  selection, no conversational surface. A human runs scripts and reads
-  JSON. The model is called by one function to rephrase one decision.
-  This is the largest gap.
-- **LLM-assisted candidate matching** — built, not connected (section 24).
-- **Fuzzy tier** — unreachable end-to-end (section 33).
+- **LLM-assisted candidate matching** — built, not connected (section
+  24). The model selects tools, phrases results, and explains decisions.
+  It does not participate in matching, so its contribution to any
+  financial outcome is zero by design.
+- **Agent tool-selection accuracy is six questions.** A smoke test, not
+  an evaluation. A real measurement needs a held-out labelled question
+  set.
+- **The fuzzy tier is reachable but not stress-tested.** Six records
+  reach it and it recovers all six, but the amount guard is doing the
+  discriminating work (section 43).
 - **Held-out sets** — 8 cases each; too small to generalise from.
-- **Real bank narration** — formats are self-invented. `BANKREF_<txn_id>`
-  is a convention no real bank provides, and it makes matching easier
-  than the real problem.
+- **Real bank narration** — five formats now, but still invented. Only
+  the `reference_mismatch_fuzzy` category has a bank-native reference;
+  every other category still uses `BANKREF_<txn_id>`, a convention no
+  real bank provides.
 - **Settlement model** — one PG transaction to one bank credit. Real
   settlements are batched: many transactions net into one transfer, minus
   refunds and chargebacks. The hard part of real reconciliation is
@@ -991,7 +1109,7 @@ Listing these explicitly so nothing here is read as a completed claim.
 
 ---
 
-# 43. Milestones
+# 47. Milestones
 
 ```
 phase-3-final
@@ -1000,14 +1118,16 @@ phase-4-final
     ↓
 phase-5-boundary
     ↓
-phase-5-final        (real Gemini integration + evaluation)
+phase-5-final     (real Gemini integration + evaluation)
+    ↓
+phase-6-final     (agent tool layer, ask() loop, real-model demo)
 ```
 
 These are architectural checkpoints, not version numbers.
 
 ---
 
-# 44. Closing
+# 48. Closing
 
 The most useful thing I built was not the reconciliation engine. It was
 the set of harnesses that kept disagreeing with it — and the discipline
@@ -1016,3 +1136,10 @@ of checking, each time, which one was actually wrong.
 Usually it was the harness. That is not a comfortable result to write
 down, but it is the honest one, and it is the reason I trust the engine
 more than I would have if everything had passed the first time.
+
+The last one was different. Upgrade B made a dead code path run for the
+first time, and the engine turned out to be more conservative than the
+ground truth expected. Accuracy fell from 100% to 90.16% as a direct
+result. That is the trade this project has been making all along: a
+number you can explain is worth more than a number that never had to be
+tested.

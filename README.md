@@ -7,7 +7,7 @@
 ![Python](https://img.shields.io/badge/python-3.11-blue)
 ![Pydantic](https://img.shields.io/badge/contracts-Pydantic%20v2-e92063)
 ![Gemini](https://img.shields.io/badge/model-Gemini%203.1%20Flash--Lite-4285F4)
-![Tests](https://img.shields.io/badge/tests-287%20passing-brightgreen)
+![Tests](https://img.shields.io/badge/tests-289%20passing-brightgreen)
 ![Status](https://img.shields.io/badge/status-phase%206%20complete-brightgreen)
 ![Track](https://img.shields.io/badge/Razorpay%20Buildathon-Track%2004-002970)
 
@@ -43,15 +43,15 @@ graph TB
         A3[Merchant Invoice] --> B1
     end
 
-    subgraph Deterministic["Deterministic Core — owns financial truth"]
+    subgraph Deterministic["Deterministic Core - owns financial truth"]
         B1[Ingestion + Schema Validation] --> B2[Normalization]
-        B2 --> B3[Matching: exact UTR → txn_id → guarded fuzzy]
+        B2 --> B3[Matching: exact UTR, then txn_id, then guarded fuzzy]
         B3 --> B4[Tax Validation: GST + TDS, independent]
         B4 --> B5[Decision Table: 512/512 combinations]
         B5 --> B6[MatchDecision + reason codes + evidence]
     end
 
-    subgraph Agent["Bounded AI Layer — owns nothing"]
+    subgraph Agent["Bounded AI Layer - owns nothing"]
         B6 --> C1[BatchQueryContext: 4 read-only tools]
         C1 --> C2{Tool Registry}
         C2 --> C3[SELECTION: model sees tools, NOT data]
@@ -108,8 +108,8 @@ razorpay-ai-finance-controller/
 │           ├── registry.py           Tool specs, strict argument validation
 │           └── candidate_lookup.py   Read-only index consumer
 │
-├── scripts/                          Generation, verification, evaluation, demo (19 files)
-├── tests/                            287 tests across 24 files
+├── scripts/                          Generation, verification, evaluation, demo
+├── tests/                            289 tests across 24 files
 ├── data/
 │   ├── raw/                          Generated PG / bank / invoice sources
 │   ├── ground_truth.json             Never read by the pipeline — evaluation only
@@ -196,7 +196,7 @@ happened, it was the harness. See below.
 | Decision Status | Count | Meaning |
 |---|---|---|
 | `MATCHED` | 30 | Clean across all three sources, tax verified |
-| `HUMAN_REVIEW` | 13 | Amount mismatch, duplicate, or degraded signals |
+| `HUMAN_REVIEW` | 13 | Amount mismatch, duplicate, degraded signals, or fuzzy-only linkage |
 | `TAX_MISMATCH` | 7 | GST or TDS variance against statutory expectation |
 | `AMBIGUOUS` | 6 | A competing record exists; no safe automatic choice |
 | `PARTIAL_MATCH` | 3 | Invoice missing — tax could not be verified |
@@ -211,33 +211,41 @@ match rate here would mean the exceptions were not being caught.**
 
 | Measure | Result |
 |---|---|
-| Status accuracy | **61/61 (100%)** |
-| Exception-code accuracy | **61/61 (100%)** |
+| Status accuracy | **55/61 (90.16%)** |
+| Exception-code accuracy | **55/61 (90.16%)** |
 | Records rejected at ingestion | 2 (corrupted — counted, not dropped) |
-| Divergences | 0 |
+| Divergences | 6, all in one category, all fail-closed |
 
-Every category at 100%, including the six ambiguous cases the per-case
-harness cannot evaluate. Ground truth is generated alongside the data
-and never read by the pipeline.
+Eight of ten categories score 100%, including the six ambiguous cases the per-case harness
+cannot evaluate. Ground truth is generated alongside the data and never read by the pipeline.
 
-**Two ground-truth labels were corrected** after the engine disagreed
-with them — `duplicate` and `unresolvable` both asserted statuses the
-decision table cannot produce. Both corrections are disclosed in
-`data/eval/accuracy_report.json` and in `FAILURE_LOG.md` §14–15. The
-decision table is the specification; it was written first and is tested
-over all 512 combinations.
+**The six divergences are the engine declining to auto-approve.** Records in
+`reference_mismatch_fuzzy` are recovered by the fuzzy tier — narration similarity, with
+amount and date agreement enforced — and then routed to `HUMAN_REVIEW` because no
+structured identifier agrees anywhere. Ground truth expected auto-match.
 
-*What this measures:* the implementation matches its own specification
-across ten adversarial categories. That is narrower than "handles
-reconciliation" — see Known Limitations.
+We kept the engine. A settlement whose only link to a transaction is a fuzzy string match
+is not something a finance system should approve without a human. Correcting the label
+would have restored 100%; it would also have been a third ground-truth edit, and **a number
+that needed the target moved is worth less than one that did not.**
+
+Recorded as `KNOWN_POLICY_DIVERGENCE` in
+`data/eval/e2e_gold_baseline_verification_5C5_2.json`, with the rationale attached to each
+case. Two earlier label corrections (`duplicate`, `unresolvable`) are disclosed in
+`data/eval/accuracy_report.json` and `FAILURE_LOG.md` §14–15.
+
+*What this measures:* the implementation matches its own specification across ten
+adversarial categories. That is narrower than "handles reconciliation" — see Known
+Limitations.
 
 ### Verification
 
 | Measure | Result |
 |---|---|
-| Test suite | **287 passing** across 24 files |
+| Test suite | **289 passing** across 24 files |
 | Decision policy coverage | **512/512** boolean combinations resolve deterministically |
-| Gold baseline (per-case E2E) | **0 divergences**, 57 exact matches, 6 declared not-evaluable |
+| Gold baseline (per-case E2E) | **0 unexplained divergences** · 51 exact · 6 not-evaluable · 6 known-policy |
+| Fuzzy tier | **6 of 61 records reach it** (was 0). Precision 1.00, recall 1.00 through threshold 90, 0.50 at 95 |
 | Throughput | **1,113.9 records/sec** at batch 60; swept across 60/300/1000/5000 |
 | Explanation faithfulness | 8/8 status preserved · 8/8 amounts preserved · 8/8 tax preserved · **0 unsupported claims** · **0 safety-critical failures** |
 | Real-model agent verification | **6/6** data invariant held · 6/6 tool selection matched expectation |
@@ -265,15 +273,19 @@ disagreeing with it.
 |---|---|
 | Six records auto-matched that should have gone to a human | The **generator** never emitted a colliding bank row, so ambiguity was asserted in ground truth but did not exist in the data. 162 unit tests passed throughout — the guarding test checked *"if flagged ambiguous, never auto-match"*, and nothing was ever flagged. |
 | Ground-truth divergences | Labels asserting statuses the decision table **cannot produce** |
-| Fuzzy precision 0.13 | A benchmark **counting correct matches as false positives** — narration embeds the UTR verbatim, so every clean record scored 100. The tell was FP staying at exactly 43 across thresholds 60–95. |
+| Fuzzy precision 0.13 | A benchmark **counting correct matches as false positives** — narration embedded the UTR verbatim, so every clean record scored 100. The tell was FP staying at exactly 43 across thresholds 60–95. |
 
 **In every case the deterministic engine was right and the instrument was wrong.**
 
-Rewriting the fuzzy benchmark surfaced a second fact: **zero of 61 records reach the fuzzy
-tier.** `bank_ref` encodes the txn_id, so tier 2 always resolves first. That was already
-documented in a test docstring and had never reached the numbers published elsewhere. The
-benchmark now reports tier reachability and refuses to print a sweep for a tier that never
-runs.
+Rewriting the fuzzy benchmark surfaced a second fact: **zero of 61 records reached the
+fuzzy tier.** `bank_ref` encoded the txn_id, so tier 2 always resolved first — a convention
+introduced for generator convenience that had made an entire code path dead. Removing it
+took the count from 0 to 6, and broke three separate evaluation scripts that had quietly
+come to depend on it.
+
+Making the tier run for the first time then exposed something the engine had always done
+and nobody had been able to test: it **declines to auto-match on fuzzy-only evidence.**
+Accuracy fell from 100% to 90.16% as a direct result.
 
 Full write-up, including the corrections to this log's own earlier claims:
 **[`FAILURE_LOG.md`](FAILURE_LOG.md)**
@@ -287,14 +299,24 @@ Stated plainly so none of the above is read as more than it is.
 - **Settlement is modelled 1:1.** One PG transaction to one bank credit. Real settlements are
   *batched* — many transactions net into one transfer, minus refunds and chargebacks. The
   hard part of real reconciliation is decomposing that, and this system never has to.
-- **Bank narration formats are self-invented.** `BANKREF_<txn_id>` is a convention no real
-  bank provides, and it makes matching easier than the real problem.
-- **The fuzzy tier is unexercised end-to-end.** Unit-tested in isolation; never reached on
-  this dataset. No end-to-end measurement exists, and none is claimed.
-- **Held-out evaluation is 8 cases.** 75% of 8 is 6. Real measurements, but closer to
-  anecdote than statistic.
-- **LLM-assisted candidate matching is built but not connected.** `find_bank_candidates_with_llm_assist`
-  exists and is deliberately off the live path until its false-positive rate is measured.
+- **Bank narration formats are invented.** Five formats now instead of one, drawn from what
+  Indian banks emit, but still synthetic. Only `reference_mismatch_fuzzy` uses a bank-native
+  reference; every other category still uses `BANKREF_<txn_id>`, a convention no real bank
+  provides.
+- **The fuzzy tier is reachable but not stress-tested.** Six records reach it and it recovers
+  all six. But accidental net collisions in this dataset are zero, so the amount guard
+  already identifies the correct row before similarity is consulted — the fuzzy score is
+  doing no discriminating work. **Precision 1.00 means "the guards are selective here", not
+  "narration matching works."** Making narration load-bearing needs amount collisions inside
+  the guard window, which is a deliberate dataset change.
+- **One bank row carries no UTR at all** (UPI format, a UPI reference instead). No regex can
+  recover it. It is deliberately present as a case the deterministic path cannot solve.
+- **Held-out evaluation is 8 cases.** Real measurements, but closer to anecdote than
+  statistic.
+- **LLM-assisted candidate matching is built but not connected.**
+  `find_bank_candidates_with_llm_assist` exists and is deliberately off the live path until
+  its false-positive rate is measured.
+- **Agent tool-selection accuracy is six questions.** A smoke test, not an evaluation.
 - **Throughput is a recorded benchmark on one machine**, not a production capacity guarantee.
 - **The dataset is synthetic and self-generated.** Results characterise this dataset.
 
@@ -311,7 +333,8 @@ Stated plainly so none of the above is read as more than it is.
 - [x] **Phase 5B** — Real model: Gemini 3.1 Flash-Lite behind the boundary
 - [x] **Phase 5C** — Evaluation: held-out sets, faithfulness scoring, gold baseline harness
 - [x] **Phase 6** — Agent: tool layer, registry, `ask()` loop, real-model demo
-- [ ] Realistic bank narration formats + connected LLM candidate matching
+- [x] **Upgrade B** — Realistic narration formats; fuzzy tier reachable for the first time
+- [ ] Connected LLM candidate matching
 - [ ] Expanded held-out evaluation (8 → 30 cases)
 - [ ] Batched settlement (N:1 decomposition)
 
@@ -344,8 +367,12 @@ python scripts/generate_data.py          # deterministic, seeded
 python scripts/verify_data.py            # structural + tax-math checks
 python scripts/benchmark_throughput.py   # 60 / 300 / 1000 / 5000
 python scripts/tune_fuzzy_threshold.py   # tier reachability + selection accuracy
-python scripts/report_accuracy.py       # measured accuracy vs ground truth
+python scripts/report_accuracy.py        # measured accuracy vs ground truth
 ```
+
+To rebuild the frozen E2E baseline after regenerating data, run
+`build_e2e_benchmark.py`, then `run_e2e_deterministic.py`, then
+`verify_e2e_gold_baseline.py`, in that order.
 
 ### Run the demo — no API key needed
 
@@ -367,6 +394,11 @@ python scripts/demo_agent.py
 
 Ten Gemini calls (selection + phrasing per question). Free tier is enforced in config —
 there is no paid-model fallback path.
+
+**Note:** the test suite is hermetic, but the real-model scripts are not. They require
+`.env` to be exported first and will fail with `RuntimeError: GEMINI_API_KEY is not
+configured` otherwise. This is documented rather than handled in code — see
+`FAILURE_LOG.md` §34.
 
 ---
 
