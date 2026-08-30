@@ -195,17 +195,21 @@ happened, it was the harness. See below.
 
 | Decision Status | Count | Meaning |
 |---|---|---|
-| `MATCHED` | 30 | Clean across all three sources, tax verified |
-| `HUMAN_REVIEW` | 13 | Amount mismatch, duplicate, degraded signals, or fuzzy-only linkage |
+| `MATCHED` | 24 | Clean across all three sources, tax verified |
+| `HUMAN_REVIEW` | 19 | Amount mismatch, duplicate, degraded signals, or fuzzy-only linkage |
 | `TAX_MISMATCH` | 7 | GST or TDS variance against statutory expectation |
 | `AMBIGUOUS` | 6 | A competing record exists; no safe automatic choice |
-| `PARTIAL_MATCH` | 3 | Invoice missing — tax could not be verified |
-| `UNMATCHED` | 2 | Malformed record rejected at ingestion |
+| `UNMATCHED` | 3 | Bank row absent, or malformed record rejected at ingestion |
+| `PARTIAL_MATCH` | 2 | Invoice missing — tax could not be verified |
 | **Total** | **61** | Every record, unfiltered |
 
-**Match rate: 49.18%** — and that number needs its context. The dataset is deliberately
+**Match rate: 39.34%** — and that number needs its context. The dataset is deliberately
 adversarial: ten anomaly categories with only 18 clean records by construction. **A high
 match rate here would mean the exceptions were not being caught.**
+
+Upgrade B lowered this from 49.18%. Six `reference_mismatch_fuzzy` records moved from
+`MATCHED` to `HUMAN_REVIEW` once the fuzzy tier became reachable and the engine's
+fail-closed behaviour became visible for the first time. See Measured Accuracy below.
 
 ### Measured accuracy — against independent ground truth
 

@@ -1303,3 +1303,27 @@ one. This log has recorded several cases of a number measuring
 something other than what it claimed. Shipping a component that adds
 nothing measurable, and describing it as AI-assisted matching, would be
 the same mistake in a different shape.
+
+## 51. The README's decision table was not updated for Upgrade B
+
+The accuracy section and the fuzzy-tier row were corrected. The
+decision-status table three paragraphs above them was not, so the
+README reported 30 `MATCHED` and a 49.18% match rate while the
+pipeline produced 24 and 39.34%.
+
+The arithmetic is exactly what Upgrade B predicts: six
+`reference_mismatch_fuzzy` records moved `MATCHED` -> `HUMAN_REVIEW`
+once the fuzzy tier became reachable. 30 − 6 = 24, 13 + 6 = 19.
+`PARTIAL_MATCH` and `UNMATCHED` also shifted by one, from RNG drift
+in the narration change.
+
+I even edited the `HUMAN_REVIEW` row's description to mention
+"fuzzy-only linkage" without changing the count sitting next to it.
+
+**How it was found.** Rehearsing the demo out loud and noticing the
+number I was saying did not match the number I had written.
+
+Third documentation-drift incident in this project. Section 29 is
+about the previous two, and includes the line "documentation had to
+catch up with the engineering reality." Apparently that is not a
+lesson you learn once.
