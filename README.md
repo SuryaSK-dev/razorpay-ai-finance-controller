@@ -38,9 +38,9 @@ question to answer and **cannot alter a single number in the answer**.
 ```mermaid
 graph TB
     subgraph Sources
-        A1[PG Settlement] --> B1
-        A2[Bank Statement] --> B1
-        A3[Merchant Invoice] --> B1
+        A1[PG Settlement]
+        A2[Bank Statement]
+        A3[Merchant Invoice]
     end
 
     subgraph Deterministic["Deterministic Core - owns financial truth"]
@@ -52,14 +52,17 @@ graph TB
     end
 
     subgraph Agent["Bounded AI Layer - owns nothing"]
-        B6 --> C1[BatchQueryContext: 4 read-only tools]
-        C1 --> C2{Tool Registry}
+        C1[BatchQueryContext: 4 read-only tools] --> C2{Tool Registry}
         C2 --> C3[SELECTION: model sees tools, NOT data]
         C3 --> C4[dispatch: deterministic execution]
         C4 --> C5[PHRASING: model sees real numbers, uses only those]
         C5 --> C6[AgentAnswer: prose + the data it describes]
     end
 
+    A1 --> B1
+    A2 --> B1
+    A3 --> B1
+    B6 --> C1
     D1[Finance Operator] --> C3
     C6 --> D1
 ```
