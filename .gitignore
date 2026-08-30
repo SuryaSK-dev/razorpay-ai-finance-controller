@@ -23,3 +23,7 @@ data/_benchmark_tmp/
 test_output.txt
 *.log
 data/_benchmark_tmp/
+
+# Personal study / interview-preparation notes.
+# Deliberately NOT part of the repository deliverable.
+FULL_SCOPE.md

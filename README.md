@@ -7,7 +7,7 @@
 ![Python](https://img.shields.io/badge/python-3.11-blue)
 ![Pydantic](https://img.shields.io/badge/contracts-Pydantic%20v2-e92063)
 ![Gemini](https://img.shields.io/badge/model-Gemini%203.1%20Flash--Lite-4285F4)
-![Tests](https://img.shields.io/badge/tests-302%20passing-brightgreen)
+![Tests](https://img.shields.io/badge/tests-326%20passing-brightgreen)
 ![Status](https://img.shields.io/badge/status-phase%206%20complete-brightgreen)
 ![Track](https://img.shields.io/badge/Razorpay%20Buildathon-Track%2004-002970)
 
@@ -52,7 +52,7 @@ graph TB
     end
 
     subgraph Agent["Bounded AI Layer - owns nothing"]
-        C1[BatchQueryContext: 4 read-only tools] --> C2{Tool Registry}
+        C1[BatchQueryContext: 5 read-only tools] --> C2{Tool Registry}
         C2 --> C3[SELECTION: model sees tools, NOT data]
         C3 --> C4[dispatch: deterministic execution]
         C4 --> C5[PHRASING: model sees real numbers, uses only those]
@@ -108,12 +108,12 @@ razorpay-ai-finance-controller/
 │       ├── explanation_validator.py  Faithfulness checks on generated prose
 │       ├── providers/                LLMProvider ABC + Gemini implementation
 │       └── tools/
-│           ├── query_tools.py        Four read-only tools over decide_batch() output
+│           ├── query_tools.py        Five read-only tools over decide_batch() output
 │           ├── registry.py           Tool specs, strict argument validation
 │           └── candidate_lookup.py   Read-only index consumer
 │
 ├── scripts/                          Generation, verification, evaluation, demo
-├── tests/                            302 tests across 25 files
+├── tests/                            326 tests across 26 files
 ├── data/
 │   ├── raw/                          Generated PG / bank / invoice sources
 │   ├── ground_truth.json             Never read by the pipeline — evaluation only
@@ -134,7 +134,7 @@ razorpay-ai-finance-controller/
 | `exceptions/decision_table.py` | Priority-ordered rules, exhaustively tested over all 2¹¹ = 2048 context combinations |
 | `exceptions/manager.py` | Builds the decision context; preserves *every* violation in `reason_codes` while `status` stays single-valued |
 | `agent/guardrails.py` | Real preemptive timeout — a 15s hang returns in under 12s, verified by regression test |
-| `agent/tools/query_tools.py` | Four read-only tools. No method recomputes a financial outcome; the absence is asserted structurally, not left to review. |
+| `agent/tools/query_tools.py` | Five read-only tools, including the cash position in rupees. No method recomputes a financial outcome; the absence is asserted structurally, not left to review. |
 | `agent/controller.py` | `ask()` — select tool → dispatch deterministically → phrase the real result |
 
 ---
@@ -251,7 +251,7 @@ Limitations.
 
 | Measure | Result |
 |---|---|
-| Test suite | **302 passing** across 25 files |
+| Test suite | **326 passing** across 26 files |
 | Decision policy coverage | **2048/2048** context combinations resolve deterministically |
 | Gold baseline (per-case E2E) | **0 unexplained divergences** · 51 exact · 6 not-evaluable · 6 known-policy |
 | Fuzzy tier | **6 of 61 records reach it** (was 0). Precision 1.00, recall 1.00 through threshold 90, 0.50 at 95 |
@@ -436,13 +436,14 @@ Q4. Why is TXN_00031 not fully matched?
             Every number came from the engine.
 ```
 
-The four tools available to the agent:
+The five tools available to the agent:
 
 | Tool | Returns |
 |---|---|
 | `get_match_rate` | Counts by status and confidence tier across the full batch |
 | `get_exceptions(status?)` | Every unresolved record, itemised — never a sample |
 | `get_evidence(txn_id)` | Full audit trail for one transaction, including which rule fired |
+| `get_cash_position` | The batch in **rupees**: settled, awaiting verification, blocked, and expected-but-not-credited — plus the variance against what the bank actually moved |
 | `get_throughput_report` | Recorded throughput, leading with the run closest to the batch size |
 
 An invented tool name is rejected, never defaulted. An invented argument is rejected, never
