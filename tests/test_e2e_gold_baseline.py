@@ -8,22 +8,34 @@ The tests prove:
 1. The frozen 5C.5.1 benchmark is deterministic.
 2. The existing reconciliation pipeline reproduces it.
 3. No evaluation-only ground truth is required.
-4. Every frozen case has an exact deterministic counterpart, OR is
-   explicitly declared not evaluable by per-case execution.
+4. Every frozen case is an exact match, OR is declared not evaluable
+   by per-case execution, OR is a documented policy divergence.
 5. No unexpected deterministic decisions appear.
-6. The batch-relational exclusion cannot hide a real divergence.
+6. Neither exclusion bucket can hide a real divergence.
 
-Scope note
-----------
-run_e2e_deterministic.py executes each case in isolation. Properties
-that depend on other records existing in the same batch -- ambiguity
-and duplicate detection -- cannot be observed in a batch of one, so
-the verifier reports them as NOT_EVALUABLE_PER_CASE rather than as
-engine divergence. Those categories are covered by the full-batch
-path in tests/test_matching.py instead.
+THREE OUTCOMES, AND WHY THE DISTINCTION MATTERS
+-----------------------------------------------
+    MATCH                    the engine reproduced the frozen gold
 
-test_exclusion_cannot_hide_divergence below is the guard that keeps
-that exclusion honest.
+    NOT_EVALUABLE_PER_CASE   the harness structurally CANNOT observe
+                             this property. run_e2e_deterministic.py
+                             executes each case in isolation, and
+                             ambiguity means "another plausible record
+                             exists elsewhere in the batch" -- which a
+                             batch of one cannot contain.
+
+    KNOWN_POLICY_DIVERGENCE  the harness observes it correctly. We
+                             decided the engine is right and the
+                             ground-truth label was optimistic, and
+                             said so in the artifact.
+
+Collapsing the last two would let an honesty mechanism hide a result.
+Four tests below exist specifically to keep both buckets honest:
+
+    test_exclusion_cannot_hide_divergence
+    test_only_declared_categories_are_excluded
+    test_policy_divergences_carry_a_rationale
+    test_the_two_exclusion_buckets_are_disjoint
 """
 
 from __future__ import annotations
@@ -58,6 +70,7 @@ EXPECTED_STAGE = "5C.5.2"
 ACCEPTABLE_STATUSES = {
     "MATCH",
     "NOT_EVALUABLE_PER_CASE",
+    "KNOWN_POLICY_DIVERGENCE",
 }
 
 
@@ -136,7 +149,7 @@ def test_baseline_is_stable() -> None:
 
 def test_no_baseline_divergence() -> None:
     """
-    Divergence among EVALUABLE cases must be zero.
+    Divergence among EVALUABLE, UNEXPLAINED cases must be zero.
 
     NOTE: the key names below were previously
     'missing_actual_cases' and 'unexpected_actual_decisions', neither
@@ -172,8 +185,8 @@ def test_no_baseline_divergence() -> None:
 
 def test_all_cases_match() -> None:
     """
-    Every case is either an exact match or explicitly declared not
-    evaluable by per-case execution. Nothing else is acceptable.
+    Every case is an exact match, or is declared not evaluable, or is
+    a documented policy divergence. Nothing else is acceptable.
     """
 
     report = load_json(
@@ -196,10 +209,19 @@ def test_all_cases_match() -> None:
             assert result["match"] is True
             assert result["differences"] == {}
         else:
-            # A not-evaluable case must be genuinely divergent --
-            # otherwise it should have been recorded as a MATCH.
+            # Both exclusion buckets describe genuinely divergent
+            # cases. A case that matched should never be in either --
+            # that would mean an exclusion was applied to a passing
+            # case, which is how an exclusion starts inflating a
+            # number.
             assert result["match"] is False
-            assert result["not_evaluable"] is True
+            assert (
+                result["not_evaluable"]
+                or result["known_policy_divergence"]
+            ), (
+                f"{result['case_id']} diverges but is in neither "
+                "documented bucket"
+            )
 
 
 def test_case_coverage_is_exact() -> None:
@@ -219,17 +241,18 @@ def test_case_coverage_is_exact() -> None:
     assert (
         coverage["matched_cases"]
         + coverage["not_evaluable_cases"]
+        + coverage["known_policy_divergence_cases"]
         == coverage["frozen_cases"]
     )
 
 
 def test_exclusion_cannot_hide_divergence() -> None:
     """
-    The batch-relational exclusion must be arithmetically transparent.
+    Both exclusions must be arithmetically transparent.
 
-    raw_divergent_cases is the mismatch count BEFORE exclusion. If it
-    ever exceeds divergent_cases + not_evaluable_cases, the exclusion
-    is absorbing something it should not.
+    raw_divergent_cases is the mismatch count BEFORE any exclusion. If
+    it ever exceeds the sum of the three buckets, something is being
+    absorbed that should not be.
     """
 
     report = load_json(
@@ -244,31 +267,106 @@ def test_exclusion_cannot_hide_divergence() -> None:
         coverage["raw_divergent_cases"]
         == coverage["divergent_cases"]
         + coverage["not_evaluable_cases"]
+        + coverage["known_policy_divergence_cases"]
     )
 
 
 def test_only_declared_categories_are_excluded() -> None:
     """
-    Exclusion is permitted ONLY for the categories the verifier
-    declares as batch-relational. A future edit cannot quietly widen
-    the exclusion to silence an inconvenient failure.
+    Exclusion is permitted ONLY for categories the verifier declares.
+    A future edit cannot quietly widen either bucket to silence an
+    inconvenient failure.
     """
 
     report = load_json(
         VERIFICATION_PATH
     )
 
-    declared = set(
+    structural = set(
         report["scope"]["batch_relational_categories"]
+    )
+
+    policy = set(
+        report["scope"]["known_policy_divergences"]
     )
 
     for result in report["case_results"]:
         if result.get("not_evaluable"):
-            assert result["category"] in declared, (
+            assert result["category"] in structural, (
                 f"{result['case_id']} excluded as not evaluable "
                 f"but its category {result['category']!r} is not "
-                f"declared batch-relational {sorted(declared)}"
+                f"declared batch-relational {sorted(structural)}"
             )
+
+        if result.get("known_policy_divergence"):
+            assert result["category"] in policy, (
+                f"{result['case_id']} excluded as a policy "
+                f"divergence but its category {result['category']!r} "
+                f"is not declared {sorted(policy)}"
+            )
+
+
+def test_policy_divergences_carry_a_rationale() -> None:
+    """
+    A case excluded on policy grounds must say WHY, in the artifact.
+
+    An exclusion without a stated reason is indistinguishable from one
+    added to make a number look better.
+    """
+
+    report = load_json(
+        VERIFICATION_PATH
+    )
+
+    for result in report["case_results"]:
+        if not result.get("known_policy_divergence"):
+            continue
+
+        rationale = result.get("policy_rationale")
+
+        assert rationale, (
+            f"{result['case_id']} is excluded as a known policy "
+            "divergence but carries no rationale"
+        )
+
+        assert len(rationale) > 60, (
+            f"{result['case_id']}: rationale is too thin to be a "
+            "real justification"
+        )
+
+
+def test_the_two_exclusion_buckets_are_disjoint() -> None:
+    """
+    A category cannot be both structurally unobservable and a known
+    policy disagreement. Overlap would mean one of the two labels is
+    wrong about what the harness can see.
+    """
+
+    report = load_json(
+        VERIFICATION_PATH
+    )
+
+    structural = set(
+        report["scope"]["batch_relational_categories"]
+    )
+
+    policy = set(
+        report["scope"]["known_policy_divergences"]
+    )
+
+    overlap = structural & policy
+
+    assert not overlap, (
+        f"categories declared in both buckets: {sorted(overlap)}"
+    )
+
+    for result in report["case_results"]:
+        assert not (
+            result.get("not_evaluable")
+            and result.get("known_policy_divergence")
+        ), (
+            f"{result['case_id']} is in both exclusion buckets"
+        )
 
 
 def test_ai_has_no_authority() -> None:
@@ -302,6 +400,8 @@ def main() -> None:
     test_case_coverage_is_exact()
     test_exclusion_cannot_hide_divergence()
     test_only_declared_categories_are_excluded()
+    test_policy_divergences_carry_a_rationale()
+    test_the_two_exclusion_buckets_are_disjoint()
     test_ai_has_no_authority()
 
     print(

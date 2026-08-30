@@ -39,6 +39,12 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from rapidfuzz import fuzz
+
+sys.path.append(str(Path(__file__).resolve().parent.parent))
+
+from src.config import FUZZY_MIN_SIMILARITY
+
 
 ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = ROOT / "data"
@@ -105,7 +111,7 @@ def normalize_id(value: Any) -> str:
 def get_txn_id(
     record: dict[str, Any],
     source_name: str,
-) -> str:
+) -> str | None:
     """
     Resolve the logical transaction ID from each source's actual schema.
 
@@ -116,9 +122,24 @@ def get_txn_id(
         txn_id / transaction_ref
 
     Bank:
-        bank_ref = BANKREF_<txn_id>
+        bank_ref = BANKREF_<txn_id>, WHEN PRESENT
 
-    The bank source intentionally does not contain a direct txn_id.
+    UPGRADE B / FIX (A2)
+    --------------------
+    This used to raise for any bank row it could not resolve. That was
+    correct while every bank row carried BANKREF_<txn_id> -- but that
+    convention is precisely what made the fuzzy tier dead code, because
+    tier 2 resolved everything before tier 3 was consulted.
+
+    The reference_mismatch_fuzzy category now emits bank rows with a
+    bank-native reference and no UTR field, so this function cannot
+    resolve them and must not pretend otherwise. It returns None, and
+    index_bank_records() links those rows by a different path.
+
+    This was the THIRD file carrying a hidden BANKREF_<txn_id>
+    assumption, after verify_data.py and tune_fuzzy_threshold.py. A
+    convention introduced for generator convenience had quietly become
+    load-bearing across the whole evaluation layer.
     """
 
     if source_name == "pg":
@@ -149,22 +170,11 @@ def get_txn_id(
             if bank_ref.startswith(prefix):
                 txn_id = bank_ref[len(prefix):].strip()
 
-                # Duplicate bank rows are deliberately represented by
-                # appending "_DUP" to bank_ref.  That suffix identifies
-                # a second physical bank row, NOT a new logical
-                # transaction.  The benchmark must therefore resolve:
-                #
-                #   BANKREF_TXN_00051
-                #   BANKREF_TXN_00051_DUP
-                #
-                # to the same logical transaction:
-                #
-                #   TXN_00051
-                #
-                # Keep this normalization confined to the evaluation
-                # adapter.  We preserve the original bank_ref in the
-                # actual input_transaction so duplicate evidence is not
-                # lost.
+                # Duplicate bank rows append "_DUP" to bank_ref. That
+                # suffix identifies a second PHYSICAL row, not a new
+                # logical transaction, so both resolve to the same
+                # txn_id. The original bank_ref is preserved in
+                # input_transaction so duplicate evidence is not lost.
                 duplicate_suffix = "_DUP"
 
                 if txn_id.endswith(duplicate_suffix):
@@ -172,6 +182,9 @@ def get_txn_id(
 
                 if txn_id:
                     return normalize_id(txn_id)
+
+        # No structured reference. Not an error -- see docstring.
+        return None
 
     raise ValueError(
         f"{source_name} record does not contain a resolvable "
@@ -183,6 +196,12 @@ def index_records(
     records: list[dict[str, Any]],
     source_name: str,
 ) -> dict[str, list[dict[str, Any]]]:
+    """
+    Index PG or invoice records by transaction ID.
+
+    Both sources always carry a txn_id, so an unresolvable record here
+    is a genuine data defect and still raises.
+    """
     indexed: dict[str, list[dict[str, Any]]] = {}
 
     for record in records:
@@ -191,10 +210,111 @@ def index_records(
             source_name,
         )
 
+        if txn_id is None:
+            raise ValueError(
+                f"{source_name} record has no transaction identifier: "
+                f"{record}"
+            )
+
         indexed.setdefault(
             txn_id,
             [],
         ).append(record)
+
+    return indexed
+
+
+def index_bank_records(
+    bank_records: list[dict[str, Any]],
+    pg_records: list[dict[str, Any]],
+) -> dict[str, list[dict[str, Any]]]:
+    """
+    Index bank rows against the transaction they belong to.
+
+    Two paths, because after UPGRADE B not every bank row carries our
+    reference convention:
+
+      1. bank_ref of the form BANKREF_<txn_id> (and _DUP).
+
+      2. A UTR matched fuzzily against the narration. Used by
+         reference_mismatch_fuzzy, whose rows carry a bank-native ref,
+         no UTR field, and sometimes a corrupted UTR inside the
+         narration -- so exact substring matching would miss half of
+         them.
+
+    Path 2 is an EVALUATION-ADAPTER affordance, and the distinction
+    matters. This script's job is to assemble each case's inputs: it
+    answers "which bank rows belong in this case?", a question about
+    the data. The pipeline under test has to answer something harder --
+    "which row, if any, may I safely link, given amount and date guards
+    across the whole candidate pool?" -- and nothing here does that
+    for it.
+
+    A row that matches nothing is dropped rather than raising. In a
+    real bank feed, unattributable credits exist; the benchmark should
+    represent that rather than refuse to build.
+    """
+    utr_by_txn = {
+        record["txn_id"]: record["utr"]
+        for record in pg_records
+        if record.get("utr") and record.get("txn_id")
+    }
+
+    indexed: dict[str, list[dict[str, Any]]] = {}
+    unattributed: list[str] = []
+
+    for record in bank_records:
+        txn_id = get_txn_id(
+            record,
+            "bank",
+        )
+
+        if txn_id is not None:
+            indexed.setdefault(
+                txn_id,
+                [],
+            ).append(record)
+            continue
+
+        narration = str(
+            record.get("narration", "") or ""
+        )
+
+        if not narration:
+            unattributed.append(
+                str(record.get("bank_ref", "?"))
+            )
+            continue
+
+        best_txn = None
+        best_score = 0.0
+
+        for candidate_txn, utr in utr_by_txn.items():
+            score = fuzz.partial_ratio(
+                utr,
+                narration,
+            )
+
+            if score > best_score:
+                best_score = score
+                best_txn = candidate_txn
+
+        if best_txn is not None and best_score >= FUZZY_MIN_SIMILARITY:
+            indexed.setdefault(
+                best_txn,
+                [],
+            ).append(record)
+        else:
+            unattributed.append(
+                str(record.get("bank_ref", "?"))
+            )
+
+    if unattributed:
+        print(
+            f"  note: {len(unattributed)} bank row(s) could not be "
+            f"attributed to any transaction and are excluded from the "
+            f"benchmark: {unattributed}"
+        )
 
     return indexed
 
@@ -641,18 +761,18 @@ def build_benchmark() -> dict[str, Any]:
         )
 
     pg_index = index_records(
-    pg_records,
-    "pg",
+        pg_records,
+        "pg",
     )
 
-    bank_index = index_records(
-    bank_records,
-    "bank",
+    bank_index = index_bank_records(
+        bank_records,
+        pg_records,
     )
 
     invoice_index = index_records(
-    invoice_records,
-    "invoice",
+        invoice_records,
+        "invoice",
     )
 
     cases = []

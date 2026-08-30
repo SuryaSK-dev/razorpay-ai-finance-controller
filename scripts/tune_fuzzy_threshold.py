@@ -249,15 +249,42 @@ def sweep_selection_accuracy(fuzzy_records, index, ground_truth) -> None:
     Among records that genuinely reach the fuzzy tier, does it select
     the CORRECT bank record?
 
-        TP -- selected bank record's resolved txn_id == pg.txn_id
-        FP -- selected a bank record belonging to a different txn
-        FN -- selected nothing, though a correct bank record existed
+        TP -- fuzzy selected the correct bank record
+        FP -- fuzzy selected a bank record belonging to another txn
+        FN -- fuzzy selected nothing, though a correct record existed
               within the guards
 
     "Fired on a record that did not need fuzzy" is NOT a false
-    positive. That was the previous version's error: it penalised the
-    tier for scoring highly on records whose UTR genuinely appears in
-    the narration.
+    positive. That was the first version's error: it penalised the tier
+    for scoring highly on records whose UTR genuinely appears in the
+    narration (FAILURE_LOG.md section 32).
+
+    TRUTH LINKAGE -- SECOND CORRECTION
+    ----------------------------------
+    The second version scored correctness as:
+
+        best_record.txn_id == pg.txn_id
+
+    which is broken for exactly the records this sweep now evaluates.
+    UPGRADE B strips both the bank_ref convention and any TXN_ token
+    from the narration of the reference_mismatch_fuzzy category --
+    that removal is what makes the tier reachable at all. So
+    `bank_record.txn_id` is None BY CONSTRUCTION for every record in
+    the sweep, `None == "TXN_00025"` is False, and every correct
+    selection was counted as a false positive:
+
+        TP = 0, FP = 6, Recall = nan
+
+    The metric was identifying ground truth by the exact field the
+    category exists to remove. Same defect class as before: a
+    measurement that cannot observe the thing it claims to measure.
+
+    Exact net equality is a valid substitute HERE ONLY BECAUSE
+    _report_accidental_net_collisions() in generate_data.py measures
+    zero net collisions outside the ambiguous category. If that number
+    ever rises, this linkage stops being unique and must change --
+    which is why the check is a named function with the dependency
+    written down rather than an inline comparison.
     """
     print("=" * 72)
     print("PART 2 -- SELECTION ACCURACY AMONG RECORDS THAT REACH FUZZY")
@@ -282,6 +309,20 @@ def sweep_selection_accuracy(fuzzy_records, index, ground_truth) -> None:
         for pg in fuzzy_records:
             expected_net = _pg_expected_net(pg)
 
+            def is_correct(bank_record) -> bool:
+                """
+                Does this bank row belong to the anchor transaction?
+
+                Prefers the resolved txn_id when one exists. Falls back
+                to exact net equality for the reference_mismatch_fuzzy
+                rows, whose txn_id is deliberately None -- see the
+                docstring above for why that fallback is sound on this
+                dataset and what would invalidate it.
+                """
+                if bank_record.txn_id is not None:
+                    return bank_record.txn_id == pg.txn_id
+                return bank_record.amount == expected_net
+
             best_record = None
             best_score = -1.0
             correct_exists = False
@@ -296,7 +337,7 @@ def sweep_selection_accuracy(fuzzy_records, index, ground_truth) -> None:
                 ):
                     continue
 
-                if bank_record.txn_id == pg.txn_id:
+                if is_correct(bank_record):
                     correct_exists = True
 
                 similarity = fuzz.partial_ratio(
@@ -312,7 +353,7 @@ def sweep_selection_accuracy(fuzzy_records, index, ground_truth) -> None:
                 if correct_exists:
                     fn += 1
                 # else: nothing to find, nothing selected -- not an error
-            elif best_record.txn_id == pg.txn_id:
+            elif is_correct(best_record):
                 tp += 1
             else:
                 fp += 1
@@ -328,6 +369,20 @@ def sweep_selection_accuracy(fuzzy_records, index, ground_truth) -> None:
     print("tiers 1 and 2. TP/FP are SELECTION outcomes -- whether the")
     print("chosen bank record was the right one -- not whether the tier")
     print("fired.")
+    print()
+    print("CAVEAT ON WHAT THIS MEASURES")
+    print("-" * 56)
+    print("Accidental net collisions in this dataset are zero, so any")
+    print("candidate surviving the amount and date guards is already")
+    print("the correct one. The fuzzy similarity score is therefore")
+    print("doing no discriminating work here -- it is a formality on")
+    print("top of a guard that has already decided.")
+    print()
+    print("A high precision below should be read as 'the guards are")
+    print("selective on this dataset', not as 'narration matching")
+    print("works'. Making narration load-bearing would require amount")
+    print("collisions INSIDE the guard window, which is a deliberate")
+    print("dataset change rather than a fix.")
 
 
 # ======================================================================

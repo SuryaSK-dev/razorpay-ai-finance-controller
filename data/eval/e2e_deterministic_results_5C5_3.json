@@ -1,7 +1,7 @@
 {
   "report_version": "5C.5.3-v1",
   "evaluation_stage": "5C.5.3",
-  "generated_at_utc": "2026-08-29T06:23:14.603996+00:00",
+  "generated_at_utc": "2026-08-30T01:00:10.648563+00:00",
   "authority": "deterministic",
   "model_role": "read_only_candidate_and_explanation",
   "benchmark": {
@@ -211,15 +211,15 @@
               "points_awarded": 20
             },
             "amount_bank": {
-              "pg_expected_net": "651.70",
-              "bank_amount": "651.70",
+              "pg_expected_net": "38323.69",
+              "bank_amount": "38323.69",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
             },
             "amount_invoice": {
-              "pg_expected_fee_plus_gst": "15.75",
-              "invoice_amount": "15.75",
+              "pg_expected_fee_plus_gst": "926.30",
+              "invoice_amount": "926.30",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
@@ -236,14 +236,14 @@
             },
             "date_points_awarded": 14,
             "utr": {
-              "pg": "UTR703527177",
-              "bank": "UTR703527177",
+              "pg": "UTR694016622",
+              "bank": "UTR694016622",
               "matched": true,
               "points_awarded": 10
             },
             "fee_consistency": {
-              "pg_fee": "13.35",
-              "invoice_fee": "13.35",
+              "pg_fee": "785.00",
+              "invoice_fee": "785.00",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 5
@@ -327,15 +327,15 @@
               "points_awarded": 20
             },
             "amount_bank": {
-              "pg_expected_net": "8525.04",
-              "bank_amount": "8525.04",
+              "pg_expected_net": "8328.85",
+              "bank_amount": "8328.85",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
             },
             "amount_invoice": {
-              "pg_expected_fee_plus_gst": "206.26",
-              "invoice_amount": "206.26",
+              "pg_expected_fee_plus_gst": "201.52",
+              "invoice_amount": "201.52",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
@@ -352,14 +352,14 @@
             },
             "date_points_awarded": 14,
             "utr": {
-              "pg": "UTR198026292",
-              "bank": "UTR198026292",
+              "pg": "UTR303980213",
+              "bank": "UTR303980213",
               "matched": true,
               "points_awarded": 10
             },
             "fee_consistency": {
-              "pg_fee": "174.80",
-              "invoice_fee": "174.80",
+              "pg_fee": "170.78",
+              "invoice_fee": "170.78",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 5
@@ -443,15 +443,15 @@
               "points_awarded": 20
             },
             "amount_bank": {
-              "pg_expected_net": "2490.61",
-              "bank_amount": "2490.61",
+              "pg_expected_net": "1010.73",
+              "bank_amount": "1010.73",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
             },
             "amount_invoice": {
-              "pg_expected_fee_plus_gst": "60.26",
-              "invoice_amount": "60.26",
+              "pg_expected_fee_plus_gst": "24.45",
+              "invoice_amount": "24.45",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
@@ -468,14 +468,14 @@
             },
             "date_points_awarded": 14,
             "utr": {
-              "pg": "UTR871985091",
-              "bank": "UTR871985091",
+              "pg": "UTR812857215",
+              "bank": "UTR812857215",
               "matched": true,
               "points_awarded": 10
             },
             "fee_consistency": {
-              "pg_fee": "51.07",
-              "invoice_fee": "51.07",
+              "pg_fee": "20.72",
+              "invoice_fee": "20.72",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 5
@@ -559,15 +559,15 @@
               "points_awarded": 20
             },
             "amount_bank": {
-              "pg_expected_net": "684.84",
-              "bank_amount": "684.84",
+              "pg_expected_net": "39521.18",
+              "bank_amount": "39521.18",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
             },
             "amount_invoice": {
-              "pg_expected_fee_plus_gst": "16.56",
-              "invoice_amount": "16.56",
+              "pg_expected_fee_plus_gst": "955.25",
+              "invoice_amount": "955.25",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
@@ -584,14 +584,14 @@
             },
             "date_points_awarded": 14,
             "utr": {
-              "pg": "UTR128851478",
-              "bank": "UTR128851478",
+              "pg": "UTR502655738",
+              "bank": "UTR502655738",
               "matched": true,
               "points_awarded": 10
             },
             "fee_consistency": {
-              "pg_fee": "14.03",
-              "invoice_fee": "14.03",
+              "pg_fee": "809.53",
+              "invoice_fee": "809.53",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 5
@@ -675,15 +675,15 @@
               "points_awarded": 20
             },
             "amount_bank": {
-              "pg_expected_net": "947.29",
-              "bank_amount": "947.29",
+              "pg_expected_net": "3191.76",
+              "bank_amount": "3191.76",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
             },
             "amount_invoice": {
-              "pg_expected_fee_plus_gst": "22.89",
-              "invoice_amount": "22.89",
+              "pg_expected_fee_plus_gst": "77.15",
+              "invoice_amount": "77.15",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
@@ -700,14 +700,14 @@
             },
             "date_points_awarded": 14,
             "utr": {
-              "pg": "UTR927677071",
-              "bank": "UTR927677071",
+              "pg": "UTR961032749",
+              "bank": "UTR961032749",
               "matched": true,
               "points_awarded": 10
             },
             "fee_consistency": {
-              "pg_fee": "19.40",
-              "invoice_fee": "19.40",
+              "pg_fee": "65.38",
+              "invoice_fee": "65.38",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 5
@@ -791,15 +791,15 @@
               "points_awarded": 20
             },
             "amount_bank": {
-              "pg_expected_net": "2058.44",
-              "bank_amount": "2058.44",
+              "pg_expected_net": "307.70",
+              "bank_amount": "307.70",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
             },
             "amount_invoice": {
-              "pg_expected_fee_plus_gst": "49.81",
-              "invoice_amount": "49.81",
+              "pg_expected_fee_plus_gst": "7.43",
+              "invoice_amount": "7.43",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
@@ -816,14 +816,14 @@
             },
             "date_points_awarded": 14,
             "utr": {
-              "pg": "UTR720715149",
-              "bank": "UTR720715149",
+              "pg": "UTR993573194",
+              "bank": "UTR993573194",
               "matched": true,
               "points_awarded": 10
             },
             "fee_consistency": {
-              "pg_fee": "42.21",
-              "invoice_fee": "42.21",
+              "pg_fee": "6.30",
+              "invoice_fee": "6.30",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 5
@@ -907,15 +907,15 @@
               "points_awarded": 20
             },
             "amount_bank": {
-              "pg_expected_net": "63804.63",
-              "bank_amount": "63804.63",
+              "pg_expected_net": "160.76",
+              "bank_amount": "160.76",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
             },
             "amount_invoice": {
-              "pg_expected_fee_plus_gst": "1542.19",
-              "invoice_amount": "1542.19",
+              "pg_expected_fee_plus_gst": "3.88",
+              "invoice_amount": "3.88",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
@@ -932,14 +932,14 @@
             },
             "date_points_awarded": 14,
             "utr": {
-              "pg": "UTR349438937",
-              "bank": "UTR349438937",
+              "pg": "UTR864157675",
+              "bank": "UTR864157675",
               "matched": true,
               "points_awarded": 10
             },
             "fee_consistency": {
-              "pg_fee": "1306.94",
-              "invoice_fee": "1306.94",
+              "pg_fee": "3.29",
+              "invoice_fee": "3.29",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 5
@@ -1023,15 +1023,15 @@
               "points_awarded": 20
             },
             "amount_bank": {
-              "pg_expected_net": "40205.04",
-              "bank_amount": "40205.04",
+              "pg_expected_net": "3181.22",
+              "bank_amount": "3181.22",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
             },
             "amount_invoice": {
-              "pg_expected_fee_plus_gst": "971.78",
-              "invoice_amount": "971.78",
+              "pg_expected_fee_plus_gst": "76.89",
+              "invoice_amount": "76.89",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
@@ -1048,14 +1048,14 @@
             },
             "date_points_awarded": 14,
             "utr": {
-              "pg": "UTR732013690",
-              "bank": "UTR732013690",
+              "pg": "UTR650317792",
+              "bank": "UTR650317792",
               "matched": true,
               "points_awarded": 10
             },
             "fee_consistency": {
-              "pg_fee": "823.54",
-              "invoice_fee": "823.54",
+              "pg_fee": "65.16",
+              "invoice_fee": "65.16",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 5
@@ -1139,15 +1139,15 @@
               "points_awarded": 20
             },
             "amount_bank": {
-              "pg_expected_net": "307.70",
-              "bank_amount": "307.70",
+              "pg_expected_net": "6598.75",
+              "bank_amount": "6598.75",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
             },
             "amount_invoice": {
-              "pg_expected_fee_plus_gst": "7.43",
-              "invoice_amount": "7.43",
+              "pg_expected_fee_plus_gst": "159.65",
+              "invoice_amount": "159.65",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
@@ -1164,14 +1164,14 @@
             },
             "date_points_awarded": 14,
             "utr": {
-              "pg": "UTR993573194",
-              "bank": "UTR993573194",
+              "pg": "UTR491150281",
+              "bank": "UTR491150281",
               "matched": true,
               "points_awarded": 10
             },
             "fee_consistency": {
-              "pg_fee": "6.30",
-              "invoice_fee": "6.30",
+              "pg_fee": "135.30",
+              "invoice_fee": "135.30",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 5
@@ -1255,15 +1255,15 @@
               "points_awarded": 20
             },
             "amount_bank": {
-              "pg_expected_net": "65782.53",
-              "bank_amount": "65782.53",
+              "pg_expected_net": "3337.78",
+              "bank_amount": "3337.78",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
             },
             "amount_invoice": {
-              "pg_expected_fee_plus_gst": "1589.99",
-              "invoice_amount": "1589.99",
+              "pg_expected_fee_plus_gst": "80.68",
+              "invoice_amount": "80.68",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
@@ -1280,14 +1280,14 @@
             },
             "date_points_awarded": 14,
             "utr": {
-              "pg": "UTR514478354",
-              "bank": "UTR514478354",
+              "pg": "UTR275602993",
+              "bank": "UTR275602993",
               "matched": true,
               "points_awarded": 10
             },
             "fee_consistency": {
-              "pg_fee": "1347.45",
-              "invoice_fee": "1347.45",
+              "pg_fee": "68.37",
+              "invoice_fee": "68.37",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 5
@@ -1371,15 +1371,15 @@
               "points_awarded": 20
             },
             "amount_bank": {
-              "pg_expected_net": "1780.74",
-              "bank_amount": "1780.74",
+              "pg_expected_net": "938.37",
+              "bank_amount": "938.37",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
             },
             "amount_invoice": {
-              "pg_expected_fee_plus_gst": "43.05",
-              "invoice_amount": "43.05",
+              "pg_expected_fee_plus_gst": "22.70",
+              "invoice_amount": "22.70",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
@@ -1396,14 +1396,14 @@
             },
             "date_points_awarded": 14,
             "utr": {
-              "pg": "UTR958003040",
-              "bank": "UTR958003040",
+              "pg": "UTR298485996",
+              "bank": "UTR298485996",
               "matched": true,
               "points_awarded": 10
             },
             "fee_consistency": {
-              "pg_fee": "36.48",
-              "invoice_fee": "36.48",
+              "pg_fee": "19.24",
+              "invoice_fee": "19.24",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 5
@@ -1487,15 +1487,15 @@
               "points_awarded": 20
             },
             "amount_bank": {
-              "pg_expected_net": "7917.07",
-              "bank_amount": "7917.07",
+              "pg_expected_net": "2839.12",
+              "bank_amount": "2839.12",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
             },
             "amount_invoice": {
-              "pg_expected_fee_plus_gst": "191.56",
-              "invoice_amount": "191.56",
+              "pg_expected_fee_plus_gst": "68.63",
+              "invoice_amount": "68.63",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
@@ -1512,14 +1512,14 @@
             },
             "date_points_awarded": 14,
             "utr": {
-              "pg": "UTR917395377",
-              "bank": "UTR917395377",
+              "pg": "UTR297913261",
+              "bank": "UTR297913261",
               "matched": true,
               "points_awarded": 10
             },
             "fee_consistency": {
-              "pg_fee": "162.34",
-              "invoice_fee": "162.34",
+              "pg_fee": "58.16",
+              "invoice_fee": "58.16",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 5
@@ -1603,15 +1603,15 @@
               "points_awarded": 20
             },
             "amount_bank": {
-              "pg_expected_net": "4307.20",
-              "bank_amount": "4307.20",
+              "pg_expected_net": "50543.62",
+              "bank_amount": "50543.62",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
             },
             "amount_invoice": {
-              "pg_expected_fee_plus_gst": "104.22",
-              "invoice_amount": "104.22",
+              "pg_expected_fee_plus_gst": "1221.67",
+              "invoice_amount": "1221.67",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
@@ -1628,14 +1628,14 @@
             },
             "date_points_awarded": 14,
             "utr": {
-              "pg": "UTR551861117",
-              "bank": "UTR551861117",
+              "pg": "UTR651050288",
+              "bank": "UTR651050288",
               "matched": true,
               "points_awarded": 10
             },
             "fee_consistency": {
-              "pg_fee": "88.32",
-              "invoice_fee": "88.32",
+              "pg_fee": "1035.31",
+              "invoice_fee": "1035.31",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 5
@@ -1719,15 +1719,15 @@
               "points_awarded": 20
             },
             "amount_bank": {
-              "pg_expected_net": "809.91",
-              "bank_amount": "809.91",
+              "pg_expected_net": "42836.05",
+              "bank_amount": "42836.05",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
             },
             "amount_invoice": {
-              "pg_expected_fee_plus_gst": "19.58",
-              "invoice_amount": "19.58",
+              "pg_expected_fee_plus_gst": "1035.37",
+              "invoice_amount": "1035.37",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
@@ -1744,14 +1744,14 @@
             },
             "date_points_awarded": 14,
             "utr": {
-              "pg": "UTR185949036",
-              "bank": "UTR185949036",
+              "pg": "UTR244982797",
+              "bank": "UTR244982797",
               "matched": true,
               "points_awarded": 10
             },
             "fee_consistency": {
-              "pg_fee": "16.59",
-              "invoice_fee": "16.59",
+              "pg_fee": "877.43",
+              "invoice_fee": "877.43",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 5
@@ -1835,15 +1835,15 @@
               "points_awarded": 20
             },
             "amount_bank": {
-              "pg_expected_net": "3054.22",
-              "bank_amount": "3054.22",
+              "pg_expected_net": "429.86",
+              "bank_amount": "429.86",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
             },
             "amount_invoice": {
-              "pg_expected_fee_plus_gst": "73.90",
-              "invoice_amount": "73.90",
+              "pg_expected_fee_plus_gst": "10.40",
+              "invoice_amount": "10.40",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
@@ -1860,14 +1860,14 @@
             },
             "date_points_awarded": 14,
             "utr": {
-              "pg": "UTR274757353",
-              "bank": "UTR274757353",
+              "pg": "UTR147287609",
+              "bank": "UTR147287609",
               "matched": true,
               "points_awarded": 10
             },
             "fee_consistency": {
-              "pg_fee": "62.63",
-              "invoice_fee": "62.63",
+              "pg_fee": "8.81",
+              "invoice_fee": "8.81",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 5
@@ -1951,15 +1951,15 @@
               "points_awarded": 20
             },
             "amount_bank": {
-              "pg_expected_net": "285.18",
-              "bank_amount": "285.18",
+              "pg_expected_net": "449.48",
+              "bank_amount": "449.48",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
             },
             "amount_invoice": {
-              "pg_expected_fee_plus_gst": "6.89",
-              "invoice_amount": "6.89",
+              "pg_expected_fee_plus_gst": "10.87",
+              "invoice_amount": "10.87",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
@@ -1976,14 +1976,14 @@
             },
             "date_points_awarded": 14,
             "utr": {
-              "pg": "UTR806183154",
-              "bank": "UTR806183154",
+              "pg": "UTR576836395",
+              "bank": "UTR576836395",
               "matched": true,
               "points_awarded": 10
             },
             "fee_consistency": {
-              "pg_fee": "5.84",
-              "invoice_fee": "5.84",
+              "pg_fee": "9.21",
+              "invoice_fee": "9.21",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 5
@@ -2067,15 +2067,15 @@
               "points_awarded": 20
             },
             "amount_bank": {
-              "pg_expected_net": "435.85",
-              "bank_amount": "435.85",
+              "pg_expected_net": "5894.92",
+              "bank_amount": "5894.92",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
             },
             "amount_invoice": {
-              "pg_expected_fee_plus_gst": "10.54",
-              "invoice_amount": "10.54",
+              "pg_expected_fee_plus_gst": "142.49",
+              "invoice_amount": "142.49",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
@@ -2092,14 +2092,14 @@
             },
             "date_points_awarded": 14,
             "utr": {
-              "pg": "UTR905331433",
-              "bank": "UTR905331433",
+              "pg": "UTR384680619",
+              "bank": "UTR384680619",
               "matched": true,
               "points_awarded": 10
             },
             "fee_consistency": {
-              "pg_fee": "8.93",
-              "invoice_fee": "8.93",
+              "pg_fee": "120.75",
+              "invoice_fee": "120.75",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 5
@@ -2183,15 +2183,15 @@
               "points_awarded": 20
             },
             "amount_bank": {
-              "pg_expected_net": "2836.21",
-              "bank_amount": "2836.21",
+              "pg_expected_net": "136.67",
+              "bank_amount": "136.67",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
             },
             "amount_invoice": {
-              "pg_expected_fee_plus_gst": "68.63",
-              "invoice_amount": "68.63",
+              "pg_expected_fee_plus_gst": "3.30",
+              "invoice_amount": "3.30",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
@@ -2208,14 +2208,14 @@
             },
             "date_points_awarded": 12,
             "utr": {
-              "pg": "UTR297913261",
-              "bank": "UTR297913261",
+              "pg": "UTR746882649",
+              "bank": "UTR746882649",
               "matched": true,
               "points_awarded": 10
             },
             "fee_consistency": {
-              "pg_fee": "58.16",
-              "invoice_fee": "58.16",
+              "pg_fee": "2.80",
+              "invoice_fee": "2.80",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 5
@@ -2257,7 +2257,7 @@
       "deterministic_decision": {
         "txn_id": "TXN_00020",
         "status": "MATCHED",
-        "confidence_score": 97,
+        "confidence_score": 98,
         "matched_sources": [
           "pg",
           "bank",
@@ -2299,39 +2299,39 @@
               "points_awarded": 20
             },
             "amount_bank": {
-              "pg_expected_net": "6822.06",
-              "bank_amount": "6822.06",
+              "pg_expected_net": "9640.98",
+              "bank_amount": "9640.98",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
             },
             "amount_invoice": {
-              "pg_expected_fee_plus_gst": "165.06",
-              "invoice_amount": "165.06",
+              "pg_expected_fee_plus_gst": "233.03",
+              "invoice_amount": "233.03",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
             },
             "date_bank": {
-              "delta_days": 3,
+              "delta_days": 2,
               "matched": true,
-              "points_if_used": 12
+              "points_if_used": 13
             },
             "date_invoice": {
               "delta_days": 19,
               "matched": false,
               "points_if_used": 0
             },
-            "date_points_awarded": 12,
+            "date_points_awarded": 13,
             "utr": {
-              "pg": "UTR984201287",
-              "bank": "UTR984201287",
+              "pg": "UTR181050023",
+              "bank": "UTR181050023",
               "matched": true,
               "points_awarded": 10
             },
             "fee_consistency": {
-              "pg_fee": "139.88",
-              "invoice_fee": "139.88",
+              "pg_fee": "197.48",
+              "invoice_fee": "197.48",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 5
@@ -2415,15 +2415,15 @@
               "points_awarded": 20
             },
             "amount_bank": {
-              "pg_expected_net": "184.29",
-              "bank_amount": "184.29",
+              "pg_expected_net": "3354.19",
+              "bank_amount": "3354.19",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
             },
             "amount_invoice": {
-              "pg_expected_fee_plus_gst": "4.45",
-              "invoice_amount": "4.45",
+              "pg_expected_fee_plus_gst": "81.08",
+              "invoice_amount": "81.08",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
@@ -2440,14 +2440,14 @@
             },
             "date_points_awarded": 15,
             "utr": {
-              "pg": "UTR594461382",
-              "bank": "UTR594461382",
+              "pg": "UTR555579834",
+              "bank": "UTR555579834",
               "matched": true,
               "points_awarded": 10
             },
             "fee_consistency": {
-              "pg_fee": "3.77",
-              "invoice_fee": "3.77",
+              "pg_fee": "68.71",
+              "invoice_fee": "68.71",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 5
@@ -2531,23 +2531,23 @@
               "points_awarded": 20
             },
             "amount_bank": {
-              "pg_expected_net": "6405.98",
-              "bank_amount": "6405.98",
+              "pg_expected_net": "717.87",
+              "bank_amount": "717.87",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
             },
             "amount_invoice": {
-              "pg_expected_fee_plus_gst": "154.99",
-              "invoice_amount": "154.99",
+              "pg_expected_fee_plus_gst": "17.35",
+              "invoice_amount": "17.35",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
             },
             "date_bank": {
-              "delta_days": 2,
+              "delta_days": 3,
               "matched": true,
-              "points_if_used": 13
+              "points_if_used": 12
             },
             "date_invoice": {
               "delta_days": 1,
@@ -2556,14 +2556,14 @@
             },
             "date_points_awarded": 14,
             "utr": {
-              "pg": "UTR454644101",
-              "bank": "UTR454644101",
+              "pg": "UTR721041977",
+              "bank": "UTR721041977",
               "matched": true,
               "points_awarded": 10
             },
             "fee_consistency": {
-              "pg_fee": "131.35",
-              "invoice_fee": "131.35",
+              "pg_fee": "14.70",
+              "invoice_fee": "14.70",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 5
@@ -2647,15 +2647,15 @@
               "points_awarded": 20
             },
             "amount_bank": {
-              "pg_expected_net": "1427.29",
-              "bank_amount": "1427.29",
+              "pg_expected_net": "217.92",
+              "bank_amount": "217.92",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
             },
             "amount_invoice": {
-              "pg_expected_fee_plus_gst": "34.50",
-              "invoice_amount": "34.50",
+              "pg_expected_fee_plus_gst": "5.26",
+              "invoice_amount": "5.26",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
@@ -2672,14 +2672,14 @@
             },
             "date_points_awarded": 13,
             "utr": {
-              "pg": "UTR958166283",
-              "bank": "UTR958166283",
+              "pg": "UTR322616528",
+              "bank": "UTR322616528",
               "matched": true,
               "points_awarded": 10
             },
             "fee_consistency": {
-              "pg_fee": "29.24",
-              "invoice_fee": "29.24",
+              "pg_fee": "4.46",
+              "invoice_fee": "4.46",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 5
@@ -2763,15 +2763,15 @@
               "points_awarded": 20
             },
             "amount_bank": {
-              "pg_expected_net": "8222.45",
-              "bank_amount": "8222.45",
+              "pg_expected_net": "63061.82",
+              "bank_amount": "63061.82",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
             },
             "amount_invoice": {
-              "pg_expected_fee_plus_gst": "198.95",
-              "invoice_amount": "198.95",
+              "pg_expected_fee_plus_gst": "1524.23",
+              "invoice_amount": "1524.23",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
@@ -2788,14 +2788,14 @@
             },
             "date_points_awarded": 12,
             "utr": {
-              "pg": "UTR137932389",
-              "bank": "UTR137932389",
+              "pg": "UTR918747559",
+              "bank": "UTR918747559",
               "matched": true,
               "points_awarded": 10
             },
             "fee_consistency": {
-              "pg_fee": "168.60",
-              "invoice_fee": "168.60",
+              "pg_fee": "1291.72",
+              "invoice_fee": "1291.72",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 5
@@ -2836,41 +2836,41 @@
       },
       "deterministic_decision": {
         "txn_id": "TXN_00025",
-        "status": "MATCHED",
-        "confidence_score": 89,
+        "status": "HUMAN_REVIEW",
+        "confidence_score": 69,
         "matched_sources": [
           "pg",
           "bank",
           "invoice"
         ],
         "tax_verified": true,
-        "exception_code": "NONE",
+        "exception_code": "REFERENCE_MISMATCH",
         "reason_codes": [
           "NONE"
         ],
         "evidence": {
-          "matched_rule": "fully_clean_match",
+          "matched_rule": "low_confidence_requires_human_review",
           "context": {
             "no_candidates_found": false,
             "is_ambiguous": false,
             "duplicate_detected": false,
-            "low_confidence": false,
+            "low_confidence": true,
             "missing_bank": false,
             "missing_invoice": false,
             "amount_mismatch": false,
             "gst_mismatch": false,
             "tds_mismatch": false,
             "tax_unverifiable": false,
-            "fully_clean": true
+            "fully_clean": false
           },
           "match_signals": {
             "missing_bank": false,
             "missing_invoice": false,
             "txn_id_bank": {
               "pg": "TXN_00025",
-              "bank": "TXN_00025",
-              "matched": true,
-              "points_awarded": 20
+              "bank": null,
+              "matched": false,
+              "points_awarded": 0
             },
             "txn_id_invoice": {
               "pg": "TXN_00025",
@@ -2879,15 +2879,15 @@
               "points_awarded": 20
             },
             "amount_bank": {
-              "pg_expected_net": "5575.14",
-              "bank_amount": "5575.14",
+              "pg_expected_net": "12555.13",
+              "bank_amount": "12555.13",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
             },
             "amount_invoice": {
-              "pg_expected_fee_plus_gst": "134.76",
-              "invoice_amount": "134.76",
+              "pg_expected_fee_plus_gst": "303.46",
+              "invoice_amount": "303.46",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
@@ -2904,31 +2904,31 @@
             },
             "date_points_awarded": 14,
             "utr": {
-              "pg": "UTR383833682",
-              "bank": "4TR383833682",
+              "pg": "UTR604916337",
+              "bank": null,
               "matched": false,
               "points_awarded": 0
             },
             "fee_consistency": {
-              "pg_fee": "114.20",
-              "invoice_fee": "114.20",
+              "pg_fee": "257.17",
+              "invoice_fee": "257.17",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 5
             }
           },
-          "selection_reason": "bank: only candidate found via exact_txn; invoice: only candidate found via exact_txn",
+          "selection_reason": "bank: only candidate found via fuzzy; invoice: only candidate found via exact_txn; selected pairing is non-authoritative for downstream financial reconciliation",
           "tax_evaluated": true,
-          "authoritative_match": true
+          "authoritative_match": false
         }
       },
       "matching": {
         "txn_id": "TXN_00025",
         "bank_candidate_count": 1,
         "invoice_candidate_count": 1,
-        "bank_match_type": "exact_txn",
+        "bank_match_type": "fuzzy",
         "invoice_match_type": "exact_txn",
-        "confidence": "MEDIUM",
+        "confidence": "NO_MATCH",
         "is_ambiguous": false,
         "sources_present": [
           "pg",
@@ -2952,41 +2952,41 @@
       },
       "deterministic_decision": {
         "txn_id": "TXN_00026",
-        "status": "MATCHED",
-        "confidence_score": 89,
+        "status": "HUMAN_REVIEW",
+        "confidence_score": 69,
         "matched_sources": [
           "pg",
           "bank",
           "invoice"
         ],
         "tax_verified": true,
-        "exception_code": "NONE",
+        "exception_code": "REFERENCE_MISMATCH",
         "reason_codes": [
           "NONE"
         ],
         "evidence": {
-          "matched_rule": "fully_clean_match",
+          "matched_rule": "low_confidence_requires_human_review",
           "context": {
             "no_candidates_found": false,
             "is_ambiguous": false,
             "duplicate_detected": false,
-            "low_confidence": false,
+            "low_confidence": true,
             "missing_bank": false,
             "missing_invoice": false,
             "amount_mismatch": false,
             "gst_mismatch": false,
             "tds_mismatch": false,
             "tax_unverifiable": false,
-            "fully_clean": true
+            "fully_clean": false
           },
           "match_signals": {
             "missing_bank": false,
             "missing_invoice": false,
             "txn_id_bank": {
               "pg": "TXN_00026",
-              "bank": "TXN_00026",
-              "matched": true,
-              "points_awarded": 20
+              "bank": null,
+              "matched": false,
+              "points_awarded": 0
             },
             "txn_id_invoice": {
               "pg": "TXN_00026",
@@ -2995,15 +2995,15 @@
               "points_awarded": 20
             },
             "amount_bank": {
-              "pg_expected_net": "378.72",
-              "bank_amount": "378.72",
+              "pg_expected_net": "1316.91",
+              "bank_amount": "1316.91",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
             },
             "amount_invoice": {
-              "pg_expected_fee_plus_gst": "9.16",
-              "invoice_amount": "9.16",
+              "pg_expected_fee_plus_gst": "31.84",
+              "invoice_amount": "31.84",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
@@ -3020,31 +3020,31 @@
             },
             "date_points_awarded": 14,
             "utr": {
-              "pg": "UTR246104106",
-              "bank": "U0R246104106",
+              "pg": "UTR431626123",
+              "bank": null,
               "matched": false,
               "points_awarded": 0
             },
             "fee_consistency": {
-              "pg_fee": "7.76",
-              "invoice_fee": "7.76",
+              "pg_fee": "26.98",
+              "invoice_fee": "26.98",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 5
             }
           },
-          "selection_reason": "bank: only candidate found via exact_txn; invoice: only candidate found via exact_txn",
+          "selection_reason": "bank: only candidate found via fuzzy; invoice: only candidate found via exact_txn; selected pairing is non-authoritative for downstream financial reconciliation",
           "tax_evaluated": true,
-          "authoritative_match": true
+          "authoritative_match": false
         }
       },
       "matching": {
         "txn_id": "TXN_00026",
         "bank_candidate_count": 1,
         "invoice_candidate_count": 1,
-        "bank_match_type": "exact_txn",
+        "bank_match_type": "fuzzy",
         "invoice_match_type": "exact_txn",
-        "confidence": "MEDIUM",
+        "confidence": "NO_MATCH",
         "is_ambiguous": false,
         "sources_present": [
           "pg",
@@ -3068,41 +3068,41 @@
       },
       "deterministic_decision": {
         "txn_id": "TXN_00027",
-        "status": "MATCHED",
-        "confidence_score": 89,
+        "status": "HUMAN_REVIEW",
+        "confidence_score": 69,
         "matched_sources": [
           "pg",
           "bank",
           "invoice"
         ],
         "tax_verified": true,
-        "exception_code": "NONE",
+        "exception_code": "REFERENCE_MISMATCH",
         "reason_codes": [
           "NONE"
         ],
         "evidence": {
-          "matched_rule": "fully_clean_match",
+          "matched_rule": "low_confidence_requires_human_review",
           "context": {
             "no_candidates_found": false,
             "is_ambiguous": false,
             "duplicate_detected": false,
-            "low_confidence": false,
+            "low_confidence": true,
             "missing_bank": false,
             "missing_invoice": false,
             "amount_mismatch": false,
             "gst_mismatch": false,
             "tds_mismatch": false,
             "tax_unverifiable": false,
-            "fully_clean": true
+            "fully_clean": false
           },
           "match_signals": {
             "missing_bank": false,
             "missing_invoice": false,
             "txn_id_bank": {
               "pg": "TXN_00027",
-              "bank": "TXN_00027",
-              "matched": true,
-              "points_awarded": 20
+              "bank": null,
+              "matched": false,
+              "points_awarded": 0
             },
             "txn_id_invoice": {
               "pg": "TXN_00027",
@@ -3111,15 +3111,15 @@
               "points_awarded": 20
             },
             "amount_bank": {
-              "pg_expected_net": "40511.19",
-              "bank_amount": "40511.19",
+              "pg_expected_net": "2823.58",
+              "bank_amount": "2823.58",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
             },
             "amount_invoice": {
-              "pg_expected_fee_plus_gst": "980.18",
-              "invoice_amount": "980.18",
+              "pg_expected_fee_plus_gst": "68.25",
+              "invoice_amount": "68.25",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
@@ -3136,31 +3136,31 @@
             },
             "date_points_awarded": 14,
             "utr": {
-              "pg": "UTR626700403",
-              "bank": "UTR656700403",
+              "pg": "UTR694524394",
+              "bank": null,
               "matched": false,
               "points_awarded": 0
             },
             "fee_consistency": {
-              "pg_fee": "830.66",
-              "invoice_fee": "830.66",
+              "pg_fee": "57.84",
+              "invoice_fee": "57.84",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 5
             }
           },
-          "selection_reason": "bank: only candidate found via exact_txn; invoice: only candidate found via exact_txn",
+          "selection_reason": "bank: only candidate found via fuzzy; invoice: only candidate found via exact_txn; selected pairing is non-authoritative for downstream financial reconciliation",
           "tax_evaluated": true,
-          "authoritative_match": true
+          "authoritative_match": false
         }
       },
       "matching": {
         "txn_id": "TXN_00027",
         "bank_candidate_count": 1,
         "invoice_candidate_count": 1,
-        "bank_match_type": "exact_txn",
+        "bank_match_type": "fuzzy",
         "invoice_match_type": "exact_txn",
-        "confidence": "MEDIUM",
+        "confidence": "NO_MATCH",
         "is_ambiguous": false,
         "sources_present": [
           "pg",
@@ -3184,41 +3184,41 @@
       },
       "deterministic_decision": {
         "txn_id": "TXN_00028",
-        "status": "MATCHED",
-        "confidence_score": 89,
+        "status": "HUMAN_REVIEW",
+        "confidence_score": 69,
         "matched_sources": [
           "pg",
           "bank",
           "invoice"
         ],
         "tax_verified": true,
-        "exception_code": "NONE",
+        "exception_code": "REFERENCE_MISMATCH",
         "reason_codes": [
           "NONE"
         ],
         "evidence": {
-          "matched_rule": "fully_clean_match",
+          "matched_rule": "low_confidence_requires_human_review",
           "context": {
             "no_candidates_found": false,
             "is_ambiguous": false,
             "duplicate_detected": false,
-            "low_confidence": false,
+            "low_confidence": true,
             "missing_bank": false,
             "missing_invoice": false,
             "amount_mismatch": false,
             "gst_mismatch": false,
             "tds_mismatch": false,
             "tax_unverifiable": false,
-            "fully_clean": true
+            "fully_clean": false
           },
           "match_signals": {
             "missing_bank": false,
             "missing_invoice": false,
             "txn_id_bank": {
               "pg": "TXN_00028",
-              "bank": "TXN_00028",
-              "matched": true,
-              "points_awarded": 20
+              "bank": null,
+              "matched": false,
+              "points_awarded": 0
             },
             "txn_id_invoice": {
               "pg": "TXN_00028",
@@ -3227,15 +3227,15 @@
               "points_awarded": 20
             },
             "amount_bank": {
-              "pg_expected_net": "1749.22",
-              "bank_amount": "1749.22",
+              "pg_expected_net": "3818.79",
+              "bank_amount": "3818.79",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
             },
             "amount_invoice": {
-              "pg_expected_fee_plus_gst": "42.28",
-              "invoice_amount": "42.28",
+              "pg_expected_fee_plus_gst": "92.30",
+              "invoice_amount": "92.30",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
@@ -3252,31 +3252,31 @@
             },
             "date_points_awarded": 14,
             "utr": {
-              "pg": "UTR423028119",
-              "bank": "UT1423028119",
+              "pg": "UTR634369463",
+              "bank": null,
               "matched": false,
               "points_awarded": 0
             },
             "fee_consistency": {
-              "pg_fee": "35.83",
-              "invoice_fee": "35.83",
+              "pg_fee": "78.22",
+              "invoice_fee": "78.22",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 5
             }
           },
-          "selection_reason": "bank: only candidate found via exact_txn; invoice: only candidate found via exact_txn",
+          "selection_reason": "bank: only candidate found via fuzzy; invoice: only candidate found via exact_txn; selected pairing is non-authoritative for downstream financial reconciliation",
           "tax_evaluated": true,
-          "authoritative_match": true
+          "authoritative_match": false
         }
       },
       "matching": {
         "txn_id": "TXN_00028",
         "bank_candidate_count": 1,
         "invoice_candidate_count": 1,
-        "bank_match_type": "exact_txn",
+        "bank_match_type": "fuzzy",
         "invoice_match_type": "exact_txn",
-        "confidence": "MEDIUM",
+        "confidence": "NO_MATCH",
         "is_ambiguous": false,
         "sources_present": [
           "pg",
@@ -3300,41 +3300,41 @@
       },
       "deterministic_decision": {
         "txn_id": "TXN_00029",
-        "status": "MATCHED",
-        "confidence_score": 89,
+        "status": "HUMAN_REVIEW",
+        "confidence_score": 69,
         "matched_sources": [
           "pg",
           "bank",
           "invoice"
         ],
         "tax_verified": true,
-        "exception_code": "NONE",
+        "exception_code": "REFERENCE_MISMATCH",
         "reason_codes": [
           "NONE"
         ],
         "evidence": {
-          "matched_rule": "fully_clean_match",
+          "matched_rule": "low_confidence_requires_human_review",
           "context": {
             "no_candidates_found": false,
             "is_ambiguous": false,
             "duplicate_detected": false,
-            "low_confidence": false,
+            "low_confidence": true,
             "missing_bank": false,
             "missing_invoice": false,
             "amount_mismatch": false,
             "gst_mismatch": false,
             "tds_mismatch": false,
             "tax_unverifiable": false,
-            "fully_clean": true
+            "fully_clean": false
           },
           "match_signals": {
             "missing_bank": false,
             "missing_invoice": false,
             "txn_id_bank": {
               "pg": "TXN_00029",
-              "bank": "TXN_00029",
-              "matched": true,
-              "points_awarded": 20
+              "bank": null,
+              "matched": false,
+              "points_awarded": 0
             },
             "txn_id_invoice": {
               "pg": "TXN_00029",
@@ -3343,15 +3343,15 @@
               "points_awarded": 20
             },
             "amount_bank": {
-              "pg_expected_net": "3350.75",
-              "bank_amount": "3350.75",
+              "pg_expected_net": "3421.63",
+              "bank_amount": "3421.63",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
             },
             "amount_invoice": {
-              "pg_expected_fee_plus_gst": "81.08",
-              "invoice_amount": "81.08",
+              "pg_expected_fee_plus_gst": "82.71",
+              "invoice_amount": "82.71",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
@@ -3368,31 +3368,31 @@
             },
             "date_points_awarded": 14,
             "utr": {
-              "pg": "UTR555579834",
-              "bank": "UTR555570834",
+              "pg": "UTR629586504",
+              "bank": null,
               "matched": false,
               "points_awarded": 0
             },
             "fee_consistency": {
-              "pg_fee": "68.71",
-              "invoice_fee": "68.71",
+              "pg_fee": "70.09",
+              "invoice_fee": "70.09",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 5
             }
           },
-          "selection_reason": "bank: only candidate found via exact_txn; invoice: only candidate found via exact_txn",
+          "selection_reason": "bank: only candidate found via fuzzy; invoice: only candidate found via exact_txn; selected pairing is non-authoritative for downstream financial reconciliation",
           "tax_evaluated": true,
-          "authoritative_match": true
+          "authoritative_match": false
         }
       },
       "matching": {
         "txn_id": "TXN_00029",
         "bank_candidate_count": 1,
         "invoice_candidate_count": 1,
-        "bank_match_type": "exact_txn",
+        "bank_match_type": "fuzzy",
         "invoice_match_type": "exact_txn",
-        "confidence": "MEDIUM",
+        "confidence": "NO_MATCH",
         "is_ambiguous": false,
         "sources_present": [
           "pg",
@@ -3416,41 +3416,41 @@
       },
       "deterministic_decision": {
         "txn_id": "TXN_00030",
-        "status": "MATCHED",
-        "confidence_score": 89,
+        "status": "HUMAN_REVIEW",
+        "confidence_score": 69,
         "matched_sources": [
           "pg",
           "bank",
           "invoice"
         ],
         "tax_verified": true,
-        "exception_code": "NONE",
+        "exception_code": "REFERENCE_MISMATCH",
         "reason_codes": [
           "NONE"
         ],
         "evidence": {
-          "matched_rule": "fully_clean_match",
+          "matched_rule": "low_confidence_requires_human_review",
           "context": {
             "no_candidates_found": false,
             "is_ambiguous": false,
             "duplicate_detected": false,
-            "low_confidence": false,
+            "low_confidence": true,
             "missing_bank": false,
             "missing_invoice": false,
             "amount_mismatch": false,
             "gst_mismatch": false,
             "tds_mismatch": false,
             "tax_unverifiable": false,
-            "fully_clean": true
+            "fully_clean": false
           },
           "match_signals": {
             "missing_bank": false,
             "missing_invoice": false,
             "txn_id_bank": {
               "pg": "TXN_00030",
-              "bank": "TXN_00030",
-              "matched": true,
-              "points_awarded": 20
+              "bank": null,
+              "matched": false,
+              "points_awarded": 0
             },
             "txn_id_invoice": {
               "pg": "TXN_00030",
@@ -3459,15 +3459,15 @@
               "points_awarded": 20
             },
             "amount_bank": {
-              "pg_expected_net": "4991.21",
-              "bank_amount": "4991.21",
+              "pg_expected_net": "38595.66",
+              "bank_amount": "38595.66",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
             },
             "amount_invoice": {
-              "pg_expected_fee_plus_gst": "120.64",
-              "invoice_amount": "120.64",
+              "pg_expected_fee_plus_gst": "932.87",
+              "invoice_amount": "932.87",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
@@ -3484,31 +3484,31 @@
             },
             "date_points_awarded": 14,
             "utr": {
-              "pg": "UTR143821707",
-              "bank": "UTR143821307",
+              "pg": "UTR106012093",
+              "bank": null,
               "matched": false,
               "points_awarded": 0
             },
             "fee_consistency": {
-              "pg_fee": "102.24",
-              "invoice_fee": "102.24",
+              "pg_fee": "790.57",
+              "invoice_fee": "790.57",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 5
             }
           },
-          "selection_reason": "bank: only candidate found via exact_txn; invoice: only candidate found via exact_txn",
+          "selection_reason": "bank: only candidate found via fuzzy; invoice: only candidate found via exact_txn; selected pairing is non-authoritative for downstream financial reconciliation",
           "tax_evaluated": true,
-          "authoritative_match": true
+          "authoritative_match": false
         }
       },
       "matching": {
         "txn_id": "TXN_00030",
         "bank_candidate_count": 1,
         "invoice_candidate_count": 1,
-        "bank_match_type": "exact_txn",
+        "bank_match_type": "fuzzy",
         "invoice_match_type": "exact_txn",
-        "confidence": "MEDIUM",
+        "confidence": "NO_MATCH",
         "is_ambiguous": false,
         "sources_present": [
           "pg",
@@ -3575,15 +3575,15 @@
               "points_awarded": 20
             },
             "amount_bank": {
-              "pg_expected_net": "96970.86",
-              "bank_amount": "96965.86",
-              "delta": "5.00",
+              "pg_expected_net": "6722.51",
+              "bank_amount": "6710.01",
+              "delta": "12.50",
               "matched": false,
               "points_awarded": 0
             },
             "amount_invoice": {
-              "pg_expected_fee_plus_gst": "2343.82",
-              "invoice_amount": "2343.82",
+              "pg_expected_fee_plus_gst": "162.49",
+              "invoice_amount": "162.49",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
@@ -3600,14 +3600,14 @@
             },
             "date_points_awarded": 14,
             "utr": {
-              "pg": "UTR270065656",
-              "bank": "UTR270065656",
+              "pg": "UTR347439911",
+              "bank": "UTR347439911",
               "matched": true,
               "points_awarded": 10
             },
             "fee_consistency": {
-              "pg_fee": "1986.29",
-              "invoice_fee": "1986.29",
+              "pg_fee": "137.70",
+              "invoice_fee": "137.70",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 5
@@ -3691,15 +3691,15 @@
               "points_awarded": 20
             },
             "amount_bank": {
-              "pg_expected_net": "43682.15",
-              "bank_amount": "43677.15",
-              "delta": "5.00",
+              "pg_expected_net": "2291.03",
+              "bank_amount": "2271.03",
+              "delta": "20.00",
               "matched": false,
               "points_awarded": 0
             },
             "amount_invoice": {
-              "pg_expected_fee_plus_gst": "1056.90",
-              "invoice_amount": "1056.90",
+              "pg_expected_fee_plus_gst": "55.38",
+              "invoice_amount": "55.38",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
@@ -3716,14 +3716,14 @@
             },
             "date_points_awarded": 14,
             "utr": {
-              "pg": "UTR641381180",
-              "bank": "UTR641381180",
+              "pg": "UTR768926291",
+              "bank": "UTR768926291",
               "matched": true,
               "points_awarded": 10
             },
             "fee_consistency": {
-              "pg_fee": "895.68",
-              "invoice_fee": "895.68",
+              "pg_fee": "46.93",
+              "invoice_fee": "46.93",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 5
@@ -3807,15 +3807,15 @@
               "points_awarded": 20
             },
             "amount_bank": {
-              "pg_expected_net": "34598.32",
-              "bank_amount": "34585.82",
-              "delta": "12.50",
+              "pg_expected_net": "6820.32",
+              "bank_amount": "6800.32",
+              "delta": "20.00",
               "matched": false,
               "points_awarded": 0
             },
             "amount_invoice": {
-              "pg_expected_fee_plus_gst": "836.25",
-              "invoice_amount": "836.25",
+              "pg_expected_fee_plus_gst": "164.85",
+              "invoice_amount": "164.85",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
@@ -3832,14 +3832,14 @@
             },
             "date_points_awarded": 14,
             "utr": {
-              "pg": "UTR670822020",
-              "bank": "UTR670822020",
+              "pg": "UTR400626496",
+              "bank": "UTR400626496",
               "matched": true,
               "points_awarded": 10
             },
             "fee_consistency": {
-              "pg_fee": "708.69",
-              "invoice_fee": "708.69",
+              "pg_fee": "139.70",
+              "invoice_fee": "139.70",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 5
@@ -3923,15 +3923,15 @@
               "points_awarded": 20
             },
             "amount_bank": {
-              "pg_expected_net": "5477.30",
-              "bank_amount": "5476.55",
-              "delta": "0.75",
+              "pg_expected_net": "5296.94",
+              "bank_amount": "5276.94",
+              "delta": "20.00",
               "matched": false,
               "points_awarded": 0
             },
             "amount_invoice": {
-              "pg_expected_fee_plus_gst": "132.38",
-              "invoice_amount": "132.38",
+              "pg_expected_fee_plus_gst": "128.03",
+              "invoice_amount": "128.03",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
@@ -3948,14 +3948,14 @@
             },
             "date_points_awarded": 14,
             "utr": {
-              "pg": "UTR499164982",
-              "bank": "UTR499164982",
+              "pg": "UTR855392155",
+              "bank": "UTR855392155",
               "matched": true,
               "points_awarded": 10
             },
             "fee_consistency": {
-              "pg_fee": "112.19",
-              "invoice_fee": "112.19",
+              "pg_fee": "108.50",
+              "invoice_fee": "108.50",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 5
@@ -4039,15 +4039,15 @@
               "points_awarded": 20
             },
             "amount_bank": {
-              "pg_expected_net": "12555.13",
-              "bank_amount": "12535.13",
-              "delta": "20.00",
+              "pg_expected_net": "596.44",
+              "bank_amount": "591.44",
+              "delta": "5.00",
               "matched": false,
               "points_awarded": 0
             },
             "amount_invoice": {
-              "pg_expected_fee_plus_gst": "303.46",
-              "invoice_amount": "303.46",
+              "pg_expected_fee_plus_gst": "14.42",
+              "invoice_amount": "14.42",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
@@ -4064,14 +4064,14 @@
             },
             "date_points_awarded": 14,
             "utr": {
-              "pg": "UTR604916337",
-              "bank": "UTR604916337",
+              "pg": "UTR789759261",
+              "bank": "UTR789759261",
               "matched": true,
               "points_awarded": 10
             },
             "fee_consistency": {
-              "pg_fee": "257.17",
-              "invoice_fee": "257.17",
+              "pg_fee": "12.22",
+              "invoice_fee": "12.22",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 5
@@ -4155,15 +4155,15 @@
               "points_awarded": 20
             },
             "amount_bank": {
-              "pg_expected_net": "2260.89",
-              "bank_amount": "2240.89",
-              "delta": "20.00",
+              "pg_expected_net": "9592.58",
+              "bank_amount": "9587.58",
+              "delta": "5.00",
               "matched": false,
               "points_awarded": 0
             },
             "amount_invoice": {
-              "pg_expected_fee_plus_gst": "54.65",
-              "invoice_amount": "54.65",
+              "pg_expected_fee_plus_gst": "231.86",
+              "invoice_amount": "231.86",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
@@ -4180,14 +4180,14 @@
             },
             "date_points_awarded": 14,
             "utr": {
-              "pg": "UTR707060904",
-              "bank": "UTR707060904",
+              "pg": "UTR389761938",
+              "bank": "UTR389761938",
               "matched": true,
               "points_awarded": 10
             },
             "fee_consistency": {
-              "pg_fee": "46.31",
-              "invoice_fee": "46.31",
+              "pg_fee": "196.49",
+              "invoice_fee": "196.49",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 5
@@ -4271,15 +4271,15 @@
               "points_awarded": 20
             },
             "amount_bank": {
-              "pg_expected_net": "883.52",
-              "bank_amount": "878.52",
-              "delta": "5.00",
+              "pg_expected_net": "8048.02",
+              "bank_amount": "8047.27",
+              "delta": "0.75",
               "matched": false,
               "points_awarded": 0
             },
             "amount_invoice": {
-              "pg_expected_fee_plus_gst": "21.38",
-              "invoice_amount": "21.38",
+              "pg_expected_fee_plus_gst": "194.52",
+              "invoice_amount": "194.52",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
@@ -4296,14 +4296,14 @@
             },
             "date_points_awarded": 14,
             "utr": {
-              "pg": "UTR135712844",
-              "bank": "UTR135712844",
+              "pg": "UTR591559610",
+              "bank": "UTR591559610",
               "matched": true,
               "points_awarded": 10
             },
             "fee_consistency": {
-              "pg_fee": "18.12",
-              "invoice_fee": "18.12",
+              "pg_fee": "164.85",
+              "invoice_fee": "164.85",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 5
@@ -4387,15 +4387,15 @@
               "points_awarded": 20
             },
             "amount_bank": {
-              "pg_expected_net": "5779.14",
-              "bank_amount": "5766.64",
-              "delta": "12.50",
+              "pg_expected_net": "58690.64",
+              "bank_amount": "58670.64",
+              "delta": "20.00",
               "matched": false,
               "points_awarded": 0
             },
             "amount_invoice": {
-              "pg_expected_fee_plus_gst": "139.69",
-              "invoice_amount": "139.69",
+              "pg_expected_fee_plus_gst": "1418.57",
+              "invoice_amount": "1418.57",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
@@ -4412,14 +4412,14 @@
             },
             "date_points_awarded": 14,
             "utr": {
-              "pg": "UTR554575029",
-              "bank": "UTR554575029",
+              "pg": "UTR242044074",
+              "bank": "UTR242044074",
               "matched": true,
               "points_awarded": 10
             },
             "fee_consistency": {
-              "pg_fee": "118.38",
-              "invoice_fee": "118.38",
+              "pg_fee": "1202.18",
+              "invoice_fee": "1202.18",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 5
@@ -4503,15 +4503,15 @@
               "points_awarded": 20
             },
             "amount_bank": {
-              "pg_expected_net": "49305.56",
-              "bank_amount": "49305.56",
+              "pg_expected_net": "92920.39",
+              "bank_amount": "92920.39",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
             },
             "amount_invoice": {
-              "pg_expected_fee_plus_gst": "1192.96",
-              "invoice_amount": "1192.96",
+              "pg_expected_fee_plus_gst": "2248.23",
+              "invoice_amount": "2248.23",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
@@ -4528,14 +4528,14 @@
             },
             "date_points_awarded": 14,
             "utr": {
-              "pg": "UTR606344009",
-              "bank": "UTR606344009",
+              "pg": "UTR627838752",
+              "bank": "UTR627838752",
               "matched": true,
               "points_awarded": 10
             },
             "fee_consistency": {
-              "pg_fee": "1010.98",
-              "invoice_fee": "1010.98",
+              "pg_fee": "1905.28",
+              "invoice_fee": "1905.28",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 5
@@ -4619,15 +4619,15 @@
               "points_awarded": 20
             },
             "amount_bank": {
-              "pg_expected_net": "9661.73",
-              "bank_amount": "9661.73",
+              "pg_expected_net": "17328.12",
+              "bank_amount": "17328.12",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
             },
             "amount_invoice": {
-              "pg_expected_fee_plus_gst": "233.77",
-              "invoice_amount": "233.77",
+              "pg_expected_fee_plus_gst": "419.25",
+              "invoice_amount": "419.25",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
@@ -4644,14 +4644,14 @@
             },
             "date_points_awarded": 14,
             "utr": {
-              "pg": "UTR798585074",
-              "bank": "UTR798585074",
+              "pg": "UTR836650738",
+              "bank": "UTR836650738",
               "matched": true,
               "points_awarded": 10
             },
             "fee_consistency": {
-              "pg_fee": "198.11",
-              "invoice_fee": "198.11",
+              "pg_fee": "355.30",
+              "invoice_fee": "355.30",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 5
@@ -4735,15 +4735,15 @@
               "points_awarded": 20
             },
             "amount_bank": {
-              "pg_expected_net": "218.52",
-              "bank_amount": "218.52",
+              "pg_expected_net": "3643.15",
+              "bank_amount": "3643.15",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
             },
             "amount_invoice": {
-              "pg_expected_fee_plus_gst": "5.29",
-              "invoice_amount": "5.29",
+              "pg_expected_fee_plus_gst": "88.15",
+              "invoice_amount": "88.15",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
@@ -4760,14 +4760,14 @@
             },
             "date_points_awarded": 15,
             "utr": {
-              "pg": "UTR708648694",
-              "bank": "UTR708648694",
+              "pg": "UTR367363175",
+              "bank": "UTR367363175",
               "matched": true,
               "points_awarded": 10
             },
             "fee_consistency": {
-              "pg_fee": "4.48",
-              "invoice_fee": "4.48",
+              "pg_fee": "74.70",
+              "invoice_fee": "74.70",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 5
@@ -4809,19 +4809,19 @@
       "deterministic_decision": {
         "txn_id": "TXN_00042",
         "status": "TAX_MISMATCH",
-        "confidence_score": 94,
+        "confidence_score": 99,
         "matched_sources": [
           "pg",
           "bank",
           "invoice"
         ],
         "tax_verified": false,
-        "exception_code": "ERR_GST_MISMATCH",
+        "exception_code": "ERR_TDS_VARIANCE",
         "reason_codes": [
-          "ERR_GST_MISMATCH"
+          "ERR_TDS_VARIANCE"
         ],
         "evidence": {
-          "matched_rule": "gst_mismatch_takes_priority_over_tds",
+          "matched_rule": "tds_mismatch",
           "context": {
             "no_candidates_found": false,
             "is_ambiguous": false,
@@ -4830,8 +4830,8 @@
             "missing_bank": false,
             "missing_invoice": false,
             "amount_mismatch": false,
-            "gst_mismatch": true,
-            "tds_mismatch": false,
+            "gst_mismatch": false,
+            "tds_mismatch": true,
             "tax_unverifiable": false,
             "fully_clean": false
           },
@@ -4851,15 +4851,15 @@
               "points_awarded": 20
             },
             "amount_bank": {
-              "pg_expected_net": "8484.56",
-              "bank_amount": "8484.56",
+              "pg_expected_net": "850.19",
+              "bank_amount": "850.19",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
             },
             "amount_invoice": {
-              "pg_expected_fee_plus_gst": "205.28",
-              "invoice_amount": "205.28",
+              "pg_expected_fee_plus_gst": "20.57",
+              "invoice_amount": "20.57",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
@@ -4876,17 +4876,17 @@
             },
             "date_points_awarded": 14,
             "utr": {
-              "pg": "UTR579676240",
-              "bank": "UTR579676240",
+              "pg": "UTR572720973",
+              "bank": "UTR572720973",
               "matched": true,
               "points_awarded": 10
             },
             "fee_consistency": {
-              "pg_fee": "173.97",
-              "invoice_fee": "184.40",
-              "delta": "10.43",
-              "matched": false,
-              "points_awarded": 0
+              "pg_fee": "17.43",
+              "invoice_fee": "17.43",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 5
             }
           },
           "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn",
@@ -4900,7 +4900,7 @@
         "invoice_candidate_count": 1,
         "bank_match_type": "exact_utr",
         "invoice_match_type": "exact_txn",
-        "confidence": "MEDIUM",
+        "confidence": "HIGH",
         "is_ambiguous": false,
         "sources_present": [
           "pg",
@@ -4925,19 +4925,19 @@
       "deterministic_decision": {
         "txn_id": "TXN_00043",
         "status": "TAX_MISMATCH",
-        "confidence_score": 94,
+        "confidence_score": 99,
         "matched_sources": [
           "pg",
           "bank",
           "invoice"
         ],
         "tax_verified": false,
-        "exception_code": "ERR_GST_MISMATCH",
+        "exception_code": "ERR_TDS_VARIANCE",
         "reason_codes": [
-          "ERR_GST_MISMATCH"
+          "ERR_TDS_VARIANCE"
         ],
         "evidence": {
-          "matched_rule": "gst_mismatch_takes_priority_over_tds",
+          "matched_rule": "tds_mismatch",
           "context": {
             "no_candidates_found": false,
             "is_ambiguous": false,
@@ -4946,8 +4946,8 @@
             "missing_bank": false,
             "missing_invoice": false,
             "amount_mismatch": false,
-            "gst_mismatch": true,
-            "tds_mismatch": false,
+            "gst_mismatch": false,
+            "tds_mismatch": true,
             "tax_unverifiable": false,
             "fully_clean": false
           },
@@ -4967,15 +4967,15 @@
               "points_awarded": 20
             },
             "amount_bank": {
-              "pg_expected_net": "27528.98",
-              "bank_amount": "27528.98",
+              "pg_expected_net": "2419.49",
+              "bank_amount": "2419.49",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
             },
             "amount_invoice": {
-              "pg_expected_fee_plus_gst": "665.39",
-              "invoice_amount": "665.39",
+              "pg_expected_fee_plus_gst": "58.48",
+              "invoice_amount": "58.48",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
@@ -4992,17 +4992,17 @@
             },
             "date_points_awarded": 14,
             "utr": {
-              "pg": "UTR132350014",
-              "bank": "UTR132350014",
+              "pg": "UTR311431648",
+              "bank": "UTR311431648",
               "matched": true,
               "points_awarded": 10
             },
             "fee_consistency": {
-              "pg_fee": "563.89",
-              "invoice_fee": "597.72",
-              "delta": "33.83",
-              "matched": false,
-              "points_awarded": 0
+              "pg_fee": "49.56",
+              "invoice_fee": "49.56",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 5
             }
           },
           "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn",
@@ -5016,7 +5016,7 @@
         "invoice_candidate_count": 1,
         "bank_match_type": "exact_utr",
         "invoice_match_type": "exact_txn",
-        "confidence": "MEDIUM",
+        "confidence": "HIGH",
         "is_ambiguous": false,
         "sources_present": [
           "pg",
@@ -5083,15 +5083,15 @@
               "points_awarded": 20
             },
             "amount_bank": {
-              "pg_expected_net": "6026.09",
-              "bank_amount": "6026.09",
+              "pg_expected_net": "8263.07",
+              "bank_amount": "8263.07",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
             },
             "amount_invoice": {
-              "pg_expected_fee_plus_gst": "145.65",
-              "invoice_amount": "145.65",
+              "pg_expected_fee_plus_gst": "199.73",
+              "invoice_amount": "199.73",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
@@ -5108,14 +5108,14 @@
             },
             "date_points_awarded": 14,
             "utr": {
-              "pg": "UTR188495897",
-              "bank": "UTR188495897",
+              "pg": "UTR968295917",
+              "bank": "UTR968295917",
               "matched": true,
               "points_awarded": 10
             },
             "fee_consistency": {
-              "pg_fee": "123.43",
-              "invoice_fee": "123.43",
+              "pg_fee": "169.26",
+              "invoice_fee": "169.26",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 5
@@ -5157,19 +5157,19 @@
       "deterministic_decision": {
         "txn_id": "TXN_00045",
         "status": "TAX_MISMATCH",
-        "confidence_score": 94,
+        "confidence_score": 99,
         "matched_sources": [
           "pg",
           "bank",
           "invoice"
         ],
         "tax_verified": false,
-        "exception_code": "ERR_GST_MISMATCH",
+        "exception_code": "ERR_TDS_VARIANCE",
         "reason_codes": [
-          "ERR_GST_MISMATCH"
+          "ERR_TDS_VARIANCE"
         ],
         "evidence": {
-          "matched_rule": "gst_mismatch_takes_priority_over_tds",
+          "matched_rule": "tds_mismatch",
           "context": {
             "no_candidates_found": false,
             "is_ambiguous": false,
@@ -5178,8 +5178,8 @@
             "missing_bank": false,
             "missing_invoice": false,
             "amount_mismatch": false,
-            "gst_mismatch": true,
-            "tds_mismatch": false,
+            "gst_mismatch": false,
+            "tds_mismatch": true,
             "tax_unverifiable": false,
             "fully_clean": false
           },
@@ -5199,15 +5199,15 @@
               "points_awarded": 20
             },
             "amount_bank": {
-              "pg_expected_net": "5318.47",
-              "bank_amount": "5318.47",
+              "pg_expected_net": "7856.66",
+              "bank_amount": "7856.66",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
             },
             "amount_invoice": {
-              "pg_expected_fee_plus_gst": "128.68",
-              "invoice_amount": "128.68",
+              "pg_expected_fee_plus_gst": "190.10",
+              "invoice_amount": "190.10",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
@@ -5224,17 +5224,17 @@
             },
             "date_points_awarded": 14,
             "utr": {
-              "pg": "UTR233795408",
-              "bank": "UTR233795408",
+              "pg": "UTR654782505",
+              "bank": "UTR654782505",
               "matched": true,
               "points_awarded": 10
             },
             "fee_consistency": {
-              "pg_fee": "109.05",
-              "invoice_fee": "115.59",
-              "delta": "6.54",
-              "matched": false,
-              "points_awarded": 0
+              "pg_fee": "161.10",
+              "invoice_fee": "161.10",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 5
             }
           },
           "selection_reason": "bank: only candidate found via exact_utr; invoice: only candidate found via exact_txn",
@@ -5248,7 +5248,7 @@
         "invoice_candidate_count": 1,
         "bank_match_type": "exact_utr",
         "invoice_match_type": "exact_txn",
-        "confidence": "MEDIUM",
+        "confidence": "HIGH",
         "is_ambiguous": false,
         "sources_present": [
           "pg",
@@ -5308,8 +5308,8 @@
               "points_awarded": 20
             },
             "amount_invoice": {
-              "pg_expected_fee_plus_gst": "932.87",
-              "invoice_amount": "932.87",
+              "pg_expected_fee_plus_gst": "56.30",
+              "invoice_amount": "56.30",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
@@ -5321,8 +5321,8 @@
             },
             "date_points_awarded": 0,
             "fee_consistency": {
-              "pg_fee": "790.57",
-              "invoice_fee": "790.57",
+              "pg_fee": "47.71",
+              "invoice_fee": "47.71",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 5
@@ -5398,8 +5398,8 @@
               "points_awarded": 20
             },
             "amount_bank": {
-              "pg_expected_net": "4378.58",
-              "bank_amount": "4378.58",
+              "pg_expected_net": "6629.94",
+              "bank_amount": "6629.94",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
@@ -5411,8 +5411,8 @@
             },
             "date_points_awarded": 14,
             "utr": {
-              "pg": "UTR777738147",
-              "bank": "UTR777738147",
+              "pg": "UTR698644561",
+              "bank": "UTR698644561",
               "matched": true,
               "points_awarded": 10
             }
@@ -5451,6 +5451,95 @@
       },
       "deterministic_decision": {
         "txn_id": "TXN_00048",
+        "status": "PARTIAL_MATCH",
+        "confidence_score": 59,
+        "matched_sources": [
+          "pg",
+          "bank"
+        ],
+        "tax_verified": null,
+        "exception_code": "MISSING_IN_INVOICE",
+        "reason_codes": [
+          "MISSING_IN_INVOICE"
+        ],
+        "evidence": {
+          "matched_rule": "missing_invoice_otherwise_clean",
+          "context": {
+            "no_candidates_found": false,
+            "is_ambiguous": false,
+            "duplicate_detected": false,
+            "low_confidence": false,
+            "missing_bank": false,
+            "missing_invoice": true,
+            "amount_mismatch": false,
+            "gst_mismatch": false,
+            "tds_mismatch": false,
+            "tax_unverifiable": false,
+            "fully_clean": false
+          },
+          "match_signals": {
+            "missing_bank": false,
+            "missing_invoice": true,
+            "txn_id_bank": {
+              "pg": "TXN_00048",
+              "bank": "TXN_00048",
+              "matched": true,
+              "points_awarded": 20
+            },
+            "amount_bank": {
+              "pg_expected_net": "6656.92",
+              "bank_amount": "6656.92",
+              "delta": "0.00",
+              "matched": true,
+              "points_awarded": 15
+            },
+            "date_bank": {
+              "delta_days": 1,
+              "matched": true,
+              "points_if_used": 14
+            },
+            "date_points_awarded": 14,
+            "utr": {
+              "pg": "UTR744323004",
+              "bank": "UTR744323004",
+              "matched": true,
+              "points_awarded": 10
+            }
+          },
+          "selection_reason": "bank: only candidate found via exact_utr; invoice: no candidates found",
+          "tax_evaluated": false,
+          "authoritative_match": true
+        }
+      },
+      "matching": {
+        "txn_id": "TXN_00048",
+        "bank_candidate_count": 1,
+        "invoice_candidate_count": 0,
+        "bank_match_type": "exact_utr",
+        "invoice_match_type": "none",
+        "confidence": "HIGH",
+        "is_ambiguous": false,
+        "sources_present": [
+          "pg",
+          "bank"
+        ],
+        "matcher_version": "v4"
+      },
+      "status": "EXECUTED",
+      "error": null
+    },
+    {
+      "case_id": "E2E_049",
+      "category": "missing_in_source",
+      "source_transaction_id": "TXN_00049",
+      "execution": {
+        "ingestion_errors": 0,
+        "normalized_record_count": 2,
+        "matching_result_count": 1,
+        "decision_count": 1
+      },
+      "deterministic_decision": {
+        "txn_id": "TXN_00049",
         "status": "UNMATCHED",
         "confidence_score": 40,
         "matched_sources": [
@@ -5481,27 +5570,27 @@
             "missing_bank": true,
             "missing_invoice": false,
             "txn_id_invoice": {
-              "pg": "TXN_00048",
-              "invoice": "TXN_00048",
+              "pg": "TXN_00049",
+              "invoice": "TXN_00049",
               "matched": true,
               "points_awarded": 20
             },
             "amount_invoice": {
-              "pg_expected_fee_plus_gst": "162.49",
-              "invoice_amount": "162.49",
+              "pg_expected_fee_plus_gst": "160.47",
+              "invoice_amount": "160.47",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
             },
             "date_invoice": {
-              "delta_days": 7,
+              "delta_days": 8,
               "matched": false,
               "points_if_used": 0
             },
             "date_points_awarded": 0,
             "fee_consistency": {
-              "pg_fee": "137.70",
-              "invoice_fee": "137.70",
+              "pg_fee": "135.99",
+              "invoice_fee": "135.99",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 5
@@ -5513,7 +5602,7 @@
         }
       },
       "matching": {
-        "txn_id": "TXN_00048",
+        "txn_id": "TXN_00049",
         "bank_candidate_count": 0,
         "invoice_candidate_count": 1,
         "bank_match_type": "none",
@@ -5523,95 +5612,6 @@
         "sources_present": [
           "pg",
           "invoice"
-        ],
-        "matcher_version": "v4"
-      },
-      "status": "EXECUTED",
-      "error": null
-    },
-    {
-      "case_id": "E2E_049",
-      "category": "missing_in_source",
-      "source_transaction_id": "TXN_00049",
-      "execution": {
-        "ingestion_errors": 0,
-        "normalized_record_count": 2,
-        "matching_result_count": 1,
-        "decision_count": 1
-      },
-      "deterministic_decision": {
-        "txn_id": "TXN_00049",
-        "status": "PARTIAL_MATCH",
-        "confidence_score": 59,
-        "matched_sources": [
-          "pg",
-          "bank"
-        ],
-        "tax_verified": null,
-        "exception_code": "MISSING_IN_INVOICE",
-        "reason_codes": [
-          "MISSING_IN_INVOICE"
-        ],
-        "evidence": {
-          "matched_rule": "missing_invoice_otherwise_clean",
-          "context": {
-            "no_candidates_found": false,
-            "is_ambiguous": false,
-            "duplicate_detected": false,
-            "low_confidence": false,
-            "missing_bank": false,
-            "missing_invoice": true,
-            "amount_mismatch": false,
-            "gst_mismatch": false,
-            "tds_mismatch": false,
-            "tax_unverifiable": false,
-            "fully_clean": false
-          },
-          "match_signals": {
-            "missing_bank": false,
-            "missing_invoice": true,
-            "txn_id_bank": {
-              "pg": "TXN_00049",
-              "bank": "TXN_00049",
-              "matched": true,
-              "points_awarded": 20
-            },
-            "amount_bank": {
-              "pg_expected_net": "6738.38",
-              "bank_amount": "6738.38",
-              "delta": "0.00",
-              "matched": true,
-              "points_awarded": 15
-            },
-            "date_bank": {
-              "delta_days": 1,
-              "matched": true,
-              "points_if_used": 14
-            },
-            "date_points_awarded": 14,
-            "utr": {
-              "pg": "UTR947450285",
-              "bank": "UTR947450285",
-              "matched": true,
-              "points_awarded": 10
-            }
-          },
-          "selection_reason": "bank: only candidate found via exact_utr; invoice: no candidates found",
-          "tax_evaluated": false,
-          "authoritative_match": true
-        }
-      },
-      "matching": {
-        "txn_id": "TXN_00049",
-        "bank_candidate_count": 1,
-        "invoice_candidate_count": 0,
-        "bank_match_type": "exact_utr",
-        "invoice_match_type": "none",
-        "confidence": "HIGH",
-        "is_ambiguous": false,
-        "sources_present": [
-          "pg",
-          "bank"
         ],
         "matcher_version": "v4"
       },
@@ -5630,26 +5630,26 @@
       },
       "deterministic_decision": {
         "txn_id": "TXN_00050",
-        "status": "PARTIAL_MATCH",
-        "confidence_score": 59,
+        "status": "UNMATCHED",
+        "confidence_score": 40,
         "matched_sources": [
           "pg",
-          "bank"
+          "invoice"
         ],
-        "tax_verified": null,
-        "exception_code": "MISSING_IN_INVOICE",
+        "tax_verified": true,
+        "exception_code": "MISSING_IN_BANK",
         "reason_codes": [
-          "MISSING_IN_INVOICE"
+          "MISSING_IN_BANK"
         ],
         "evidence": {
-          "matched_rule": "missing_invoice_otherwise_clean",
+          "matched_rule": "missing_bank_unmatched",
           "context": {
             "no_candidates_found": false,
             "is_ambiguous": false,
             "duplicate_detected": false,
             "low_confidence": false,
-            "missing_bank": false,
-            "missing_invoice": true,
+            "missing_bank": true,
+            "missing_invoice": false,
             "amount_mismatch": false,
             "gst_mismatch": false,
             "tds_mismatch": false,
@@ -5657,50 +5657,51 @@
             "fully_clean": false
           },
           "match_signals": {
-            "missing_bank": false,
-            "missing_invoice": true,
-            "txn_id_bank": {
+            "missing_bank": true,
+            "missing_invoice": false,
+            "txn_id_invoice": {
               "pg": "TXN_00050",
-              "bank": "TXN_00050",
+              "invoice": "TXN_00050",
               "matched": true,
               "points_awarded": 20
             },
-            "amount_bank": {
-              "pg_expected_net": "1273.26",
-              "bank_amount": "1273.26",
+            "amount_invoice": {
+              "pg_expected_fee_plus_gst": "15.12",
+              "invoice_amount": "15.12",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
             },
-            "date_bank": {
-              "delta_days": 1,
-              "matched": true,
-              "points_if_used": 14
+            "date_invoice": {
+              "delta_days": 9,
+              "matched": false,
+              "points_if_used": 0
             },
-            "date_points_awarded": 14,
-            "utr": {
-              "pg": "UTR560350077",
-              "bank": "UTR560350077",
+            "date_points_awarded": 0,
+            "fee_consistency": {
+              "pg_fee": "12.81",
+              "invoice_fee": "12.81",
+              "delta": "0.00",
               "matched": true,
-              "points_awarded": 10
+              "points_awarded": 5
             }
           },
-          "selection_reason": "bank: only candidate found via exact_utr; invoice: no candidates found",
-          "tax_evaluated": false,
+          "selection_reason": "bank: no candidates found; invoice: only candidate found via exact_txn",
+          "tax_evaluated": true,
           "authoritative_match": true
         }
       },
       "matching": {
         "txn_id": "TXN_00050",
-        "bank_candidate_count": 1,
-        "invoice_candidate_count": 0,
-        "bank_match_type": "exact_utr",
-        "invoice_match_type": "none",
-        "confidence": "HIGH",
+        "bank_candidate_count": 0,
+        "invoice_candidate_count": 1,
+        "bank_match_type": "none",
+        "invoice_match_type": "exact_txn",
+        "confidence": "LOW",
         "is_ambiguous": false,
         "sources_present": [
           "pg",
-          "bank"
+          "invoice"
         ],
         "matcher_version": "v4"
       },
@@ -5762,15 +5763,15 @@
               "points_awarded": 20
             },
             "amount_bank": {
-              "pg_expected_net": "55628.33",
-              "bank_amount": "55628.33",
+              "pg_expected_net": "46648.99",
+              "bank_amount": "46648.99",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
             },
             "amount_invoice": {
-              "pg_expected_fee_plus_gst": "1344.56",
-              "invoice_amount": "1344.56",
+              "pg_expected_fee_plus_gst": "1127.53",
+              "invoice_amount": "1127.53",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
@@ -5787,14 +5788,14 @@
             },
             "date_points_awarded": 14,
             "utr": {
-              "pg": "UTR403299525",
-              "bank": "UTR403299525",
+              "pg": "UTR289321853",
+              "bank": "UTR289321853",
               "matched": true,
               "points_awarded": 10
             },
             "fee_consistency": {
-              "pg_fee": "1139.46",
-              "invoice_fee": "1139.46",
+              "pg_fee": "955.53",
+              "invoice_fee": "955.53",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 5
@@ -5878,15 +5879,15 @@
               "points_awarded": 20
             },
             "amount_bank": {
-              "pg_expected_net": "7620.30",
-              "bank_amount": "7620.30",
+              "pg_expected_net": "7770.58",
+              "bank_amount": "7770.58",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
             },
             "amount_invoice": {
-              "pg_expected_fee_plus_gst": "184.19",
-              "invoice_amount": "184.19",
+              "pg_expected_fee_plus_gst": "187.82",
+              "invoice_amount": "187.82",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
@@ -5903,14 +5904,14 @@
             },
             "date_points_awarded": 14,
             "utr": {
-              "pg": "UTR553117015",
-              "bank": "UTR553117015",
+              "pg": "UTR699379633",
+              "bank": "UTR699379633",
               "matched": true,
               "points_awarded": 10
             },
             "fee_consistency": {
-              "pg_fee": "156.09",
-              "invoice_fee": "156.09",
+              "pg_fee": "159.17",
+              "invoice_fee": "159.17",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 5
@@ -5994,15 +5995,15 @@
               "points_awarded": 20
             },
             "amount_bank": {
-              "pg_expected_net": "438.52",
-              "bank_amount": "438.52",
+              "pg_expected_net": "80740.57",
+              "bank_amount": "80740.57",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
             },
             "amount_invoice": {
-              "pg_expected_fee_plus_gst": "10.60",
-              "invoice_amount": "10.60",
+              "pg_expected_fee_plus_gst": "1951.53",
+              "invoice_amount": "1951.53",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
@@ -6019,14 +6020,14 @@
             },
             "date_points_awarded": 14,
             "utr": {
-              "pg": "UTR437924120",
-              "bank": "UTR437924120",
+              "pg": "UTR549325370",
+              "bank": "UTR549325370",
               "matched": true,
               "points_awarded": 10
             },
             "fee_consistency": {
-              "pg_fee": "8.98",
-              "invoice_fee": "8.98",
+              "pg_fee": "1653.84",
+              "invoice_fee": "1653.84",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 5
@@ -6110,15 +6111,15 @@
               "points_awarded": 20
             },
             "amount_bank": {
-              "pg_expected_net": "8024.30",
-              "bank_amount": "8024.30",
+              "pg_expected_net": "40834.13",
+              "bank_amount": "40834.13",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
             },
             "amount_invoice": {
-              "pg_expected_fee_plus_gst": "193.94",
-              "invoice_amount": "193.94",
+              "pg_expected_fee_plus_gst": "986.98",
+              "invoice_amount": "986.98",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
@@ -6135,14 +6136,14 @@
             },
             "date_points_awarded": 14,
             "utr": {
-              "pg": "UTR230106753",
-              "bank": "UTR230106753",
+              "pg": "UTR906364121",
+              "bank": "UTR906364121",
               "matched": true,
               "points_awarded": 10
             },
             "fee_consistency": {
-              "pg_fee": "164.36",
-              "invoice_fee": "164.36",
+              "pg_fee": "836.42",
+              "invoice_fee": "836.42",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 5
@@ -6226,15 +6227,15 @@
               "points_awarded": 20
             },
             "amount_bank": {
-              "pg_expected_net": "8024.30",
-              "bank_amount": "8024.30",
+              "pg_expected_net": "40834.13",
+              "bank_amount": "40834.13",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
             },
             "amount_invoice": {
-              "pg_expected_fee_plus_gst": "193.94",
-              "invoice_amount": "193.94",
+              "pg_expected_fee_plus_gst": "986.98",
+              "invoice_amount": "986.98",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
@@ -6251,14 +6252,14 @@
             },
             "date_points_awarded": 14,
             "utr": {
-              "pg": "UTR107833180",
-              "bank": "UTR107833180",
+              "pg": "UTR988927745",
+              "bank": "UTR988927745",
               "matched": true,
               "points_awarded": 10
             },
             "fee_consistency": {
-              "pg_fee": "164.36",
-              "invoice_fee": "164.36",
+              "pg_fee": "836.42",
+              "invoice_fee": "836.42",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 5
@@ -6342,15 +6343,15 @@
               "points_awarded": 20
             },
             "amount_bank": {
-              "pg_expected_net": "9592.58",
-              "bank_amount": "9592.58",
+              "pg_expected_net": "713.90",
+              "bank_amount": "713.90",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
             },
             "amount_invoice": {
-              "pg_expected_fee_plus_gst": "231.86",
-              "invoice_amount": "231.86",
+              "pg_expected_fee_plus_gst": "17.25",
+              "invoice_amount": "17.25",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
@@ -6367,14 +6368,14 @@
             },
             "date_points_awarded": 14,
             "utr": {
-              "pg": "UTR389761938",
-              "bank": "UTR389761938",
+              "pg": "UTR727763735",
+              "bank": "UTR727763735",
               "matched": true,
               "points_awarded": 10
             },
             "fee_consistency": {
-              "pg_fee": "196.49",
-              "invoice_fee": "196.49",
+              "pg_fee": "14.62",
+              "invoice_fee": "14.62",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 5
@@ -6458,15 +6459,15 @@
               "points_awarded": 20
             },
             "amount_bank": {
-              "pg_expected_net": "9592.58",
-              "bank_amount": "9592.58",
+              "pg_expected_net": "713.90",
+              "bank_amount": "713.90",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
             },
             "amount_invoice": {
-              "pg_expected_fee_plus_gst": "231.86",
-              "invoice_amount": "231.86",
+              "pg_expected_fee_plus_gst": "17.25",
+              "invoice_amount": "17.25",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
@@ -6483,14 +6484,14 @@
             },
             "date_points_awarded": 14,
             "utr": {
-              "pg": "UTR773518974",
-              "bank": "UTR773518974",
+              "pg": "UTR175131984",
+              "bank": "UTR175131984",
               "matched": true,
               "points_awarded": 10
             },
             "fee_consistency": {
-              "pg_fee": "196.49",
-              "invoice_fee": "196.49",
+              "pg_fee": "14.62",
+              "invoice_fee": "14.62",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 5
@@ -6574,15 +6575,15 @@
               "points_awarded": 20
             },
             "amount_bank": {
-              "pg_expected_net": "8048.02",
-              "bank_amount": "8048.02",
+              "pg_expected_net": "71239.94",
+              "bank_amount": "71239.94",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
             },
             "amount_invoice": {
-              "pg_expected_fee_plus_gst": "194.52",
-              "invoice_amount": "194.52",
+              "pg_expected_fee_plus_gst": "1721.90",
+              "invoice_amount": "1721.90",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
@@ -6599,14 +6600,14 @@
             },
             "date_points_awarded": 14,
             "utr": {
-              "pg": "UTR591559610",
-              "bank": "UTR591559610",
+              "pg": "UTR541113249",
+              "bank": "UTR541113249",
               "matched": true,
               "points_awarded": 10
             },
             "fee_consistency": {
-              "pg_fee": "164.85",
-              "invoice_fee": "164.85",
+              "pg_fee": "1459.24",
+              "invoice_fee": "1459.24",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 5
@@ -6690,15 +6691,15 @@
               "points_awarded": 20
             },
             "amount_bank": {
-              "pg_expected_net": "8048.02",
-              "bank_amount": "8048.02",
+              "pg_expected_net": "71239.94",
+              "bank_amount": "71239.94",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
             },
             "amount_invoice": {
-              "pg_expected_fee_plus_gst": "194.52",
-              "invoice_amount": "194.52",
+              "pg_expected_fee_plus_gst": "1721.90",
+              "invoice_amount": "1721.90",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
@@ -6715,14 +6716,14 @@
             },
             "date_points_awarded": 14,
             "utr": {
-              "pg": "UTR247230269",
-              "bank": "UTR247230269",
+              "pg": "UTR849567478",
+              "bank": "UTR849567478",
               "matched": true,
               "points_awarded": 10
             },
             "fee_consistency": {
-              "pg_fee": "164.85",
-              "invoice_fee": "164.85",
+              "pg_fee": "1459.24",
+              "invoice_fee": "1459.24",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 5
@@ -6872,15 +6873,15 @@
               "points_awarded": 20
             },
             "amount_bank": {
-              "pg_expected_net": "9446.86",
-              "bank_amount": "9396.86",
+              "pg_expected_net": "64018.66",
+              "bank_amount": "63968.66",
               "delta": "50.00",
               "matched": false,
               "points_awarded": 0
             },
             "amount_invoice": {
-              "pg_expected_fee_plus_gst": "228.33",
-              "invoice_amount": "228.33",
+              "pg_expected_fee_plus_gst": "1547.36",
+              "invoice_amount": "1547.36",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
@@ -6897,14 +6898,14 @@
             },
             "date_points_awarded": 0,
             "utr": {
-              "pg": "UTR345452411",
+              "pg": "UTR518584072",
               "bank": null,
               "matched": false,
               "points_awarded": 0
             },
             "fee_consistency": {
-              "pg_fee": "193.50",
-              "invoice_fee": "193.50",
+              "pg_fee": "1311.32",
+              "invoice_fee": "1311.32",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 5
@@ -6988,15 +6989,15 @@
               "points_awarded": 20
             },
             "amount_bank": {
-              "pg_expected_net": "6435.32",
-              "bank_amount": "6385.32",
+              "pg_expected_net": "8839.67",
+              "bank_amount": "8789.67",
               "delta": "50.00",
               "matched": false,
               "points_awarded": 0
             },
             "amount_invoice": {
-              "pg_expected_fee_plus_gst": "155.70",
-              "invoice_amount": "155.70",
+              "pg_expected_fee_plus_gst": "213.88",
+              "invoice_amount": "213.88",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 15
@@ -7013,14 +7014,14 @@
             },
             "date_points_awarded": 0,
             "utr": {
-              "pg": "UTR916715120",
+              "pg": "UTR595581190",
               "bank": null,
               "matched": false,
               "points_awarded": 0
             },
             "fee_consistency": {
-              "pg_fee": "131.95",
-              "invoice_fee": "131.95",
+              "pg_fee": "181.25",
+              "invoice_fee": "181.25",
               "delta": "0.00",
               "matched": true,
               "points_awarded": 5

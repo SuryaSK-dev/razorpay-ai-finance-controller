@@ -1,5 +1,5 @@
 {
-  "report_version": "5C.5.2-v1",
+  "report_version": "5C.5.2-v2",
   "evaluation_stage": "5C.5.2",
   "dataset_version": "5C.5-v1",
   "authority": "deterministic",
@@ -13,7 +13,11 @@
       "ambiguous",
       "duplicate"
     ],
-    "limitation": "Per-case execution isolates each transaction, so properties that depend on other records existing in the batch (ambiguity, duplicate detection) cannot be evaluated here. These are covered by the full-batch path instead."
+    "limitation": "Per-case execution isolates each transaction, so properties that depend on other records existing in the batch (ambiguity, duplicate detection) cannot be evaluated here. These are covered by the full-batch path instead.",
+    "known_policy_divergences": {
+      "reference_mismatch_fuzzy": "Recovered by the fuzzy tier, then routed to HUMAN_REVIEW because no structured identifier agrees -- only narration similarity. Fail-closed by design. Ground truth expected auto-match, an assumption made while the fuzzy tier was unreachable and therefore never tested."
+    },
+    "policy_note": "A known policy divergence is NOT a blind spot. The harness observes it correctly; we have decided the engine is right and the ground-truth label was optimistic. Each such case carries its rationale."
   },
   "execution_integrity": {
     "expected_cases": 63,
@@ -25,10 +29,11 @@
     "frozen_cases": 63,
     "execution_cases": 63,
     "actual_decisions": 63,
-    "matched_cases": 57,
+    "matched_cases": 51,
     "divergent_cases": 0,
     "not_evaluable_cases": 6,
-    "raw_divergent_cases": 6,
+    "known_policy_divergence_cases": 6,
+    "raw_divergent_cases": 12,
     "evaluable_cases": 57,
     "missing_execution_cases": 0,
     "unexpected_execution_cases": 0
@@ -44,6 +49,14 @@
     "E2E_058",
     "E2E_059"
   ],
+  "known_policy_divergence_case_ids": [
+    "E2E_025",
+    "E2E_026",
+    "E2E_027",
+    "E2E_028",
+    "E2E_029",
+    "E2E_030"
+  ],
   "case_results": [
     {
       "case_id": "E2E_001",
@@ -51,6 +64,8 @@
       "status": "MATCH",
       "match": true,
       "not_evaluable": false,
+      "known_policy_divergence": false,
+      "policy_rationale": null,
       "category": "exact_match",
       "differences": {}
     },
@@ -60,6 +75,8 @@
       "status": "MATCH",
       "match": true,
       "not_evaluable": false,
+      "known_policy_divergence": false,
+      "policy_rationale": null,
       "category": "exact_match",
       "differences": {}
     },
@@ -69,6 +86,8 @@
       "status": "MATCH",
       "match": true,
       "not_evaluable": false,
+      "known_policy_divergence": false,
+      "policy_rationale": null,
       "category": "exact_match",
       "differences": {}
     },
@@ -78,6 +97,8 @@
       "status": "MATCH",
       "match": true,
       "not_evaluable": false,
+      "known_policy_divergence": false,
+      "policy_rationale": null,
       "category": "exact_match",
       "differences": {}
     },
@@ -87,6 +108,8 @@
       "status": "MATCH",
       "match": true,
       "not_evaluable": false,
+      "known_policy_divergence": false,
+      "policy_rationale": null,
       "category": "exact_match",
       "differences": {}
     },
@@ -96,6 +119,8 @@
       "status": "MATCH",
       "match": true,
       "not_evaluable": false,
+      "known_policy_divergence": false,
+      "policy_rationale": null,
       "category": "exact_match",
       "differences": {}
     },
@@ -105,6 +130,8 @@
       "status": "MATCH",
       "match": true,
       "not_evaluable": false,
+      "known_policy_divergence": false,
+      "policy_rationale": null,
       "category": "exact_match",
       "differences": {}
     },
@@ -114,6 +141,8 @@
       "status": "MATCH",
       "match": true,
       "not_evaluable": false,
+      "known_policy_divergence": false,
+      "policy_rationale": null,
       "category": "exact_match",
       "differences": {}
     },
@@ -123,6 +152,8 @@
       "status": "MATCH",
       "match": true,
       "not_evaluable": false,
+      "known_policy_divergence": false,
+      "policy_rationale": null,
       "category": "exact_match",
       "differences": {}
     },
@@ -132,6 +163,8 @@
       "status": "MATCH",
       "match": true,
       "not_evaluable": false,
+      "known_policy_divergence": false,
+      "policy_rationale": null,
       "category": "exact_match",
       "differences": {}
     },
@@ -141,6 +174,8 @@
       "status": "MATCH",
       "match": true,
       "not_evaluable": false,
+      "known_policy_divergence": false,
+      "policy_rationale": null,
       "category": "exact_match",
       "differences": {}
     },
@@ -150,6 +185,8 @@
       "status": "MATCH",
       "match": true,
       "not_evaluable": false,
+      "known_policy_divergence": false,
+      "policy_rationale": null,
       "category": "exact_match",
       "differences": {}
     },
@@ -159,6 +196,8 @@
       "status": "MATCH",
       "match": true,
       "not_evaluable": false,
+      "known_policy_divergence": false,
+      "policy_rationale": null,
       "category": "exact_match",
       "differences": {}
     },
@@ -168,6 +207,8 @@
       "status": "MATCH",
       "match": true,
       "not_evaluable": false,
+      "known_policy_divergence": false,
+      "policy_rationale": null,
       "category": "exact_match",
       "differences": {}
     },
@@ -177,6 +218,8 @@
       "status": "MATCH",
       "match": true,
       "not_evaluable": false,
+      "known_policy_divergence": false,
+      "policy_rationale": null,
       "category": "exact_match",
       "differences": {}
     },
@@ -186,6 +229,8 @@
       "status": "MATCH",
       "match": true,
       "not_evaluable": false,
+      "known_policy_divergence": false,
+      "policy_rationale": null,
       "category": "exact_match",
       "differences": {}
     },
@@ -195,6 +240,8 @@
       "status": "MATCH",
       "match": true,
       "not_evaluable": false,
+      "known_policy_divergence": false,
+      "policy_rationale": null,
       "category": "exact_match",
       "differences": {}
     },
@@ -204,6 +251,8 @@
       "status": "MATCH",
       "match": true,
       "not_evaluable": false,
+      "known_policy_divergence": false,
+      "policy_rationale": null,
       "category": "exact_match",
       "differences": {}
     },
@@ -213,6 +262,8 @@
       "status": "MATCH",
       "match": true,
       "not_evaluable": false,
+      "known_policy_divergence": false,
+      "policy_rationale": null,
       "category": "timing_difference",
       "differences": {}
     },
@@ -222,6 +273,8 @@
       "status": "MATCH",
       "match": true,
       "not_evaluable": false,
+      "known_policy_divergence": false,
+      "policy_rationale": null,
       "category": "timing_difference",
       "differences": {}
     },
@@ -231,6 +284,8 @@
       "status": "MATCH",
       "match": true,
       "not_evaluable": false,
+      "known_policy_divergence": false,
+      "policy_rationale": null,
       "category": "timing_difference",
       "differences": {}
     },
@@ -240,6 +295,8 @@
       "status": "MATCH",
       "match": true,
       "not_evaluable": false,
+      "known_policy_divergence": false,
+      "policy_rationale": null,
       "category": "timing_difference",
       "differences": {}
     },
@@ -249,6 +306,8 @@
       "status": "MATCH",
       "match": true,
       "not_evaluable": false,
+      "known_policy_divergence": false,
+      "policy_rationale": null,
       "category": "timing_difference",
       "differences": {}
     },
@@ -258,62 +317,130 @@
       "status": "MATCH",
       "match": true,
       "not_evaluable": false,
+      "known_policy_divergence": false,
+      "policy_rationale": null,
       "category": "timing_difference",
       "differences": {}
     },
     {
       "case_id": "E2E_025",
       "txn_id": "TXN_00025",
-      "status": "MATCH",
-      "match": true,
+      "status": "KNOWN_POLICY_DIVERGENCE",
+      "match": false,
       "not_evaluable": false,
+      "known_policy_divergence": true,
+      "policy_rationale": "Recovered by the fuzzy tier, then routed to HUMAN_REVIEW because no structured identifier agrees -- only narration similarity. Fail-closed by design. Ground truth expected auto-match, an assumption made while the fuzzy tier was unreachable and therefore never tested.",
       "category": "reference_mismatch_fuzzy",
-      "differences": {}
+      "differences": {
+        "status": {
+          "expected": "MATCHED",
+          "actual": "HUMAN_REVIEW"
+        },
+        "exception_code": {
+          "expected": "NONE",
+          "actual": "REFERENCE_MISMATCH"
+        }
+      }
     },
     {
       "case_id": "E2E_026",
       "txn_id": "TXN_00026",
-      "status": "MATCH",
-      "match": true,
+      "status": "KNOWN_POLICY_DIVERGENCE",
+      "match": false,
       "not_evaluable": false,
+      "known_policy_divergence": true,
+      "policy_rationale": "Recovered by the fuzzy tier, then routed to HUMAN_REVIEW because no structured identifier agrees -- only narration similarity. Fail-closed by design. Ground truth expected auto-match, an assumption made while the fuzzy tier was unreachable and therefore never tested.",
       "category": "reference_mismatch_fuzzy",
-      "differences": {}
+      "differences": {
+        "status": {
+          "expected": "MATCHED",
+          "actual": "HUMAN_REVIEW"
+        },
+        "exception_code": {
+          "expected": "NONE",
+          "actual": "REFERENCE_MISMATCH"
+        }
+      }
     },
     {
       "case_id": "E2E_027",
       "txn_id": "TXN_00027",
-      "status": "MATCH",
-      "match": true,
+      "status": "KNOWN_POLICY_DIVERGENCE",
+      "match": false,
       "not_evaluable": false,
+      "known_policy_divergence": true,
+      "policy_rationale": "Recovered by the fuzzy tier, then routed to HUMAN_REVIEW because no structured identifier agrees -- only narration similarity. Fail-closed by design. Ground truth expected auto-match, an assumption made while the fuzzy tier was unreachable and therefore never tested.",
       "category": "reference_mismatch_fuzzy",
-      "differences": {}
+      "differences": {
+        "status": {
+          "expected": "MATCHED",
+          "actual": "HUMAN_REVIEW"
+        },
+        "exception_code": {
+          "expected": "NONE",
+          "actual": "REFERENCE_MISMATCH"
+        }
+      }
     },
     {
       "case_id": "E2E_028",
       "txn_id": "TXN_00028",
-      "status": "MATCH",
-      "match": true,
+      "status": "KNOWN_POLICY_DIVERGENCE",
+      "match": false,
       "not_evaluable": false,
+      "known_policy_divergence": true,
+      "policy_rationale": "Recovered by the fuzzy tier, then routed to HUMAN_REVIEW because no structured identifier agrees -- only narration similarity. Fail-closed by design. Ground truth expected auto-match, an assumption made while the fuzzy tier was unreachable and therefore never tested.",
       "category": "reference_mismatch_fuzzy",
-      "differences": {}
+      "differences": {
+        "status": {
+          "expected": "MATCHED",
+          "actual": "HUMAN_REVIEW"
+        },
+        "exception_code": {
+          "expected": "NONE",
+          "actual": "REFERENCE_MISMATCH"
+        }
+      }
     },
     {
       "case_id": "E2E_029",
       "txn_id": "TXN_00029",
-      "status": "MATCH",
-      "match": true,
+      "status": "KNOWN_POLICY_DIVERGENCE",
+      "match": false,
       "not_evaluable": false,
+      "known_policy_divergence": true,
+      "policy_rationale": "Recovered by the fuzzy tier, then routed to HUMAN_REVIEW because no structured identifier agrees -- only narration similarity. Fail-closed by design. Ground truth expected auto-match, an assumption made while the fuzzy tier was unreachable and therefore never tested.",
       "category": "reference_mismatch_fuzzy",
-      "differences": {}
+      "differences": {
+        "status": {
+          "expected": "MATCHED",
+          "actual": "HUMAN_REVIEW"
+        },
+        "exception_code": {
+          "expected": "NONE",
+          "actual": "REFERENCE_MISMATCH"
+        }
+      }
     },
     {
       "case_id": "E2E_030",
       "txn_id": "TXN_00030",
-      "status": "MATCH",
-      "match": true,
+      "status": "KNOWN_POLICY_DIVERGENCE",
+      "match": false,
       "not_evaluable": false,
+      "known_policy_divergence": true,
+      "policy_rationale": "Recovered by the fuzzy tier, then routed to HUMAN_REVIEW because no structured identifier agrees -- only narration similarity. Fail-closed by design. Ground truth expected auto-match, an assumption made while the fuzzy tier was unreachable and therefore never tested.",
       "category": "reference_mismatch_fuzzy",
-      "differences": {}
+      "differences": {
+        "status": {
+          "expected": "MATCHED",
+          "actual": "HUMAN_REVIEW"
+        },
+        "exception_code": {
+          "expected": "NONE",
+          "actual": "REFERENCE_MISMATCH"
+        }
+      }
     },
     {
       "case_id": "E2E_031",
@@ -321,6 +448,8 @@
       "status": "MATCH",
       "match": true,
       "not_evaluable": false,
+      "known_policy_divergence": false,
+      "policy_rationale": null,
       "category": "amount_fee_discrepancy",
       "differences": {}
     },
@@ -330,6 +459,8 @@
       "status": "MATCH",
       "match": true,
       "not_evaluable": false,
+      "known_policy_divergence": false,
+      "policy_rationale": null,
       "category": "amount_fee_discrepancy",
       "differences": {}
     },
@@ -339,6 +470,8 @@
       "status": "MATCH",
       "match": true,
       "not_evaluable": false,
+      "known_policy_divergence": false,
+      "policy_rationale": null,
       "category": "amount_fee_discrepancy",
       "differences": {}
     },
@@ -348,6 +481,8 @@
       "status": "MATCH",
       "match": true,
       "not_evaluable": false,
+      "known_policy_divergence": false,
+      "policy_rationale": null,
       "category": "amount_fee_discrepancy",
       "differences": {}
     },
@@ -357,6 +492,8 @@
       "status": "MATCH",
       "match": true,
       "not_evaluable": false,
+      "known_policy_divergence": false,
+      "policy_rationale": null,
       "category": "amount_fee_discrepancy",
       "differences": {}
     },
@@ -366,6 +503,8 @@
       "status": "MATCH",
       "match": true,
       "not_evaluable": false,
+      "known_policy_divergence": false,
+      "policy_rationale": null,
       "category": "amount_fee_discrepancy",
       "differences": {}
     },
@@ -375,6 +514,8 @@
       "status": "MATCH",
       "match": true,
       "not_evaluable": false,
+      "known_policy_divergence": false,
+      "policy_rationale": null,
       "category": "amount_fee_discrepancy",
       "differences": {}
     },
@@ -384,6 +525,8 @@
       "status": "MATCH",
       "match": true,
       "not_evaluable": false,
+      "known_policy_divergence": false,
+      "policy_rationale": null,
       "category": "amount_fee_discrepancy",
       "differences": {}
     },
@@ -393,6 +536,8 @@
       "status": "MATCH",
       "match": true,
       "not_evaluable": false,
+      "known_policy_divergence": false,
+      "policy_rationale": null,
       "category": "tax_mismatch",
       "differences": {}
     },
@@ -402,6 +547,8 @@
       "status": "MATCH",
       "match": true,
       "not_evaluable": false,
+      "known_policy_divergence": false,
+      "policy_rationale": null,
       "category": "tax_mismatch",
       "differences": {}
     },
@@ -411,6 +558,8 @@
       "status": "MATCH",
       "match": true,
       "not_evaluable": false,
+      "known_policy_divergence": false,
+      "policy_rationale": null,
       "category": "tax_mismatch",
       "differences": {}
     },
@@ -420,6 +569,8 @@
       "status": "MATCH",
       "match": true,
       "not_evaluable": false,
+      "known_policy_divergence": false,
+      "policy_rationale": null,
       "category": "tax_mismatch",
       "differences": {}
     },
@@ -429,6 +580,8 @@
       "status": "MATCH",
       "match": true,
       "not_evaluable": false,
+      "known_policy_divergence": false,
+      "policy_rationale": null,
       "category": "tax_mismatch",
       "differences": {}
     },
@@ -438,6 +591,8 @@
       "status": "MATCH",
       "match": true,
       "not_evaluable": false,
+      "known_policy_divergence": false,
+      "policy_rationale": null,
       "category": "tax_mismatch",
       "differences": {}
     },
@@ -447,6 +602,8 @@
       "status": "MATCH",
       "match": true,
       "not_evaluable": false,
+      "known_policy_divergence": false,
+      "policy_rationale": null,
       "category": "tax_mismatch",
       "differences": {}
     },
@@ -456,6 +613,8 @@
       "status": "MATCH",
       "match": true,
       "not_evaluable": false,
+      "known_policy_divergence": false,
+      "policy_rationale": null,
       "category": "missing_in_source",
       "differences": {}
     },
@@ -465,6 +624,8 @@
       "status": "MATCH",
       "match": true,
       "not_evaluable": false,
+      "known_policy_divergence": false,
+      "policy_rationale": null,
       "category": "missing_in_source",
       "differences": {}
     },
@@ -474,6 +635,8 @@
       "status": "MATCH",
       "match": true,
       "not_evaluable": false,
+      "known_policy_divergence": false,
+      "policy_rationale": null,
       "category": "missing_in_source",
       "differences": {}
     },
@@ -483,6 +646,8 @@
       "status": "MATCH",
       "match": true,
       "not_evaluable": false,
+      "known_policy_divergence": false,
+      "policy_rationale": null,
       "category": "missing_in_source",
       "differences": {}
     },
@@ -492,6 +657,8 @@
       "status": "MATCH",
       "match": true,
       "not_evaluable": false,
+      "known_policy_divergence": false,
+      "policy_rationale": null,
       "category": "missing_in_source",
       "differences": {}
     },
@@ -501,6 +668,8 @@
       "status": "MATCH",
       "match": true,
       "not_evaluable": false,
+      "known_policy_divergence": false,
+      "policy_rationale": null,
       "category": "duplicate",
       "differences": {}
     },
@@ -510,6 +679,8 @@
       "status": "MATCH",
       "match": true,
       "not_evaluable": false,
+      "known_policy_divergence": false,
+      "policy_rationale": null,
       "category": "duplicate",
       "differences": {}
     },
@@ -519,6 +690,8 @@
       "status": "MATCH",
       "match": true,
       "not_evaluable": false,
+      "known_policy_divergence": false,
+      "policy_rationale": null,
       "category": "duplicate",
       "differences": {}
     },
@@ -528,6 +701,8 @@
       "status": "NOT_EVALUABLE_PER_CASE",
       "match": false,
       "not_evaluable": true,
+      "known_policy_divergence": false,
+      "policy_rationale": null,
       "category": "ambiguous",
       "differences": {
         "status": {
@@ -546,6 +721,8 @@
       "status": "NOT_EVALUABLE_PER_CASE",
       "match": false,
       "not_evaluable": true,
+      "known_policy_divergence": false,
+      "policy_rationale": null,
       "category": "ambiguous",
       "differences": {
         "status": {
@@ -564,6 +741,8 @@
       "status": "NOT_EVALUABLE_PER_CASE",
       "match": false,
       "not_evaluable": true,
+      "known_policy_divergence": false,
+      "policy_rationale": null,
       "category": "ambiguous",
       "differences": {
         "status": {
@@ -582,6 +761,8 @@
       "status": "NOT_EVALUABLE_PER_CASE",
       "match": false,
       "not_evaluable": true,
+      "known_policy_divergence": false,
+      "policy_rationale": null,
       "category": "ambiguous",
       "differences": {
         "status": {
@@ -600,6 +781,8 @@
       "status": "NOT_EVALUABLE_PER_CASE",
       "match": false,
       "not_evaluable": true,
+      "known_policy_divergence": false,
+      "policy_rationale": null,
       "category": "ambiguous",
       "differences": {
         "status": {
@@ -618,6 +801,8 @@
       "status": "NOT_EVALUABLE_PER_CASE",
       "match": false,
       "not_evaluable": true,
+      "known_policy_divergence": false,
+      "policy_rationale": null,
       "category": "ambiguous",
       "differences": {
         "status": {
@@ -636,6 +821,8 @@
       "status": "MATCH",
       "match": true,
       "not_evaluable": false,
+      "known_policy_divergence": false,
+      "policy_rationale": null,
       "category": "corrupted",
       "differences": {}
     },
@@ -645,6 +832,8 @@
       "status": "MATCH",
       "match": true,
       "not_evaluable": false,
+      "known_policy_divergence": false,
+      "policy_rationale": null,
       "category": "corrupted",
       "differences": {}
     },
@@ -654,6 +843,8 @@
       "status": "MATCH",
       "match": true,
       "not_evaluable": false,
+      "known_policy_divergence": false,
+      "policy_rationale": null,
       "category": "unresolvable",
       "differences": {}
     },
@@ -663,6 +854,8 @@
       "status": "MATCH",
       "match": true,
       "not_evaluable": false,
+      "known_policy_divergence": false,
+      "policy_rationale": null,
       "category": "unresolvable",
       "differences": {}
     }

@@ -5,30 +5,14 @@ Synthetic dataset generator for the reconciliation engine.
 Produces three independent source files (PG settlement, bank statement,
 merchant invoice) -- each as both JSON and CSV -- plus a hidden
 ground_truth.json that is deliberately NEVER read by the reconciliation
-pipeline itself. Ground truth exists solely for the evaluation layer,
-so the system's reported match rate is an independently checkable
-number rather than a self-reported claim.
-
-Run:
-    python scripts/generate_data.py
-
-Reproducibility:
-    The random seed is fixed in config.py (RANDOM_SEED). Re-running
-    this script produces an identical dataset every time.
+pipeline itself.
 
 GROUND-TRUTH LABELLING RULE
 ---------------------------
 expected_status must describe what the DECISION TABLE will actually
 produce for the data this builder emits -- not what the category name
-suggests, and not what a human would informally call the situation.
-
-Two labels violated that rule and were corrected (see FIX (L1) and
-FIX (L2) below). Both made a correct engine look broken. Ground truth
-that disagrees with a correct engine is worse than no ground truth:
-it burns review time on phantom defects and trains the team to ignore
-the harness.
-
-The decision table's actual mapping, for reference:
+suggests. Two labels violated that rule (FIX L1, FIX L2) and made a
+correct engine look broken.
 
     no_candidates_found (bank AND invoice absent) -> UNMATCHED
     duplicate_detected                            -> HUMAN_REVIEW
@@ -39,12 +23,13 @@ The decision table's actual mapping, for reference:
 
 DATA-REALISM RULE
 -----------------
-The generator must not make the reconciliation problem artificially
-easy OR artificially hard. See FIX (A1) in _draw_gross(): an earlier
-version drew gross from six fixed values, which manufactured exact
-net collisions throughout the batch and caused the fuzzy tier to
-measure 0.13 precision. That number described the generator, not the
-engine.
+The generator must not make the problem artificially easy OR
+artificially hard.
+
+    FIX (A1)  six fixed gross values manufactured net collisions
+              everywhere and made the fuzzy tier look imprecise
+    FIX (A2)  bank_ref always encoded our own txn_id, so tier 2
+              resolved everything and the fuzzy tier was dead code
 """
 
 from __future__ import annotations
@@ -115,15 +100,10 @@ NARRATION_METHODS = ["UPI", "NEFT", "IMPS"]
 # =======================================================================
 # MERCHANT POOL
 # Merchants 1-3 are seeded just under the TDS annual threshold
-# (INR 495,000 of 500,000) so that a handful of their transactions in
-# this batch will genuinely cross into TDS-applicable territory. This
-# starting figure represents each merchant's REAL prior-period
-# cumulative gross -- i.e. what a real merchant ledger would already
-# show before this batch's transactions occur. It is now written
-# explicitly into each PG record as merchant_ytd_gross_opening, so
-# that any downstream consumer (the seller ledger in tax validation)
-# can independently reconstruct the correct threshold decision without
-# needing access to this generator's private in-memory state.
+# (INR 495,000 of 500,000) so a handful of their transactions genuinely
+# cross into TDS territory. Written into each PG record as
+# merchant_ytd_gross_opening so the seller ledger can reconstruct the
+# threshold decision from real data rather than generator state.
 # =======================================================================
 
 MERCHANTS = [
@@ -135,7 +115,6 @@ MERCHANTS = [
     for i in range(1, 16)
 ]
 
-# Merchants 1-3 are the seeded near-threshold cohort.
 NEAR_THRESHOLD_MERCHANTS = MERCHANTS[:3]
 ZERO_BASE_MERCHANTS = MERCHANTS[3:]
 
@@ -145,35 +124,26 @@ def pick_merchant():
 
 
 def pick_high_volume_merchant():
-    """Used to bias a few clean transactions toward the seeded
-    near-threshold merchants, increasing the odds the threshold is
-    actually crossed within this batch."""
+    """Bias a few clean transactions toward the near-threshold cohort
+    so the TDS threshold is actually crossed within this batch."""
     return rng.choice(NEAR_THRESHOLD_MERCHANTS)
 
 
 def pick_zero_base_merchant():
-    """Merchants 4-15 start at zero cumulative gross and, across a
-    batch this size, cannot accumulate the INR 500,000 needed to cross
-    the TDS threshold.
+    """Merchants 4-15 start at zero and cannot cross the TDS threshold
+    in a batch this size.
 
-    This matters specifically for the ambiguous pair. Ambiguity is
-    detected by comparing a PG record's EXPECTED NET against candidate
-    bank amounts, and AMOUNT_TOLERANCE is INR 0.01. If one member of
-    the pair withheld TDS and the other did not, their nets would
-    differ by 0.1% of gross -- orders of magnitude above the tolerance
-    -- and the amount collision that CREATES the ambiguity would
-    silently fail to exist.
-
-    Drawing both members from the zero-base cohort guarantees TDS == 0
-    on both sides, so identical gross yields identical net. The pair
-    therefore genuinely collides, which is the whole point of the
-    category. TDS is exercised by other categories, not this one.
+    This matters for the ambiguous pair. Ambiguity is detected by
+    comparing a PG record's EXPECTED NET against candidate bank
+    amounts, and AMOUNT_TOLERANCE is INR 0.01. If one member withheld
+    TDS and the other did not, their nets would differ by 0.1% of
+    gross -- orders of magnitude above tolerance -- and the collision
+    that CREATES the ambiguity would silently fail to exist.
 
     ACKNOWLEDGED CONSTRAINT: this is the generator being shaped to fit
-    the measurement. It is defensible -- isolating one variable is
-    normal test design -- but it does mean the ambiguous category can
-    never exercise TDS. Recorded in FAILURE_LOG.md rather than left
-    implicit."""
+    the measurement. Defensible as variable isolation, but it does mean
+    the ambiguous category can never exercise TDS. Recorded in
+    FAILURE_LOG.md rather than left implicit."""
     return rng.choice(ZERO_BASE_MERCHANTS)
 
 
@@ -188,69 +158,97 @@ def next_txn_id(counter: list[int]) -> str:
 
 def _draw_gross() -> Decimal:
     """
-    Draw a transaction gross amount to paise precision.
+    Draw a gross amount to paise precision.
 
-    FIX (A1) -- WHY NOT A FIXED SET OF VALUES
-    -----------------------------------------
-    An earlier version drew gross from six fixed amounts:
+    FIX (A1). An earlier version drew from six fixed values. With 63
+    records that put ~10 transactions on each, and because fee and GST
+    are fixed percentages, identical gross produced identical expected
+    net. Nine bank rows landed on 12205.00; the date window was doing
+    nearly all the discriminating work in ambiguity detection.
 
-        ["1000.00", "2500.00", "5400.00", "890.00", "12500.00", "3200.00"]
+    Log-uniform rather than flat, because real transaction values
+    cluster low with a long tail. Paise precision is the part that
+    matters: AMOUNT_TOLERANCE is 0.01, so rounding to rupees would
+    leave a weaker version of the same artifact.
 
-    With 63 records that placed roughly ten transactions on each value.
-    Because pg_fee and GST are fixed percentages of gross, identical
-    gross produced an IDENTICAL EXPECTED NET -- so exact net collisions
-    were everywhere by construction, not by accident:
-
-        - nine bank rows landed on exactly 12205.00
-        - the fuzzy tier measured precision 0.13 at threshold 85,
-          with 41 false positives against 6 true positives
-        - the date window was doing nearly all the discriminating work
-          in ambiguity detection, because the amount guard could not
-          separate anything
-        - unrelated categories supplied accidental ambiguity evidence
-          to each other
-
-    Every one of those numbers described the GENERATOR, not the engine.
-    Documenting 0.13 as a fuzzy-matching limitation understated the
-    matching layer and mis-attributed a data artifact to the code.
-
-    LOG-UNIFORM, NOT FLAT
-    ---------------------
-    Real transaction values cluster at the low end with a long tail. A
-    flat uniform draw across the full range would over-represent large
-    amounts and misrepresent the distribution a matcher actually faces.
-    Drawing the order of magnitude first -- weighted toward thousands
-    -- then a mantissa within it, approximates that shape cheaply and
-    deterministically.
-
-    PAISE PRECISION IS THE POINT
-    ----------------------------
-    AMOUNT_TOLERANCE is INR 0.01. Drawing to paise rather than whole
-    rupees is what makes accidental collision within tolerance go from
-    routine to vanishingly unlikely. Rounding to rupees would leave a
-    weaker version of the same artifact.
-
-    DELIBERATE COLLISION IS UNAFFECTED
-    ----------------------------------
-    The two categories that REQUIRE collision still get it, because
-    both copy rather than redraw:
-
-        ambiguous  -- build_ambiguous_sibling() copies the
-                      counterpart's gross_amount explicitly
-        duplicate  -- the duplicate bank row is dict(bank)
-
-    What disappears is only ACCIDENTAL collision, which was
-    contaminating the measurements.
+    Deliberate collision is unaffected -- build_ambiguous_sibling()
+    copies its counterpart's gross and the duplicate bank row is a
+    dict copy. Only ACCIDENTAL collision disappears.
     """
-    # Weighted toward thousands; hundreds and ten-thousands present so
-    # the matcher sees genuine order-of-magnitude spread rather than
-    # one narrow band.
     magnitude = rng.choice([2, 3, 3, 3, 4])
-
     low_paise = (10 ** magnitude) * 100
     high_paise = (10 ** (magnitude + 1)) * 100 - 1
-
     return money(Decimal(rng.randint(low_paise, high_paise)) / Decimal(100))
+
+
+# =======================================================================
+# BANK NARRATION FORMATS
+# =======================================================================
+#
+# UPGRADE B. Replaces a single invented format --
+#
+#     "NEFT CR UTR123456789 MERCH_004"
+#
+# -- with formats drawn from what Indian banks actually emit. Real
+# narration varies by bank, by channel, and sometimes within one bank's
+# own statement.
+#
+# Two properties matter for matching:
+#
+#   1. Most formats embed the UTR in free text. That is the signal the
+#      guarded fuzzy tier keys on.
+#
+#   2. The UPI format carries a UPI reference number and NO UTR. It is
+#      deliberately unrecoverable from narration alone. Without at
+#      least one such case, "our fuzzy tier recovers narration" would
+#      be an untested claim about a dataset engineered to be easy.
+#
+# None of these contain a TXN_ token, so _extract_txn_from_narration()
+# returns None for all of them. Real banks do not echo your internal
+# transaction ID.
+
+BANK_IFSC_CODES = [
+    "HDFC0000123", "ICIC0001234", "SBIN0004521",
+    "UTIB0000456", "KKBK0005678",
+]
+
+
+def _make_narration(
+    utr: str | None,
+    merchant_id: str,
+    method: str,
+) -> str:
+    """
+    Build a bank narration in one of several realistic formats.
+
+    `utr=None` produces the UPI form, which carries a UPI reference
+    instead and is therefore unrecoverable by narration matching.
+    """
+    ifsc = rng.choice(BANK_IFSC_CODES)
+
+    if utr is None:
+        upi_ref = rng.randint(10**11, 10**12 - 1)
+        return f"UPI/P2M/{upi_ref}/RAZORPAY/{merchant_id}"
+
+    return rng.choice([
+        f"{method}-{ifsc}-{utr}-{merchant_id}",
+        f"IMPS/{rng.randint(10**11, 10**12 - 1)}/{utr}/SETTLEMENT",
+        f"BY TRANSFER-{method}*{ifsc[:4]}*{utr}*RAZORPAY-",
+        f"{method} CR {utr} {merchant_id} SETTLEMENT",
+        f"{method}/{utr}/{merchant_id}/NET STLMNT",
+    ])
+
+
+def _bank_native_ref() -> str:
+    """
+    A bank's own reference, carrying no trace of our transaction ID.
+
+    BANKREF_<txn_id> is a convention no real bank provides. Rows using
+    this instead cannot be resolved by tier 2 and must fall through to
+    guarded fuzzy narration matching.
+    """
+    ifsc = rng.choice(BANK_IFSC_CODES)
+    return f"{ifsc}N{rng.randint(10**7, 10**8 - 1)}"
 
 
 # =======================================================================
@@ -266,9 +264,9 @@ def build_clean_transaction(merchant, txn_id, date_offset_days):
     fee = money(gross * Decimal("0.02"))
     gst = money(fee * GST_RATE_ON_FEE)
 
-    # Captured BEFORE this transaction is applied -- this is the
-    # merchant's true starting point, written into the record so it is
-    # real data rather than private generator state.
+    # Captured BEFORE this transaction is applied -- the merchant's
+    # true starting point, written into the record so it is real data
+    # rather than private generator state.
     opening_gross = merchant["annual_gross_so_far"]
 
     merchant["annual_gross_so_far"] += gross
@@ -304,7 +302,7 @@ def build_clean_transaction(merchant, txn_id, date_offset_days):
         "utr": utr,
         "credited_amount": str(net),
         "value_date": (ts + timedelta(days=1)).date().isoformat(),
-        "narration": f"{narration_method} CR {utr} {merchant['id']}",
+        "narration": _make_narration(utr, merchant["id"], narration_method),
         "bank_charges": "0.00",
     }
     invoice = {
@@ -342,21 +340,74 @@ def build_timing_difference(merchant, txn_id, date_offset_days):
 
 
 def build_reference_mismatch(merchant, txn_id, date_offset_days):
-    """UTR slightly garbled in the bank feed; recoverable only via fuzzy
-    match. NOTE: the bank record is still linked to this transaction via
-    its bank_ref (BANKREF_<txn_id>) -- only the UTR field itself is
-    corrupted, simulating a real-world scenario where the bank's own
-    reference is intact but the UTR was mistyped or OCR'd incorrectly."""
-    pg, bank, invoice, gt = build_clean_transaction(merchant, txn_id, date_offset_days)
+    """
+    A bank row with NO structured reference to our transaction.
+
+    UPGRADE B / FIX (A2)
+    --------------------
+    The previous version corrupted only bank["utr"] and left bank_ref
+    as BANKREF_<txn_id>. Tier 2 therefore resolved every record in this
+    category before the fuzzy tier was ever consulted. Zero of 61
+    records reached tier 3 -- the category was named for a code path it
+    never executed (FAILURE_LOG.md section 33, and documented in
+    tests/test_matching.py long before that).
+
+    The realistic version of this scenario is a bank feed that gives
+    you no structured reference at all: a bank-native ref, no UTR
+    field, and a settlement identifiable only by a UTR sitting in free
+    text. That is precisely what the guarded fuzzy tier exists for.
+
+        Tier 1 exact UTR  -> miss, bank.utr is None
+        Tier 2 exact txn  -> miss, bank_ref is bank-native and the
+                             narration carries no TXN_ token
+        Tier 3 fuzzy      -> fires, amount and date agreement enforced
+
+    Half carry a clean UTR in the narration (fuzzy ~100); half carry a
+    single corrupted digit (fuzzy ~91), simulating OCR or manual entry
+    error. Both sit above the threshold of 85. Amount and date are
+    untouched, so the guards pass on merit rather than by construction.
+
+    The clean/corrupted split is derived from the txn_id rather than
+    drawn randomly, so it stays stable across regenerations and the
+    two behaviours are always both present.
+    """
+    pg, bank, invoice, gt = build_clean_transaction(
+        merchant, txn_id, date_offset_days
+    )
+
     original = bank["utr"]
-    pos = rng.randint(0, len(original) - 1)
-    corrupted = original[:pos] + rng.choice("0123456789") + original[pos+1:]
-    method = bank["narration"].split(" ")[0]
-    bank["utr"] = corrupted
-    bank["narration"] = f"{method} CR {corrupted} {merchant['id']}"
+
+    corrupt_it = txn_id[-1] in "13579"
+
+    if corrupt_it:
+        pos = rng.randint(0, len(original) - 1)
+        narration_utr = (
+            original[:pos]
+            + rng.choice("0123456789")
+            + original[pos + 1:]
+        )
+        detail = "single corrupted digit"
+    else:
+        narration_utr = original
+        detail = "intact UTR"
+
+    method = rng.choice(NARRATION_METHODS)
+
+    # No structured linkage on the bank side, at all.
+    bank["bank_ref"] = _bank_native_ref()
+    bank["utr"] = None
+    bank["narration"] = _make_narration(
+        narration_utr, merchant["id"], method
+    )
+
     gt["category"] = "reference_mismatch_fuzzy"
     gt["expected_status"] = "MATCHED"
-    gt["notes"] = "UTR digit corrupted on bank side; recoverable via amount+date-gated fuzzy match."
+    gt["notes"] = (
+        "Bank feed provides no structured reference: bank-native "
+        f"bank_ref, no UTR field, {detail} embedded in free-text "
+        "narration. Recoverable only via amount+date-gated fuzzy "
+        "matching -- this category is what tier 3 exists for."
+    )
     return pg, bank, invoice, gt
 
 
@@ -364,12 +415,12 @@ def build_amount_discrepancy(merchant, txn_id, date_offset_days):
     """
     Bank credits less than the expected net.
 
-    Drift values are all far above AMOUNT_TOLERANCE (0.01), so these
-    are genuine discrepancies rather than rounding noise. They remain
-    fixed rather than scaled to gross: a flat INR 5 short-credit is a
-    realistic operational error regardless of transaction size, and
-    keeping it absolute means the check is exercised at both ends of
-    the amount distribution.
+    Drift values are far above AMOUNT_TOLERANCE (0.01), so these are
+    genuine discrepancies rather than rounding noise. They stay
+    absolute rather than scaling with gross: a flat INR 5 short-credit
+    is a realistic operational error at any transaction size, and
+    keeping it absolute exercises the check at both ends of the amount
+    distribution.
     """
     pg, bank, invoice, gt = build_clean_transaction(merchant, txn_id, date_offset_days)
     drift = Decimal(rng.choice(["5.00", "12.50", "0.75", "20.00"]))
@@ -403,18 +454,15 @@ def build_tax_mismatch(merchant, txn_id, date_offset_days):
 
 def build_missing_in_source(merchant, txn_id, date_offset_days):
     """
-    One source is dropped entirely.
-
-    Both labels here are correct as written and were verified against
-    the decision table:
+    One source is dropped entirely. Both labels verified against the
+    decision table:
 
         bank dropped    -> missing_bank_unmatched   -> UNMATCHED
         invoice dropped -> missing_invoice_...      -> PARTIAL_MATCH
 
-    Note that UNMATCHED is reachable here via the dedicated
-    `missing_bank` rule (priority 4), NOT via `no_candidates_found`
-    (priority 0) -- the invoice is still present, so the transaction is
-    not source-less. Two different rules, same status.
+    UNMATCHED is reachable here via the dedicated missing_bank rule
+    (priority 4), NOT via no_candidates_found (priority 0) -- the
+    invoice is still present. Two different rules, same status.
     """
     pg, bank, invoice, gt = build_clean_transaction(merchant, txn_id, date_offset_days)
     dropped = rng.choice(["bank", "invoice"])
@@ -433,22 +481,16 @@ def build_missing_in_source(merchant, txn_id, date_offset_days):
 
 def build_duplicate(merchant, txn_id, date_offset_days):
     """
-    The same settlement is credited twice in the bank feed.
+    The same settlement credited twice in the bank feed.
 
     FIX (L1): expected_status was "AMBIGUOUS". The decision table maps
-    `duplicate_detected` to HUMAN_REVIEW / DUPLICATE_DETECTED at
-    priority 1 -- it has never produced AMBIGUOUS for a duplicate, and
-    should not: a duplicate is not an ambiguity.
+    duplicate_detected to HUMAN_REVIEW / DUPLICATE_DETECTED at priority
+    1 and has never produced AMBIGUOUS for a duplicate.
 
-    Ambiguity means "two DIFFERENT plausible transactions compete for
-    one record". Duplication means "one transaction appears twice".
-    The operational response differs: ambiguity needs disambiguation,
-    duplication needs one row reversed. Collapsing them into one status
-    would lose that distinction for the finance operator.
-
-    The exception code was already correct, so this divergence showed
-    up as a status-only mismatch -- the clearest possible signal that
-    the label, not the engine, was wrong.
+    Ambiguity means two DIFFERENT plausible transactions compete for
+    one record. Duplication means one transaction appears twice. The
+    operational response differs -- disambiguate versus reverse a row
+    -- so collapsing them would lose that distinction for the operator.
     """
     pg, bank, invoice, gt = build_clean_transaction(merchant, txn_id, date_offset_days)
     gt["category"] = "duplicate"
@@ -462,8 +504,7 @@ def build_duplicate(merchant, txn_id, date_offset_days):
 
 def build_ambiguous(merchant, txn_id, date_offset_days):
     """First member of an ambiguous pair. Its sibling is injected at
-    batch assembly by build_ambiguous_sibling(), which reuses this
-    record's gross_amount and timestamp to create the collision."""
+    batch assembly by build_ambiguous_sibling()."""
     pg, bank, invoice, gt = build_clean_transaction(merchant, txn_id, date_offset_days)
     gt["category"] = "ambiguous"
     gt["expected_exception_code"] = "AMBIGUOUS_MATCH"
@@ -474,13 +515,11 @@ def build_ambiguous(merchant, txn_id, date_offset_days):
 
 def build_corrupted(merchant, txn_id, date_offset_days):
     """
-    Malformed gross_amount; must be rejected at ingestion.
+    Malformed gross_amount; rejected at ingestion.
 
-    UNMATCHED / CORRUPTED_RECORD is produced by the ingestion terminal
-    path in run_e2e_deterministic.py, not by the decision table -- the
-    record never reaches normalization, matching, or decisioning. That
-    is why this label is correct despite UNMATCHED normally requiring
-    no_candidates_found.
+    UNMATCHED / CORRUPTED_RECORD comes from the ingestion terminal path
+    in run_e2e_deterministic.py, not the decision table -- the record
+    never reaches normalization, matching, or decisioning.
     """
     pg, bank, invoice, gt = build_clean_transaction(merchant, txn_id, date_offset_days)
     pg["gross_amount"] = "NOT_A_NUMBER"
@@ -493,34 +532,25 @@ def build_corrupted(merchant, txn_id, date_offset_days):
 
 def build_unresolvable(merchant, txn_id, date_offset_days):
     """
-    Every individual signal is degraded simultaneously: the amount
-    drifts by INR 50, the value date drifts by 9 days, and the UTR is
-    nulled. The bank_ref linkage is deliberately LEFT INTACT.
+    Every individual signal degraded at once: amount drifts by INR 50,
+    value date by 9 days, UTR nulled. bank_ref is deliberately LEFT
+    INTACT.
 
-    FIX (L2): expected_status was "UNMATCHED" / HUMAN_REVIEW_REQUIRED.
-
-    That was self-contradictory. UNMATCHED requires
-    `no_candidates_found`, which requires BOTH bank and invoice to be
-    absent. This builder emits all three sources and keeps bank_ref
-    resolvable, so a counterpart IS found -- the engine then correctly
-    reports the INR 50 shortfall as AMOUNT_MISMATCH / HUMAN_REVIEW.
-
-    The two statuses mean different things operationally:
+    FIX (L2): expected_status was UNMATCHED / HUMAN_REVIEW_REQUIRED,
+    which was self-contradictory. UNMATCHED requires
+    no_candidates_found -- both bank AND invoice absent. This builder
+    emits all three sources and keeps bank_ref resolvable, so a
+    counterpart IS found and the INR 50 shortfall is correctly an
+    amount mismatch.
 
         UNMATCHED       -- no counterpart exists; go find it
         AMOUNT_MISMATCH -- counterpart found, short by INR 50; go
                            reconcile it
 
-    The second is strictly more actionable and is what actually
-    happened. Widening UNMATCHED to cover found-but-discrepant records
-    would make the status semantically meaningless and break the
-    decision table's 512-combination coverage.
-
-    NAMING NOTE: the category is called "unresolvable" but is, by
-    construction, resolvable by identity -- only irreconcilable without
-    a human. "degraded_signals" would be more accurate. Renaming is
-    deferred to avoid churning case IDs mid-submission; recorded in
-    FAILURE_LOG.md.
+    NAMING NOTE: the category is called "unresolvable" but is
+    resolvable by identity -- only irreconcilable without a human.
+    "degraded_signals" would be more accurate. Renaming deferred to
+    avoid churning case IDs mid-submission.
     """
     pg, bank, invoice, gt = build_clean_transaction(merchant, txn_id, date_offset_days)
     bank["credited_amount"] = str(money(Decimal(bank["credited_amount"]) - Decimal("50.00")))
@@ -539,37 +569,29 @@ def build_unresolvable(merchant, txn_id, date_offset_days):
 
 def build_ambiguous_sibling(merchant, txn_id, counterpart_pg, counterpart_bank):
     """
-    Build a sibling PG/bank/invoice triplet that intentionally shares
-    gross_amount and timestamp with its ambiguous counterpart -- that
-    collision is what creates genuine ambiguity -- while remaining
-    internally consistent on its own: fee/GST/TDS/net_payout/bank
-    credited_amount/invoice amounts are all derived from the SAME
-    gross_amount used for the collision, computed once, rather than
-    generated for an unrelated amount and overwritten afterward.
+    A sibling triplet sharing gross_amount and timestamp with its
+    ambiguous counterpart -- that collision is what creates genuine
+    ambiguity -- while remaining internally consistent on its own.
 
     WHY THE BANK RECORD MATTERS MOST
     --------------------------------
-    Ambiguity detection (find_bank_ambiguity_candidates) compares the
-    anchor PG record's EXPECTED NET against candidate BANK amounts and
-    dates. Copying only the PG-side gross/timestamp -- as an earlier
-    version of this generator did -- produced ground truth asserting
-    AMBIGUOUS while emitting no bank record the engine could ever
-    detect as competing. Every unit test still passed, because
+    Ambiguity detection compares the anchor PG record's EXPECTED NET
+    against candidate BANK amounts and dates. Copying only the PG-side
+    gross/timestamp -- as an earlier version did -- produced ground
+    truth asserting AMBIGUOUS while emitting no bank record the engine
+    could detect as competing. Every unit test still passed, because
     "ambiguous results are never auto-matched" was never violated:
-    nothing was ever flagged ambiguous in the first place. The result
-    was six fail-open cases that only a full-batch regression harness
-    surfaced.
+    nothing was ever flagged. Six fail-open cases resulted, surfaced
+    only by a full-batch harness.
 
-    Both bank rows must therefore land on the same net amount and the
-    same value_date. Callers must draw BOTH merchants from the
-    zero-base cohort so TDS is zero on both sides (see
-    pick_zero_base_merchant for why AMOUNT_TOLERANCE makes this
-    mandatory).
+    Both bank rows must land on the same net amount and value_date.
+    Callers must draw BOTH merchants from the zero-base cohort so TDS
+    is zero on both sides.
 
-    NOTE ON FIX (A1): this function copies gross rather than calling
-    _draw_gross(), which is precisely why widening the amount
-    distribution does not weaken the ambiguous category. Deliberate
-    collision is constructed; only accidental collision was removed.
+    NOTE ON FIX (A1): this copies gross rather than calling
+    _draw_gross(), which is why widening the amount distribution does
+    not weaken this category. Deliberate collision is constructed; only
+    accidental collision was removed.
     """
     gross = Decimal(counterpart_pg["gross_amount"])
     fee = money(gross * Decimal("0.02"))
@@ -607,12 +629,12 @@ def build_ambiguous_sibling(merchant, txn_id, counterpart_pg, counterpart_bank):
         "bank_ref": f"BANKREF_{txn_id}",
         "utr": utr,
         "credited_amount": str(net),
-        # Explicitly mirror the counterpart's value_date rather than
-        # recomputing ts + 1 day. Both are identical today, but pinning
-        # it here means a future change to the counterpart's settlement
-        # lag cannot silently break the date half of the collision.
+        # Mirror the counterpart's value_date rather than recomputing
+        # ts + 1 day. Identical today, but pinning it means a future
+        # change to settlement lag cannot silently break the date half
+        # of the collision.
         "value_date": counterpart_bank["value_date"],
-        "narration": f"{narration_method} CR {utr} {merchant['id']}",
+        "narration": _make_narration(utr, merchant["id"], narration_method),
         "bank_charges": "0.00",
     }
     invoice = {
@@ -654,8 +676,6 @@ BUILDERS = {
     "unresolvable": build_unresolvable,
 }
 
-# Categories biased toward the near-threshold merchants, to increase
-# the odds the TDS threshold is genuinely crossed within this batch.
 HIGH_VOLUME_BIAS_CATEGORIES = {"exact_match", "timing_difference", "tax_mismatch"}
 
 
@@ -668,13 +688,10 @@ def generate_batch():
         builder = BUILDERS[category]
         for i in range(count):
             if category == "ambiguous":
-                # Both members of an ambiguous pair must withhold zero
-                # TDS so their nets collide within AMOUNT_TOLERANCE.
+                # Both pair members must withhold zero TDS so their
+                # nets collide within AMOUNT_TOLERANCE.
                 merchant = pick_zero_base_merchant()
             elif category in HIGH_VOLUME_BIAS_CATEGORIES and i % 3 == 0:
-                # bias roughly 1-in-3 of certain categories toward the
-                # near-threshold merchants so the TDS threshold actually
-                # gets exercised somewhere in the batch
                 merchant = pick_high_volume_merchant()
             else:
                 merchant = pick_merchant()
@@ -715,41 +732,29 @@ def generate_batch():
     return pg_records, bank_records, invoice_records, ground_truth, category_counts
 
 
-def print_summary(category_counts: dict, ground_truth: list, pg_records: list):
-    print(f"\nGenerated dataset (seed={RANDOM_SEED})\n")
-    label_width = max(len(k) for k in category_counts) + 2
-    for category, count in category_counts.items():
-        dots = "." * (label_width - len(category) + 10)
-        print(f"  {category} {dots} {count}")
-    print(f"\n  {'total base transactions':.<{label_width + 10}} {sum(category_counts.values())}")
-    print(f"  {'total ground-truth entries':.<{label_width + 10}} {len(ground_truth)}")
-    print("  (ground-truth total exceeds base transactions because the")
-    print("   'ambiguous' category injects one extra linked sibling record)")
+# =======================================================================
+# SELF-CHECKS
+# =======================================================================
 
-    tds_positive = sum(1 for r in pg_records
-                        if r["gross_amount"] != "NOT_A_NUMBER"
-                        and Decimal(r["tds_withheld"]) > 0)
-    print(f"\n  records with TDS > 0 (threshold genuinely crossed): {tds_positive}")
-
-    # Self-check: every ambiguous pair must actually collide on net
-    # amount and value date, otherwise the category is asserting a
-    # condition the data does not contain.
-    _verify_ambiguous_pairs_collide(ground_truth, pg_records)
-
-    # Self-check: no ground-truth label may assert a status the
-    # decision table cannot produce for the data as emitted.
-    _verify_label_reachability(ground_truth)
-
-    # FIX (A1) instrumentation: report how much ACCIDENTAL net
-    # collision the amount distribution is producing.
-    _report_accidental_net_collisions(ground_truth, pg_records)
+EXPECTED_STATUS_BY_CATEGORY = {
+    "exact_match": "MATCHED",
+    "timing_difference": "MATCHED",
+    "reference_mismatch_fuzzy": "MATCHED",
+    "amount_fee_discrepancy": "HUMAN_REVIEW",
+    "tax_mismatch": "TAX_MISMATCH",
+    "missing_in_source": {"UNMATCHED", "PARTIAL_MATCH"},
+    "duplicate": "HUMAN_REVIEW",
+    "ambiguous": "AMBIGUOUS",
+    "corrupted": "UNMATCHED",
+    "unresolvable": "HUMAN_REVIEW",
+}
 
 
 def _verify_ambiguous_pairs_collide(ground_truth: list, pg_records: list):
-    """Fail loudly at generation time if an ambiguous pair does not
-    genuinely collide. Ground truth that asserts AMBIGUOUS without a
-    detectable collision is worse than no ground truth at all: it makes
-    a correct engine look broken, or hides a fail-open bug."""
+    """Fail loudly if an ambiguous pair does not genuinely collide.
+    Ground truth asserting AMBIGUOUS without a detectable collision is
+    worse than no ground truth: it makes a correct engine look broken,
+    or hides a fail-open bug."""
     pg_by_id = {r["txn_id"]: r for r in pg_records}
     ambiguous_ids = [g["txn_id"] for g in ground_truth
                      if g["category"] == "ambiguous"]
@@ -775,14 +780,9 @@ def _report_accidental_net_collisions(ground_truth: list, pg_records: list):
     """
     Count net-amount collisions OUTSIDE the ambiguous category.
 
-    This is the metric FIX (A1) exists to move. Under the old six-value
-    distribution this number was large -- roughly ten records shared
-    each gross, so nearly every record collided with several others,
-    and the fuzzy tier had no amount signal left to discriminate on.
-
-    A small number here is healthy and realistic: real batches DO
-    contain occasional equal amounts. A large number means the
-    generator is manufacturing the difficulty it then measures.
+    The metric FIX (A1) exists to move. A small number is healthy and
+    realistic; a large one means the generator is manufacturing the
+    difficulty it then measures.
     """
     category_by_id = {g["txn_id"]: g["category"] for g in ground_truth}
 
@@ -791,7 +791,7 @@ def _report_accidental_net_collisions(ground_truth: list, pg_records: list):
         if record["gross_amount"] == "NOT_A_NUMBER":
             continue
         if category_by_id.get(record["txn_id"]) == "ambiguous":
-            continue          # deliberate collision, not accidental
+            continue
         nets.setdefault(record["net_payout"], []).append(record["txn_id"])
 
     colliding = {net: ids for net, ids in nets.items() if len(ids) > 1}
@@ -806,27 +806,60 @@ def _report_accidental_net_collisions(ground_truth: list, pg_records: list):
               "tier honestly.")
 
 
-# The status each category is expected to produce, per the decision
-# table. Kept here as the generator's own declaration of intent so a
-# label change cannot silently drift from the policy it describes.
-EXPECTED_STATUS_BY_CATEGORY = {
-    "exact_match": "MATCHED",
-    "timing_difference": "MATCHED",
-    "reference_mismatch_fuzzy": "MATCHED",
-    "amount_fee_discrepancy": "HUMAN_REVIEW",
-    "tax_mismatch": "TAX_MISMATCH",
-    "missing_in_source": {"UNMATCHED", "PARTIAL_MATCH"},
-    "duplicate": "HUMAN_REVIEW",
-    "ambiguous": "AMBIGUOUS",
-    "corrupted": "UNMATCHED",
-    "unresolvable": "HUMAN_REVIEW",
-}
+def _verify_fuzzy_tier_is_reachable(ground_truth: list, bank_records: list):
+    """
+    UPGRADE B instrumentation.
+
+    The reference_mismatch_fuzzy category exists to exercise tier 3. It
+    can only do so if its bank rows are unresolvable by tiers 1 and 2:
+
+        no UTR field           -> tier 1 cannot fire
+        bank-native bank_ref   -> tier 2 cannot fire
+
+    Checking this at generation time rather than discovering three
+    harness runs later that the tier is dead code, which is exactly
+    what happened before FIX (A2).
+    """
+    ref_ids = {g["txn_id"] for g in ground_truth
+               if g["category"] == "reference_mismatch_fuzzy"}
+
+    if not ref_ids:
+        return
+
+    problems = []
+    checked = 0
+
+    for row in bank_records:
+        ref = row.get("bank_ref", "") or ""
+
+        # Identify this category's rows by their bank-native ref shape.
+        if ref.startswith("BANKREF_"):
+            continue
+        checked += 1
+
+        if row.get("utr") is not None:
+            problems.append(
+                f"{ref}: exposes a UTR field, so tier 1 will resolve it"
+            )
+
+    if checked != len(ref_ids):
+        problems.append(
+            f"expected {len(ref_ids)} bank-native rows, found {checked}"
+        )
+
+    if problems:
+        print("\n  WARNING: fuzzy tier may be unreachable:")
+        for problem in problems:
+            print(f"    {problem}")
+    else:
+        print(f"  fuzzy-tier reachability verified: {checked} bank row(s) "
+              f"with no UTR and no BANKREF convention")
 
 
 def _verify_label_reachability(ground_truth: list):
     """Fail loudly if a category emits a status outside its declared
-    set. This is the guard that would have caught FIX (L1) and
-    FIX (L2) at generation time rather than three harness runs later."""
+    set. The guard that would have caught FIX (L1) and FIX (L2) at
+    generation time."""
     problems = []
 
     for entry in ground_truth:
@@ -854,6 +887,28 @@ def _verify_label_reachability(ground_truth: list):
         print(f"  label reachability verified: {len(ground_truth)} entries")
 
 
+def print_summary(category_counts, ground_truth, pg_records, bank_records):
+    print(f"\nGenerated dataset (seed={RANDOM_SEED})\n")
+    label_width = max(len(k) for k in category_counts) + 2
+    for category, count in category_counts.items():
+        dots = "." * (label_width - len(category) + 10)
+        print(f"  {category} {dots} {count}")
+    print(f"\n  {'total base transactions':.<{label_width + 10}} {sum(category_counts.values())}")
+    print(f"  {'total ground-truth entries':.<{label_width + 10}} {len(ground_truth)}")
+    print("  (ground-truth total exceeds base transactions because the")
+    print("   'ambiguous' category injects one extra linked sibling record)")
+
+    tds_positive = sum(1 for r in pg_records
+                        if r["gross_amount"] != "NOT_A_NUMBER"
+                        and Decimal(r["tds_withheld"]) > 0)
+    print(f"\n  records with TDS > 0 (threshold genuinely crossed): {tds_positive}")
+
+    _verify_ambiguous_pairs_collide(ground_truth, pg_records)
+    _verify_label_reachability(ground_truth)
+    _report_accidental_net_collisions(ground_truth, pg_records)
+    _verify_fuzzy_tier_is_reachable(ground_truth, bank_records)
+
+
 def main():
     print(f"Generating synthetic reconciliation batch (seed={RANDOM_SEED})...")
     pg_records, bank_records, invoice_records, ground_truth, category_counts = generate_batch()
@@ -867,7 +922,7 @@ def main():
     write_csv(bank_records, RAW_DIR / "bank_statement.csv")
     write_csv(invoice_records, RAW_DIR / "merchant_invoice.csv")
 
-    print_summary(category_counts, ground_truth, pg_records)
+    print_summary(category_counts, ground_truth, pg_records, bank_records)
     print(f"\nWrote JSON + CSV sources to {RAW_DIR}")
     print(f"Wrote ground_truth.json to {OUTPUT_DIR} "
           f"-- the pipeline must NEVER read this file.")

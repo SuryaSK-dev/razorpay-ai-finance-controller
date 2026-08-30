@@ -729,47 +729,48 @@ def test_full_pipeline_runs_against_generated_data():
     )
 
 
-def test_reference_mismatch_category_recovered_via_alternate_signal():
+def test_reference_mismatch_recovered_via_fuzzy_narration():
     """
-    Confirms the reference_mismatch_fuzzy synthetic category is
-    genuinely recoverable end-to-end.
+    The reference_mismatch_fuzzy category must be recoverable through
+    the FUZZY TIER specifically, not through a structured fallback.
 
-    In our data, this typically resolves via exact_txn since bank_ref
-    still encodes the correct txn_id even when UTR is corrupted.
+    This test previously documented the opposite:
 
-    The fuzzy tier exists for the realistic case where no such
-    structured convention is available.
+        "In our data, this typically resolves via exact_txn since
+         bank_ref still encodes the correct txn_id even when UTR is
+         corrupted."
+
+    That was accurate and it was the problem. UPGRADE B / FIX (A2)
+    removed the structured convention from this category's bank rows --
+    bank-native bank_ref, no UTR field, a UTR sitting only in free-text
+    narration -- so tier 3 is now the only path that can recover them.
+
+    Asserting the TIER rather than just "a match happened", because a
+    match happening tells us nothing about which code path produced it,
+    and that ambiguity is what let the fuzzy tier sit dead for so long.
     """
+    batch = load_batch(RAW_DIR)
+    normalized = normalize_batch(batch)
+    results = run_matching(normalized.records)
 
-    batch = load_batch(
-        RAW_DIR
-    )
-
-    normalized = normalize_batch(
-        batch
-    )
-
-    results = run_matching(
-        normalized.records
-    )
-
-    recovered_despite_utr_mismatch = [
-        r
-        for r in results
-        if (
-            r.bank_record is not None
-            and r.pg_record.utr
-            != r.bank_record.utr
-        )
+    fuzzy_matched = [
+        r for r in results
+        if r.bank_match_type == "fuzzy" and r.bank_record is not None
     ]
 
-    assert len(
-        recovered_despite_utr_mismatch
-    ) > 0, (
-        "Expected at least one transaction to be correctly "
-        "linked despite a UTR mismatch -- "
-        "reference_mismatch_fuzzy category should exercise this."
+    assert len(fuzzy_matched) > 0, (
+        "No transaction was recovered via the fuzzy tier. The "
+        "reference_mismatch_fuzzy category exists to exercise tier 3; "
+        "if nothing reaches it, the tier is dead code and every "
+        "measurement taken on it is vacuous. See FAILURE_LOG.md "
+        "section 33."
     )
+
+    for result in fuzzy_matched:
+        assert result.bank_record.utr is None, (
+            f"{result.txn_id}: fuzzy fired on a bank row that still "
+            "exposes a UTR, so tier 1 should have resolved it first"
+        )
 
 
 def test_missing_in_source_category_produces_no_candidate_not_crash():
@@ -851,7 +852,7 @@ if __name__ == "__main__":
 
     # Integration against real generated batch
     test_full_pipeline_runs_against_generated_data()
-    test_reference_mismatch_category_recovered_via_alternate_signal()
+    test_reference_mismatch_recovered_via_fuzzy_narration()
     test_missing_in_source_category_produces_no_candidate_not_crash()
     test_no_result_has_out_of_range_score()
 

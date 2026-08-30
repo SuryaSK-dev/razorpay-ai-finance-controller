@@ -5,14 +5,14 @@
   "rejected_at_ingestion": 2,
   "decisions_evaluated": 61,
   "status_accuracy": {
-    "correct": 61,
+    "correct": 55,
     "total": 61,
-    "percent": 100.0
+    "percent": 90.16
   },
   "exception_code_accuracy": {
-    "correct": 61,
+    "correct": 55,
     "total": 61,
-    "percent": 100.0
+    "percent": 90.16
   },
   "by_category": {
     "ambiguous": {
@@ -47,8 +47,8 @@
     },
     "reference_mismatch_fuzzy": {
       "total": 6,
-      "status_ok": 6,
-      "code_ok": 6
+      "status_ok": 0,
+      "code_ok": 0
     },
     "tax_mismatch": {
       "total": 7,
@@ -66,7 +66,86 @@
       "code_ok": 2
     }
   },
-  "divergences": [],
+  "divergences": [
+    {
+      "txn_id": "TXN_00025",
+      "category": "reference_mismatch_fuzzy",
+      "expected_status": "MATCHED",
+      "actual_status": "HUMAN_REVIEW",
+      "expected_exception_code": "NONE",
+      "actual_exception_code": "REFERENCE_MISMATCH",
+      "status_matched": false,
+      "code_matched": false,
+      "reason_codes": [
+        "NONE"
+      ]
+    },
+    {
+      "txn_id": "TXN_00026",
+      "category": "reference_mismatch_fuzzy",
+      "expected_status": "MATCHED",
+      "actual_status": "HUMAN_REVIEW",
+      "expected_exception_code": "NONE",
+      "actual_exception_code": "REFERENCE_MISMATCH",
+      "status_matched": false,
+      "code_matched": false,
+      "reason_codes": [
+        "NONE"
+      ]
+    },
+    {
+      "txn_id": "TXN_00027",
+      "category": "reference_mismatch_fuzzy",
+      "expected_status": "MATCHED",
+      "actual_status": "HUMAN_REVIEW",
+      "expected_exception_code": "NONE",
+      "actual_exception_code": "REFERENCE_MISMATCH",
+      "status_matched": false,
+      "code_matched": false,
+      "reason_codes": [
+        "NONE"
+      ]
+    },
+    {
+      "txn_id": "TXN_00028",
+      "category": "reference_mismatch_fuzzy",
+      "expected_status": "MATCHED",
+      "actual_status": "HUMAN_REVIEW",
+      "expected_exception_code": "NONE",
+      "actual_exception_code": "REFERENCE_MISMATCH",
+      "status_matched": false,
+      "code_matched": false,
+      "reason_codes": [
+        "NONE"
+      ]
+    },
+    {
+      "txn_id": "TXN_00029",
+      "category": "reference_mismatch_fuzzy",
+      "expected_status": "MATCHED",
+      "actual_status": "HUMAN_REVIEW",
+      "expected_exception_code": "NONE",
+      "actual_exception_code": "REFERENCE_MISMATCH",
+      "status_matched": false,
+      "code_matched": false,
+      "reason_codes": [
+        "NONE"
+      ]
+    },
+    {
+      "txn_id": "TXN_00030",
+      "category": "reference_mismatch_fuzzy",
+      "expected_status": "MATCHED",
+      "actual_status": "HUMAN_REVIEW",
+      "expected_exception_code": "NONE",
+      "actual_exception_code": "REFERENCE_MISMATCH",
+      "status_matched": false,
+      "code_matched": false,
+      "reason_codes": [
+        "NONE"
+      ]
+    }
+  ],
   "rejected_records": [
     {
       "txn_id": "TXN_00060",
