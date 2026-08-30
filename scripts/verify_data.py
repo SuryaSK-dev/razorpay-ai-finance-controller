@@ -32,7 +32,7 @@ circular but is not. The verifier's job here is only to answer "does a
 bank row for this transaction exist in the file at all?" -- a question
 about the DATA. The engine has to answer a different question: "which
 bank row, if any, may I safely link, given amount and date guards and
-a candidate pool of 64 rows?" That is the property under test, and
+a candidate pool of 63 rows?" That is the property under test, and
 nothing here does it for the engine.
 
 Run:
@@ -383,10 +383,81 @@ def main():
     else:
         ok()
 
-    no_utr = [n for n in narrations if "UTR" not in n]
     print(f"  Distinct narration shapes: {len(shapes)}")
-    print(f"  Narrations carrying no UTR at all: {len(no_utr)} "
-          f"(UPI form -- unrecoverable by narration matching, on purpose)")
+
+    # -------------------------------------------------------------
+    print("\n" + "=" * 70)
+    print("CHECK 9: Corrupted UTRs remain recoverable")
+    print("=" * 70)
+    #
+    # CORRECTION. An earlier version of CHECK 8 counted narrations with
+    # no literal "UTR" substring and labelled them:
+    #
+    #     "UPI form -- unrecoverable by narration matching, on purpose"
+    #
+    # That was wrong on both counts, and worth recording rather than
+    # quietly editing.
+    #
+    # The one row it found was:
+    #
+    #     UPI/3TR694524394/MERCH_004/NET STLMNT
+    #
+    # That is NOT the UPI form. It is the standard
+    # "{method}/{utr}/{merchant}/NET STLMNT" shape where the
+    # single-character corruption in build_reference_mismatch landed on
+    # index 0 -- turning "UTR694524394" into "3TR694524394". Eleven of
+    # twelve characters still match, so partial_ratio recovers it
+    # comfortably. It is entirely recoverable.
+    #
+    # The UPI branch of _make_narration is in fact UNREACHABLE: every
+    # caller passes a real UTR, so the `utr is None` path never fires.
+    # The label described a code path that does not execute.
+    #
+    # This check now measures the real property: a corrupted UTR must
+    # stay above the fuzzy threshold. Corruption landing on the "UTR"
+    # prefix rather than the digits is realistic -- OCR and manual
+    # entry both do it -- and it is worth seeing when it happens rather
+    # than mislabelling it.
+
+    pg_by_id = {r["txn_id"]: r for r in pg}
+    prefix_corrupted = []
+    below_threshold = []
+
+    for txn_id in ref_mismatch_txns:
+        pg_record = pg_by_id.get(txn_id)
+        bank_rows = bank_by_txn.get(txn_id, [])
+
+        if pg_record is None or not bank_rows:
+            continue
+
+        narration = bank_rows[0].get("narration", "") or ""
+        original_utr = pg_record.get("utr") or ""
+
+        score = fuzz.partial_ratio(original_utr, narration)
+
+        if "UTR" not in narration:
+            prefix_corrupted.append((txn_id, narration, score))
+
+        if score < FUZZY_MIN_SIMILARITY:
+            below_threshold.append((txn_id, score))
+            fail(f"  {txn_id}: narration similarity {score:.0f} is below "
+                 f"the production threshold {FUZZY_MIN_SIMILARITY}; the "
+                 f"fuzzy tier cannot recover it")
+        else:
+            ok()
+
+    print(f"  Checked {len(ref_mismatch_txns)} reference-mismatch rows against "
+          f"the production threshold ({FUZZY_MIN_SIMILARITY}).")
+
+    if prefix_corrupted:
+        print(f"  {len(prefix_corrupted)} row(s) had the corruption land on the "
+              f"'UTR' prefix rather than the digits:")
+        for txn_id, narration, score in prefix_corrupted:
+            print(f"    {txn_id}  similarity {score:.0f}  {narration}")
+        print("    (still recoverable -- 11 of 12 characters match)")
+
+    if not below_threshold:
+        print("  Every corrupted UTR remains above the threshold.")
 
     # -------------------------------------------------------------
     print("\n" + "=" * 70)

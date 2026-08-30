@@ -1143,3 +1143,163 @@ ground truth expected. Accuracy fell from 100% to 90.16% as a direct
 result. That is the trade this project has been making all along: a
 number you can explain is worth more than a number that never had to be
 tested.
+
+# 49. A verification script asserted a property the data did not have
+
+Small, but it belongs here because of where it happened.
+
+`verify_data.py` CHECK 8 printed:
+
+    Narrations carrying no UTR at all: 1
+    (UPI form -- unrecoverable by narration matching, on purpose)
+
+Both halves were wrong.
+
+The row it found was:
+
+    UPI/3TR694524394/MERCH_004/NET STLMNT
+
+That is not the UPI form. It is the ordinary
+`{method}/{utr}/{merchant}/NET STLMNT` shape, and the single-character
+corruption in `build_reference_mismatch()` happened to land on index 0
+— turning `UTR694524394` into `3TR694524394`. Eleven of twelve
+characters still match. `partial_ratio` scores it 92, comfortably above
+the production threshold of 85. It is entirely recoverable.
+
+`rng.randint(0, len(original) - 1)` includes indices 0, 1 and 2, which
+are the letters `U`, `T`, `R`. Nothing about that is a defect — OCR and
+manual entry both corrupt prefixes — but the check was reporting it as
+something else.
+
+**The label described a code path that does not execute.** The UPI
+branch of `_make_narration()` only fires when `utr is None`, and every
+caller passes a real UTR. I wrote a comment asserting a property of
+data that is never generated, in the file whose entire job is verifying
+properties the data actually has.
+
+**Fix.** CHECK 8 no longer counts or labels missing-UTR narrations. A
+new CHECK 9 measures the property that matters instead: every
+`reference_mismatch_fuzzy` row must score above `FUZZY_MIN_SIMILARITY`
+against its original UTR, and it fails if any does not. Prefix
+corruptions are reported separately with their scores, so the case is
+visible rather than mislabelled:
+
+    CHECK 9: Corrupted UTRs remain recoverable
+      Checked 6 reference-mismatch rows against the production
+      threshold (85).
+      1 row(s) had the corruption land on the 'UTR' prefix rather than
+      the digits:
+        TXN_00027  similarity 92  UPI/3TR694524394/MERCH_004/NET STLMNT
+        (still recoverable -- 11 of 12 characters match)
+      Every corrupted UTR remains above the threshold.
+
+The UPI branch is retained but marked unreachable. It is the shape a
+bank row takes when there is no recoverable reference at all, and it is
+the case that would be needed if an LLM extraction path were ever
+justified — which brings us to the next section.
+
+---
+
+# 50. We looked for a job for the LLM in matching and could not honestly find one
+
+`find_bank_candidates_with_llm_assist()` has existed in
+`candidates.py` since Phase 5, deliberately off the live path. Section
+24 lists the preconditions for connecting it. Upgrade B was supposed to
+supply the missing one: a bank row the deterministic tiers genuinely
+cannot resolve.
+
+It did not. Three designs were considered and all three failed for
+different reasons, and the pattern is the finding.
+
+## Design 1 — extract a TXN_ token from the narration
+
+This is what the extractor already does. It is also now impossible,
+because **Upgrade B removed every `TXN_` token from bank narration on
+purpose.** Real banks do not echo your internal transaction ID; that
+convention was exactly what made the fuzzy tier dead code (section 39).
+
+The extractor is looking for something the data no longer contains, and
+correctly so.
+
+Even if it found one, `index.bank_by_txn` does not hold the
+`reference_mismatch_fuzzy` rows — they have no resolvable txn_id by
+construction. That absence is what makes them reach tier 3 at all.
+
+## Design 2 — recover rows that carry no UTR
+
+Make the UPI branch reachable, and some bank rows would look like:
+
+    UPI/P2M/412345678901/RAZORPAY/MERCH_004
+
+A UPI reference that appears nowhere else in the dataset, and a
+merchant ID. **There is no recoverable signal in that string.** An LLM
+cannot extract information that is not present; it can only invent
+something, which the deterministic index lookup would then reject.
+
+A guard correctly rejecting a hallucination is a good property, but it
+is not recall. Building the case in order to demonstrate the guard
+would be building a problem to demonstrate a solution.
+
+## Design 3 — let the model choose from a candidate shortlist
+
+Accidental net collisions in this dataset are **zero** (section 16).
+Any candidate surviving the amount and date guards is already the
+correct one. The shortlist has length one. There is nothing to choose
+between.
+
+## And the one place ambiguity does exist is where the model must not go
+
+The `ambiguous` category contains genuine competing candidates — that
+is its whole purpose. It is also precisely where an LLM must not
+intervene. Breaking an ambiguity tie with no independent verifying
+signal **is** the model deciding financial truth, which is the exact
+failure this architecture exists to prevent. Routing those to
+`HUMAN_REVIEW` is the correct outcome, and a model that resolved them
+would be doing harm confidently.
+
+## What would be required, and why we did not do it
+
+Making narration load-bearing needs amount collisions *inside* the
+guard window, so that the amount guard stops uniquely identifying the
+right row and narration has to break the tie. That is a deliberate
+change to the dataset in order to create work for a tool we already
+have.
+
+Everywhere else in this project, the dataset was changed to make a
+measurement honest. This would be changing it to make a component look
+necessary. Those are not the same thing and the difference is the point.
+
+## The deferred function also has four real bugs
+
+Worth recording, because it has never run and its state is not
+obvious from reading it:
+
+1. `index.bank_by_txn.get(result.value, [])` — `result.value` is a
+   `NarrationExtraction` object, not a string. It passes the whole
+   dataclass as a dict key and returns `[]` forever.
+2. `pg_record.raw_ref.get("narration")` — narration lives on the BANK
+   record. PG records do not have one, so this is always empty and the
+   function returns early every time.
+3. It returns candidates without applying the amount and date guards,
+   which section 24 lists as a precondition for connecting it.
+4. It labels the result `"fuzzy"`, which would misreport the tier in
+   every downstream measurement.
+
+All four are fixable. None of them is the reason it stays disconnected.
+
+## Current position
+
+The extractor exists, is guarded, is tested in isolation, and is not
+connected.
+
+**The model's contribution to financial outcomes is zero by design and
+by measurement, not by omission.** It selects which question to answer,
+phrases results from real numbers, and explains decisions it cannot
+alter. On this dataset the deterministic tier recovers everything an
+LLM extraction path would have, at precision 1.00.
+
+Connecting it would mean adding a model to a path that does not need
+one. This log has recorded several cases of a number measuring
+something other than what it claimed. Shipping a component that adds
+nothing measurable, and describing it as AI-assisted matching, would be
+the same mistake in a different shape.
