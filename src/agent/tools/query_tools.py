@@ -4,13 +4,20 @@ Phase 6 — Read-only query tools over deterministic decisions.
 
 WHAT THIS IS
 ------------
-Four functions that answer the questions Track 04 requires a finance
+Five functions that answer the questions Track 04 requires a finance
 operator to be able to ask:
 
     get_match_rate()             -- what matched, and how confidently
     get_exceptions(status=None)  -- what did NOT resolve, itemised
     get_evidence(txn_id)         -- why one specific decision was made
+    get_cash_position()          -- where the MONEY is, in rupees
     get_throughput_report()      -- how fast the batch processed
+
+Track 04 is "run the books AND THE CASH POSITION". The first three run
+the books. get_cash_position() is the other half, and it is the only
+tool that reports value rather than record counts -- twenty clean small
+settlements and one blocked large one is a very different cash position
+from the reverse, and both read as "20 matched, 1 blocked".
 
 WHAT THIS IS NOT
 ----------------
@@ -62,7 +69,11 @@ from collections import Counter
 from pathlib import Path
 from typing import Any, Optional
 
+from decimal import Decimal
+
 from src.models import DecisionStatus, ExceptionCode, MatchDecision
+from src.config import money
+from src.financial import settlement_expected_net
 from src.ingestion.loader import load_batch
 from src.normalization.engine import normalize_batch
 from src.matching.engine import run_matching
@@ -78,6 +89,31 @@ DEFAULT_THROUGHPUT_PATH = ROOT / "data" / "throughput_benchmark.json"
 # Statuses that represent a resolved, no-action-needed outcome.
 # Everything else is an exception a human may need to look at.
 RESOLVED_STATUSES = frozenset({DecisionStatus.MATCHED})
+
+
+# Where each decision status places a transaction's money.
+#
+# Every DecisionStatus must appear exactly once. A status with no bucket
+# would silently drop real money out of the cash position, and a status
+# in two buckets would double-count it -- both make the totals stop
+# reconciling, which is the one property that makes this report
+# checkable by hand. test_every_status_has_exactly_one_cash_bucket
+# enforces exhaustiveness against the enum itself.
+CASH_BUCKET_BY_STATUS: dict[DecisionStatus, str] = {
+    DecisionStatus.MATCHED: "settled_and_verified",
+    DecisionStatus.PARTIAL_MATCH: "awaiting_verification",
+    DecisionStatus.HUMAN_REVIEW: "blocked_in_exceptions",
+    DecisionStatus.AMBIGUOUS: "blocked_in_exceptions",
+    DecisionStatus.TAX_MISMATCH: "blocked_in_exceptions",
+    DecisionStatus.UNMATCHED: "not_yet_credited",
+}
+
+CASH_BUCKETS = (
+    "settled_and_verified",
+    "awaiting_verification",
+    "blocked_in_exceptions",
+    "not_yet_credited",
+)
 
 
 class TxnNotFoundError(LookupError):
@@ -132,6 +168,13 @@ class BatchQueryContext:
         """
         batch = load_batch(self.raw_dir)
         normalized = normalize_batch(batch)
+
+        # Records rejected at ingestion never reach decide_batch(), so
+        # they are absent from every count below. get_cash_position()
+        # discloses them explicitly rather than letting them vanish: a
+        # corrupted record is money whose position is UNKNOWN, and an
+        # unknown is a different fact from a zero.
+        self.ingestion_rejections = batch.total_errors
 
         self.match_results = run_matching(normalized.records)
         self.decisions = decide_batch(self.match_results)
@@ -280,7 +323,118 @@ class BatchQueryContext:
         }
 
     # ------------------------------------------------------------------
-    # TOOL 4 -- THROUGHPUT
+    # TOOL 4 -- CASH POSITION
+    # ------------------------------------------------------------------
+
+    def get_cash_position(self) -> dict[str, Any]:
+        """
+        The batch expressed in rupees rather than record counts.
+
+        Track 04 is "run the books AND THE CASH POSITION". The other
+        tools run the books -- what matched, what did not, why. This one
+        answers the question a finance controller actually opens a
+        reconciliation report to ask: how much money is settled, how
+        much is stuck, and does what we expected to move match what the
+        bank actually moved.
+
+        A record count cannot answer that. Twenty clean small
+        settlements and one blocked large one is a very different cash
+        position from the reverse, and both read as "20 matched, 1
+        blocked".
+
+        BUCKETS
+        -------
+        Every decisioned transaction lands in exactly one bucket, keyed
+        off its DecisionStatus by CASH_BUCKET_BY_STATUS:
+
+            settled_and_verified   reconciled across sources, tax verified
+            awaiting_verification  PARTIAL_MATCH -- tax could not be checked
+            blocked_in_exceptions  needs a human before it can be trusted
+            not_yet_credited       expected, but no bank credit exists
+
+        `not_yet_credited` is deliberately included at its expected net.
+        A missing bank row is money the merchant is OWED and has not
+        received -- the single most operationally urgent line in the
+        report. Excluding it would understate exposure and would break
+        the arithmetic below, which is what makes this number checkable
+        by hand.
+
+        WHAT IS AND IS NOT COUNTED
+        --------------------------
+        Amounts are expected net -- gross minus fee, GST and TDS -- from
+        the same src/financial.py definition the matcher and the amount
+        control use. There is no second settlement formula here.
+
+        `total_bank_credited` sums the SELECTED bank record per
+        transaction. Where a settlement was credited twice, the
+        duplicate row is not added again: it is a credit pending
+        reversal, not additional expected settlement, and the
+        transaction itself appears in blocked_in_exceptions so an
+        operator sees it.
+
+        Records rejected at ingestion are reported as a count and NOT
+        as an amount. Their gross is unparseable, so their value is
+        genuinely unknown -- and an unknown is a different fact from a
+        zero. Reporting them as zero would let corrupted money quietly
+        balance the books.
+
+        This tool READS. It computes no financial outcome that
+        decide_batch() has not already established; it aggregates
+        amounts already attached to records the deterministic pipeline
+        produced.
+        """
+        totals = {bucket: Decimal("0") for bucket in CASH_BUCKETS}
+        counts = {bucket: 0 for bucket in CASH_BUCKETS}
+
+        total_bank_credited = Decimal("0")
+        transactions_with_bank_credit = 0
+
+        for result in self.match_results:
+            decision = self._by_txn[result.txn_id]
+
+            bucket = CASH_BUCKET_BY_STATUS[decision.status]
+
+            totals[bucket] += settlement_expected_net(result.pg_record)
+            counts[bucket] += 1
+
+            if result.bank_record is not None:
+                total_bank_credited += result.bank_record.amount
+                transactions_with_bank_credit += 1
+
+        total_expected = sum(totals.values(), Decimal("0"))
+        variance = total_expected - total_bank_credited
+
+        return {
+            "currency": "INR",
+            "total_records": len(self.decisions),
+            "by_bucket": {
+                bucket: {
+                    "amount": str(money(totals[bucket])),
+                    "records": counts[bucket],
+                }
+                for bucket in CASH_BUCKETS
+            },
+            "total_expected_settlement": str(money(total_expected)),
+            "total_bank_credited": str(money(total_bank_credited)),
+            "transactions_with_bank_credit": transactions_with_bank_credit,
+            "variance_vs_bank_credited": str(money(variance)),
+            "records_rejected_at_ingestion": self.ingestion_rejections,
+            "rejected_value_note": (
+                f"{self.ingestion_rejections} record(s) were rejected at "
+                "ingestion and carry no parseable amount. Their value is "
+                "unknown and is excluded from every figure above rather "
+                "than being counted as zero."
+            ),
+            "caveat": (
+                "Amounts are expected net (gross - fee - GST - TDS) from "
+                "the deterministic pipeline. total_bank_credited counts "
+                "the selected bank record per transaction; a duplicate "
+                "credit is pending reversal, not additional settlement."
+            ),
+        }
+
+    # ------------------------------------------------------------------
+    # TOOL 5 -- THROUGHPUT
     # ------------------------------------------------------------------
 
     def get_throughput_report(self) -> dict[str, Any]:

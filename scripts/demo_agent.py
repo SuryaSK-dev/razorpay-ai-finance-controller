@@ -41,8 +41,8 @@ distinction could be misread.
 
 COST
 ----
-Two Gemini calls per question (selection + phrasing). Five questions,
-so ten calls.
+Two Gemini calls per question (selection + phrasing). Six questions,
+so twelve calls.
 """
 
 from __future__ import annotations
@@ -84,6 +84,11 @@ DEMO_QUESTIONS = [
     "Show me everything that needs human review.",
     None,                      # filled with a real exception txn_id
     "How fast did the pipeline process this batch?",
+    # Closing question. The others report records; this one reports
+    # money -- which is what "run the books AND THE CASH POSITION"
+    # actually asks for, and what a finance controller opens the report
+    # to find out.
+    "How much money is blocked behind those exceptions?",
 ]
 
 
@@ -120,6 +125,14 @@ def offline_model(context: BatchQueryContext):
             return json.dumps({
                 "tool_name": "get_exceptions",
                 "arguments": {"status": "HUMAN_REVIEW"},
+            })
+
+        if any(w in question for w in (
+            "money", "cash", "rupee", "amount", "value",
+            "blocked", "stuck", "exposure", "settled",
+        )):
+            return json.dumps({
+                "tool_name": "get_cash_position", "arguments": {},
             })
 
         if any(w in question for w in ("resolve", "exception", "failed")):

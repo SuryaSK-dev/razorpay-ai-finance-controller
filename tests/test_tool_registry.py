@@ -55,9 +55,33 @@ def build_context() -> BatchQueryContext:
 # REGISTRY INTEGRITY
 # ======================================================================
 
+# The tools the agent is permitted to choose from, named explicitly.
+#
+# This used to be `len(TOOL_REGISTRY) == 4`. A bare count fails on every
+# addition and is fixed by bumping the number, which teaches the next
+# person to bump it without reading -- so it stops guarding anything.
+#
+# Naming the set instead makes adding a tool a deliberate two-place
+# edit, and makes an accidental REMOVAL fail just as loudly as an
+# accidental addition. The count was only ever a proxy for that.
+EXPECTED_TOOLS = {
+    "get_match_rate",
+    "get_exceptions",
+    "get_evidence",
+    "get_cash_position",
+    "get_throughput_report",
+}
+
+
 def test_registry_is_not_empty():
     assert TOOL_REGISTRY
-    assert len(TOOL_REGISTRY) == 4
+
+
+def test_registry_exposes_exactly_the_expected_tools():
+    assert set(TOOL_REGISTRY) == EXPECTED_TOOLS, (
+        f"unexpected: {sorted(set(TOOL_REGISTRY) - EXPECTED_TOOLS)}; "
+        f"missing: {sorted(EXPECTED_TOOLS - set(TOOL_REGISTRY))}"
+    )
 
 
 def test_every_registered_tool_exists_on_the_context():

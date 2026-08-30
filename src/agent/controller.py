@@ -437,6 +437,25 @@ def _render_fallback(tool_name: str, data: dict[str, Any]) -> str:
             f"Rule fired: {data['matched_rule']}."
         )
 
+    if tool_name == "get_cash_position":
+        buckets = data["by_bucket"]
+        return (
+            f"Of {data['total_expected_settlement']} "
+            f"{data['currency']} expected across "
+            f"{data['total_records']} records: "
+            f"{buckets['settled_and_verified']['amount']} settled and "
+            f"verified, "
+            f"{buckets['blocked_in_exceptions']['amount']} blocked "
+            f"behind {buckets['blocked_in_exceptions']['records']} "
+            f"exceptions, "
+            f"{buckets['awaiting_verification']['amount']} awaiting tax "
+            f"verification, and "
+            f"{buckets['not_yet_credited']['amount']} expected but not "
+            f"credited. The bank credited "
+            f"{data['total_bank_credited']}, a variance of "
+            f"{data['variance_vs_bank_credited']}."
+        )
+
     if tool_name == "get_throughput_report":
         if not data.get("available"):
             return f"No throughput benchmark available. {data.get('reason', '')}"

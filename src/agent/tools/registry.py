@@ -219,6 +219,24 @@ TOOL_REGISTRY: dict[str, ToolSpec] = {
         },
     ),
 
+    "get_cash_position": ToolSpec(
+        name="get_cash_position",
+        description=(
+            "Returns the batch in RUPEES rather than record counts: how "
+            "much is settled and verified, how much is awaiting tax "
+            "verification, how much is blocked behind exceptions, and "
+            "how much was expected but never credited by the bank. Also "
+            "returns total expected settlement, total actually credited, "
+            "and the variance between them. Use for any question about "
+            "money, value, amounts, rupees, cash, exposure, or how much "
+            "is stuck."
+        ),
+        when_not_to_use=(
+            "the operator wants counts of records rather than amounts of "
+            "money -- use get_match_rate for that"
+        ),
+    ),
+
     "get_throughput_report": ToolSpec(
         name="get_throughput_report",
         description=(
