@@ -1,12 +1,25 @@
 """
 Exhaustive combinatorial tests for the decision policy.
 
-The original nine independent policy dimensions are exhaustively tested
-as 2^9 = 512 combinations.
+Two sweeps, deliberately kept separate:
 
-The newer duplicate_detected and amount_mismatch fields are explicit
-DecisionContext facts, but default to False in the exhaustive sweep.
-Dedicated tests cover those new policy paths separately.
+    512  = 2^9   the original Phase-4 dimensions, holding
+                 duplicate_detected and amount_mismatch at False.
+                 Retained because FAILURE_LOG.md section 9 refers to
+                 it -- this is the sweep that found a state with no
+                 matching rule and caused the catch-all to be added.
+
+    2048 = 2^11  the COMPLETE DecisionContext space, including
+                 duplicate_detected and amount_mismatch.
+
+The coverage figure quoted in documentation is 2048/2048. The 512
+sweep on its own never established coverage of the space the engine
+actually produces, because two real policy dimensions were pinned
+False throughout it.
+
+test_context_dimensions_match_the_swept_space() ties both sweeps to
+the dataclass, so adding a twelfth field fails loudly rather than
+silently making the published figure wrong.
 """
 
 import sys
@@ -31,8 +44,9 @@ from src.models import DecisionStatus, ExceptionCode
 # -----------------------------------------------------------------------
 # Original Phase-4 policy dimensions.
 #
-# Keep this at nine dimensions so the established exhaustive test
-# remains 2^9 = 512 combinations.
+# Kept at nine so the historical 2^9 = 512 sweep stays intact and
+# comparable to what FAILURE_LOG.md section 9 describes. The full
+# eleven-dimension space is swept separately, below.
 # -----------------------------------------------------------------------
 
 BOOLEAN_FIELDS = [
@@ -132,6 +146,104 @@ def test_every_combination_of_conditions_resolves_without_error():
     assert not failures, (
         f"{len(failures)} of 512 combinations had "
         f"no matching rule: {failures[:5]}"
+    )
+
+
+def test_every_combination_of_the_full_context_space_resolves():
+    """
+    2^11 = 2048 combinations -- the COMPLETE DecisionContext space.
+
+    The 512 sweep above is the historical Phase-4 test and is kept
+    because FAILURE_LOG.md section 9 refers to it: it is what found
+    the state with no matching rule and caused the catch-all to be
+    added.
+
+    But 512 holds duplicate_detected and amount_mismatch at False,
+    so on its own it does not establish coverage of the space the
+    engine actually produces -- both of those are real policy
+    dimensions with their own rules. Documenting "512/512
+    combinations" as the coverage figure overstated what had been
+    swept.
+
+    This test closes that gap by sweeping all eleven dimensions.
+    Every combination must resolve to exactly one rule.
+    """
+
+    import warnings
+
+    all_fields = BOOLEAN_FIELDS + [
+        "duplicate_detected",
+        "amount_mismatch",
+    ]
+
+    assert len(all_fields) == 11, (
+        "DecisionContext gained or lost a policy dimension; update "
+        "this sweep and the coverage figure quoted in README.md."
+    )
+
+    failures = []
+
+    with warnings.catch_warnings():
+        warnings.simplefilter(
+            "ignore",
+            RuntimeWarning,
+        )
+
+        for combo in product(
+            [False, True],
+            repeat=len(all_fields),
+        ):
+            context = make_context(
+                **dict(
+                    zip(
+                        all_fields,
+                        combo,
+                    )
+                )
+            )
+
+            try:
+                evaluate(context)
+
+            except ValueError as error:
+                failures.append(
+                    (
+                        combo,
+                        str(error),
+                    )
+                )
+
+    assert not failures, (
+        f"{len(failures)} of 2048 combinations had no matching "
+        f"rule: {failures[:5]}"
+    )
+
+
+def test_context_dimensions_match_the_swept_space():
+    """
+    Ties the sweep to the dataclass.
+
+    If someone adds a twelfth field to DecisionContext, the sweeps
+    above silently stop being exhaustive and the coverage figure in
+    README.md silently becomes wrong. This fails instead.
+    """
+
+    import dataclasses
+
+    declared = {
+        field.name
+        for field in dataclasses.fields(DecisionContext)
+    }
+
+    swept = set(BOOLEAN_FIELDS) | {
+        "duplicate_detected",
+        "amount_mismatch",
+    }
+
+    assert declared == swept, (
+        f"DecisionContext fields and the swept space disagree. "
+        f"Only in context: {sorted(declared - swept)}. "
+        f"Only in sweep: {sorted(swept - declared)}."
     )
 
 
@@ -346,6 +458,119 @@ def test_reason_codes_include_amount_mismatch():
     )
 
 
+def test_reason_codes_include_low_confidence():
+    """
+    REGRESSION (FAILURE_LOG.md section 53).
+
+    The low-confidence rule reports REFERENCE_MISMATCH as its primary
+    exception code, but _all_violated_codes() had no branch for
+    context.low_confidence. Because low_confidence is mutually
+    exclusive with every identity and source-presence flag, these
+    records had no other violation to fall back on -- so a
+    HUMAN_REVIEW / REFERENCE_MISMATCH decision reached the operator
+    with reason_codes=[NONE].
+
+    Six records in the real batch were affected.
+    """
+
+    context = make_context(
+        low_confidence=True,
+    )
+
+    codes = _all_violated_codes(
+        context
+    )
+
+    assert (
+        ExceptionCode.REFERENCE_MISMATCH
+        in codes
+    )
+
+    assert codes != [ExceptionCode.NONE]
+
+
+def test_primary_exception_code_is_always_preserved_in_reason_codes():
+    """
+    THE GENERAL INVARIANT the low-confidence gap violated.
+
+    Whatever rule fires, its exception_code must also appear in
+    reason_codes. status classifies; reason_codes explain -- and an
+    explanation that omits the very thing being classified is not an
+    explanation.
+
+    Swept across the COMPLETE 2^11 = 2048 context space rather than
+    the 2^9 baseline, because this property must hold for every
+    reachable combination of every policy dimension, including
+    duplicate_detected and amount_mismatch.
+
+    Two rules are exempt by construction:
+
+        fully_clean_match        exception_code is NONE, and
+                                 reason_codes is correctly [NONE]
+
+        catch_all_unresolved_state
+                                 fires precisely when no violation
+                                 flag is set, so there is nothing for
+                                 it to preserve. It is a safety net
+                                 for a state that should be
+                                 unreachable, and a dedicated test
+                                 asserts it never fires on real data.
+    """
+
+    import warnings
+
+    all_fields = BOOLEAN_FIELDS + [
+        "duplicate_detected",
+        "amount_mismatch",
+    ]
+
+    failures = []
+
+    with warnings.catch_warnings():
+        warnings.simplefilter(
+            "ignore",
+            RuntimeWarning,
+        )
+
+        for combo in product(
+            [False, True],
+            repeat=len(all_fields),
+        ):
+            context = make_context(
+                **dict(
+                    zip(
+                        all_fields,
+                        combo,
+                    )
+                )
+            )
+
+            rule = evaluate(context)
+
+            if rule.name == "catch_all_unresolved_state":
+                continue
+
+            if rule.exception_code == ExceptionCode.NONE:
+                continue
+
+            codes = _all_violated_codes(context)
+
+            if rule.exception_code not in codes:
+                failures.append(
+                    (
+                        rule.name,
+                        rule.exception_code.value,
+                        [c.value for c in codes],
+                    )
+                )
+
+    assert not failures, (
+        f"{len(failures)} of 2048 combinations produced a primary "
+        f"exception_code absent from reason_codes. First five: "
+        f"{failures[:5]}"
+    )
+
+
 def test_reason_codes_include_duplicate():
     context = make_context(
         duplicate_detected=True,
@@ -553,6 +778,8 @@ def test_no_transaction_in_real_batch_hits_catch_all():
 
 if __name__ == "__main__":
     test_every_combination_of_conditions_resolves_without_error()
+    test_every_combination_of_the_full_context_space_resolves()
+    test_context_dimensions_match_the_swept_space()
     test_no_candidates_always_wins_regardless_of_other_flags()
     test_duplicate_wins_over_ambiguous_and_tax_state()
     test_ambiguous_wins_over_tax_state()
@@ -564,11 +791,13 @@ if __name__ == "__main__":
     test_reason_codes_captures_all_violations_not_just_winning_one()
     test_reason_codes_include_amount_mismatch()
     test_reason_codes_include_duplicate()
+    test_reason_codes_include_low_confidence()
+    test_primary_exception_code_is_always_preserved_in_reason_codes()
     test_decide_end_to_end_with_simultaneous_gst_and_tds_mismatch()
     test_no_transaction_in_real_batch_hits_catch_all()
 
     print(
-        "All decision table tests passed "
-        "-- 512/512 baseline combinations resolve "
-        "deterministically."
+        "All decision table tests passed -- 2048/2048 context "
+        "combinations resolve deterministically (512/512 on the "
+        "historical nine-dimension sweep)."
     )

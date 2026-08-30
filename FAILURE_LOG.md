@@ -1047,7 +1047,7 @@ raw (12) == divergent (0) + not_evaluable (6) + known_policy (6)
 # 45. Current state
 
 ```
-289 / 289 tests passing
+302 / 302 tests passing
 
 Gold baseline:            stable
 Baseline divergences:     0
@@ -1055,14 +1055,16 @@ Not evaluable:            6  (batch-relational)
 Known policy divergences: 6  (fail-closed, documented)
 Raw mismatches:           12
 Measured accuracy:        55/61 (90.16%)
+Decision policy coverage: 2048/2048
 Fuzzy tier:               6 of 61 records reach it
 Accidental collisions:    0
+Settlement arithmetic:    1 definition (was 4)
 ```
 
 **Deterministic core (0–4).** Decimal firewall, per-record fault
 isolation, three-tier matching with deterministic tie-breaking,
 independent GST/TDS validation, per-record seller ledger, priority
-decision table with 512/512 combination coverage, full reason-code
+decision table with 2048/2048 combination coverage, full reason-code
 preservation.
 
 **AI boundary (5A).** Preemptive timeout, typed contracts with no
@@ -1327,3 +1329,160 @@ Third documentation-drift incident in this project. Section 29 is
 about the previous two, and includes the line "documentation had to
 catch up with the engineering reality." Apparently that is not a
 lesson you learn once.
+
+---
+
+# 52. The most important formula in the system existed four times
+
+`expected_net = gross - fee - GST - TDS` is the expression every
+layer that touches a bank amount depends on. It existed as four
+independent inline copies:
+
+```
+matching/candidates.py   _pg_expected_net()   -- the only named one
+matching/engine.py       inline, candidate ranking
+matching/scoring.py      inline, SCORE_AMOUNT_BANK
+exceptions/manager.py    inline, AMOUNT_MISMATCH
+```
+
+`fee + GST` -- the expected invoice amount -- existed twice more,
+in `engine.py` and `scoring.py`.
+
+**How it was found.** By reading the files, during a full-repository
+audit. Not by a test, and not by a harness.
+
+**Nothing was ever wrong.** All four copies agreed, and every number
+this project has published is unaffected. That is exactly why it
+survived: a divergence that has not happened yet is invisible to
+every assertion you can write about current behaviour. The 289 tests
+passing at the time could not have caught it, because there was
+nothing yet to catch.
+
+**Why it is a defect anyway.** The copies were not independent
+implementations kept in sync deliberately. They were the same
+expression typed four times, and nothing connected them. The moment
+a settlement term is added -- a refund, a chargeback, an adjustment,
+the negative line items that make real settlement reconciliation
+hard -- a partial edit leaves candidate ranking, confidence scoring
+and the AMOUNT_MISMATCH control each reconciling against a different
+definition of the same settlement. Nothing raises. The batch is
+simply wrong, quietly, in the layer with the least test visibility.
+
+That is not hypothetical. N:1 batched settlement is the single
+largest gap named in section 46, and adding it *starts* by changing
+this expression.
+
+**Fix.** `src/financial.py` -- `settlement_expected_net()` and
+`expected_invoice_amount()`. All six call sites now import.
+
+The refactor was verified behaviour-identical before anything else
+changed: a full-batch decision snapshot (status, exception code,
+confidence, tax state, reason codes for all 61 records) hashed to
+`cefdc56f22c13dff` before and after.
+
+**Regression protection.** `tests/test_financial_invariants.py`,
+nine tests in two layers:
+
+- *Behavioural* -- over the real batch, the scoring signal, the
+  amount control, the invoice signal and the generator's own
+  independently-written `net_payout` field must all agree with
+  `src/financial.py` to the paise.
+- *Structural* -- a regex sweep of `src/` fails if any module
+  outside `financial.py` re-derives either expression inline, plus a
+  positive check that the four consumers still import it.
+
+The structural half is the one that matters. The behavioural half
+only fires once someone has already written a divergence *and* the
+batch happens to exercise it. The structural half rejects the copy
+at the moment it appears. It was tested by reintroducing a fifth
+copy into `scoring.py` and confirming the failure names the exact
+file and line.
+
+**What I took from this.** Every defect in this log so far was found
+by an instrument disagreeing with the engine. This one could not be,
+in principle. Some defects are only visible by reading, and "all
+tests pass" is silent about them by construction.
+
+---
+
+# 53. A HUMAN_REVIEW decision with nothing in its reason codes
+
+`_all_violated_codes()` had a branch for every `DecisionContext`
+flag except `low_confidence`.
+
+The decision table's low-confidence rule reports
+`REFERENCE_MISMATCH` as its primary exception code. But
+`low_confidence` is mutually exclusive with every identity and
+source-presence flag -- the guard in `_build_context()` makes it so
+-- which means those records have no *other* violation to populate
+the list. The one code that should have been there was the only one
+missing.
+
+Result, on the real batch:
+
+```
+TXN_00025  HUMAN_REVIEW  REFERENCE_MISMATCH  reason_codes=[NONE]
+```
+
+Six records, all `reference_mismatch_fuzzy`, routed to a human with
+no machine-readable statement of what was wrong with them.
+
+**How it was found.** A full-file audit, then confirmed directly
+against `data/eval/accuracy_report.json`, where all six divergences
+had been printing `"reason_codes": ["NONE"]` in a published artifact
+the whole time. I had read that file more than once.
+
+**Why it matters.** No decision was wrong. Status, exception code
+and the complete `evidence.context` were all correct, and the record
+went to review as it should have. But this README says every
+unresolved record carries "the complete set of violated conditions",
+and section 6 of this log records splitting `status` from
+`reason_codes` specifically so that a single status would not be the
+only audit evidence. For the second-largest exception bucket in the
+batch, `reason_codes` explained nothing.
+
+**Fix.** The missing branch. One `if`.
+
+**The fix was broader than expected.** It changed 16 records, not 6.
+The `amount_fee_discrepancy` and `unresolvable` categories are
+genuinely *both* amount-mismatched and low-confidence: the bank
+credits less than expected, so `SCORE_AMOUNT_BANK` is withheld, so
+the normalized score falls below the auto-match floor. The table
+picks `AMOUNT_MISMATCH` at priority 3, and `reason_codes` now
+preserves both facts:
+
+```
+TXN_00031  HUMAN_REVIEW  AMOUNT_MISMATCH
+           reason_codes=[AMOUNT_MISMATCH, REFERENCE_MISMATCH]
+```
+
+That is the C3 fix (section 12) becoming visible in the output for
+the first time. C3 established that identity and financial
+correctness are different questions; these ten records are the ones
+where both answers are bad, and now they say so.
+
+**Regression protection.** Two tests. The specific one asserts a
+pure low-confidence context yields `REFERENCE_MISMATCH`. The general
+one is the better guard:
+
+> whatever rule fires, its `exception_code` must also appear in
+> `reason_codes`
+
+swept across the complete 2^11 = 2048 context space, with
+`fully_clean` and the catch-all exempt by construction. Reverting
+the one-line fix makes it fail on 16 of 2048 combinations and names
+the responsible rule.
+
+The specific test only proves this bug is fixed. The general test
+proves the *class* is closed -- had it existed, it would have caught
+this the day `low_confidence` was added to the context.
+
+**Related.** While writing the 2048-combination sweep it became
+clear that the coverage figure published everywhere -- "512/512
+combinations" -- described a 2^9 sweep that pinned
+`duplicate_detected` and `amount_mismatch` at False throughout. Both
+are real policy dimensions with their own rules. The figure
+understated the space rather than covering it. The full space is now
+swept and the published figure is 2048/2048;
+`test_context_dimensions_match_the_swept_space()` fails if a twelfth
+field is ever added without updating both.

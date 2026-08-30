@@ -7,7 +7,7 @@
 ![Python](https://img.shields.io/badge/python-3.11-blue)
 ![Pydantic](https://img.shields.io/badge/contracts-Pydantic%20v2-e92063)
 ![Gemini](https://img.shields.io/badge/model-Gemini%203.1%20Flash--Lite-4285F4)
-![Tests](https://img.shields.io/badge/tests-289%20passing-brightgreen)
+![Tests](https://img.shields.io/badge/tests-302%20passing-brightgreen)
 ![Status](https://img.shields.io/badge/status-phase%206%20complete-brightgreen)
 ![Track](https://img.shields.io/badge/Razorpay%20Buildathon-Track%2004-002970)
 
@@ -47,7 +47,7 @@ graph TB
         B1[Ingestion + Schema Validation] --> B2[Normalization]
         B2 --> B3[Matching: exact UTR, then txn_id, then guarded fuzzy]
         B3 --> B4[Tax Validation: GST + TDS, independent]
-        B4 --> B5[Decision Table: 512/512 combinations]
+        B4 --> B5[Decision Table: 2048/2048 combinations]
         B5 --> B6[MatchDecision + reason codes + evidence]
     end
 
@@ -82,6 +82,7 @@ razorpay-ai-finance-controller/
 ├── src/
 │   ├── config.py                     Single source of truth: tax rates, tolerances, seed
 │   ├── models.py                     Pydantic contracts; Decimal firewall rejects float/bool
+│   ├── financial.py                  Settlement arithmetic — one definition, imported everywhere
 │   │
 │   ├── ingestion/loader.py           Per-record fault isolation — one bad row ≠ dead batch
 │   ├── normalization/engine.py       Canonical NormalizedRecord, UTC anchoring
@@ -112,7 +113,7 @@ razorpay-ai-finance-controller/
 │           └── candidate_lookup.py   Read-only index consumer
 │
 ├── scripts/                          Generation, verification, evaluation, demo
-├── tests/                            289 tests across 24 files
+├── tests/                            302 tests across 25 files
 ├── data/
 │   ├── raw/                          Generated PG / bank / invoice sources
 │   ├── ground_truth.json             Never read by the pipeline — evaluation only
@@ -126,10 +127,11 @@ razorpay-ai-finance-controller/
 
 | Module | Responsibility |
 |---|---|
+| `financial.py` | `expected_net = gross − fee − GST − TDS` in **one** place. It previously existed as four inline copies that agreed by coincidence, not by construction; a structural test now fails if a fifth appears |
 | `models.py` | Money as `Decimal` only — `float` and `bool` are rejected at the ingestion boundary, before any business logic runs |
 | `matching/candidates.py` | Strongest-evidence-first: exact UTR, then resolved txn_id, then amount+date-guarded fuzzy. Similarity alone can never authorise a match. |
 | `tax/validator.py` | Verifies the GST *relationship* against MDR rather than trusting the claimed value. GST and TDS evaluated independently so neither can suppress the other. |
-| `exceptions/decision_table.py` | Priority-ordered rules, exhaustively tested over all 2⁹ = 512 boolean combinations |
+| `exceptions/decision_table.py` | Priority-ordered rules, exhaustively tested over all 2¹¹ = 2048 context combinations |
 | `exceptions/manager.py` | Builds the decision context; preserves *every* violation in `reason_codes` while `status` stays single-valued |
 | `agent/guardrails.py` | Real preemptive timeout — a 15s hang returns in under 12s, verified by regression test |
 | `agent/tools/query_tools.py` | Four read-only tools. No method recomputes a financial outcome; the absence is asserted structurally, not left to review. |
@@ -249,8 +251,8 @@ Limitations.
 
 | Measure | Result |
 |---|---|
-| Test suite | **289 passing** across 24 files |
-| Decision policy coverage | **512/512** boolean combinations resolve deterministically |
+| Test suite | **302 passing** across 25 files |
+| Decision policy coverage | **2048/2048** context combinations resolve deterministically |
 | Gold baseline (per-case E2E) | **0 unexplained divergences** · 51 exact · 6 not-evaluable · 6 known-policy |
 | Fuzzy tier | **6 of 61 records reach it** (was 0). Precision 1.00, recall 1.00 through threshold 90, 0.50 at 95 |
 | Throughput | **1,113.9 records/sec** at batch 60; swept across 60/300/1000/5000 |
@@ -341,7 +343,7 @@ Stated plainly so none of the above is read as more than it is.
 - [x] **Phase 1** — Adversarial dataset: 10 categories, independent ground truth, reachability guards
 - [x] **Phase 2** — Ingestion + normalization: fault isolation, canonical records
 - [x] **Phase 3** — Matching: three-tier search, deterministic tie-breaking, ambiguity detection
-- [x] **Phase 4** — Tax + decisions: independent GST/TDS, 512-combination decision table
+- [x] **Phase 4** — Tax + decisions: independent GST/TDS, 2048-combination decision table
 - [x] **Phase 5A** — AI boundary: preemptive timeout, frozen contracts, invariance tests
 - [x] **Phase 5B** — Real model: Gemini 3.1 Flash-Lite behind the boundary
 - [x] **Phase 5C** — Evaluation: held-out sets, faithfulness scoring, gold baseline harness

@@ -22,6 +22,20 @@ Important policy principles:
 7. The catch-all exists as a defensive safety boundary and must not
    become normal production behavior.
 
+COVERAGE
+--------
+DecisionContext has eleven boolean dimensions, so the policy space is
+2^11 = 2048 combinations. All 2048 are swept in
+tests/test_decision_table.py and every one resolves to exactly one
+rule.
+
+An earlier documented figure of "512/512" described a 2^9 sweep that
+held duplicate_detected and amount_mismatch at False throughout. Both
+are real policy dimensions with their own rules, so that figure
+understated the space rather than covering it. The 512 sweep is
+retained because FAILURE_LOG.md section 9 refers to it, but 2048 is
+the coverage claim.
+
 Financial authority remains deterministic. No AI-generated output
 participates in this policy.
 """
