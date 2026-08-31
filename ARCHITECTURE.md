@@ -461,27 +461,47 @@ reconciliation is decomposing that — this system never has to.
 
 # Other extension points
 
-## Method-aware MDR
+## Method-aware MDR — **built**
 
-`payment_method` is written on every PG record and **never read**. Fee is
-a flat 2% of gross.
+`config.MDR_BY_METHOD` replaced a flat 2%. UPI P2M is zero-rated, cards
+2%, netbanking 1.8%. `verify_gst()` needed no edit — it already computes
+GST from whatever fee is on the record.
 
-Real MDR is method-dependent: UPI P2M is largely zero-rated, RuPay debit
-is capped, credit cards run ~2%, international ~3%, netbanking is often a
-flat per-transaction fee.
+The genuinely useful consequence: a legitimate **₹0 fee implying ₹0 GST**
+is now a case the system has to handle. 17 of 61 records carry it, none
+are wrongly flagged, and 8 reach `MATCHED` cleanly. That edge case did not
+exist under a flat MDR.
 
-```python
-MDR_BY_METHOD = {
-    "UPI":        Decimal("0.0000"),
-    "CARD":       Decimal("0.0200"),
-    "NETBANKING": Decimal("0.0180"),
-}
-```
+**Still simplified.** Real netbanking is frequently a *flat*
+per-transaction fee rather than a percentage; modelled as a percentage
+here so a flat fee cannot exceed a small transaction's value. Capped RuPay
+debit and ~3% international cards are not modelled.
 
-This is a **generator plus config** change. `verify_gst()` already
-computes GST from whatever fee is on the record, so the tax layer needs no
-edit. It would also make GST verification meaningfully harder — three fee
-bases instead of one, including a legitimate ₹0 fee implying ₹0 GST.
+## Matching is O(n²) — a real scaling ceiling
+
+`find_bank_ambiguity_candidates()` scans the full bank pool for every PG
+record, asking *"does a competing record exist elsewhere in the batch?"*
+That is the price of detecting ambiguity at all, and it is quadratic:
+
+| Batch | Match time | Records/sec |
+|---|---|---|
+| 60 | 0.004s | 1,348.5 |
+| 1,000 | 0.836s | 1,052.1 |
+| 5,000 | **27.3s** | **179.2** |
+
+At the 61-record batch this system targets, matching costs 4 milliseconds.
+At production scale it would not hold.
+
+**The fix, not implemented:** bucket candidates by
+`(quantised amount, date window)` and scan only the matching bucket
+instead of the whole pool. Ambiguity detection then becomes roughly O(n)
+in the common case, since the amount gate already eliminates almost
+everything. That is a real change to core matching logic and was not
+attempted days before a deadline.
+
+This figure was published as *linear* for four phases — the benchmark
+artifact predated the ambiguity scan and was never re-recorded. See
+`FAILURE_LOG.md` §54.
 
 ## Ledger-backed YTD
 

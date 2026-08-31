@@ -1047,7 +1047,7 @@ raw (12) == divergent (0) + not_evaluable (6) + known_policy (6)
 # 45. Current state
 
 ```
-302 / 302 tests passing
+326 / 326 tests passing
 
 Gold baseline:            stable
 Baseline divergences:     0
@@ -1059,6 +1059,8 @@ Decision policy coverage: 2048/2048
 Fuzzy tier:               6 of 61 records reach it
 Accidental collisions:    0
 Settlement arithmetic:    1 definition (was 4)
+Throughput:               1,348.5 rec/s @ 60; O(n^2) -- 179.2 @ 5000
+MDR:                      method-aware (UPI zero-rated); 17 zero-fee records
 ```
 
 **Deterministic core (0–4).** Decimal firewall, per-record fault
@@ -1486,3 +1488,178 @@ understated the space rather than covering it. The full space is now
 swept and the published figure is 2048/2048;
 `test_context_dimensions_match_the_swept_space()` fails if a twelfth
 field is ever added without updating both.
+
+---
+
+# 54. The throughput figure described an engine that no longer existed
+
+This is the fourth documentation-drift incident (§29, §49, §51), and the
+worst of them, because the number was a headline claim rather than a
+sentence in prose.
+
+**What happened.** `README.md` reported:
+
+    Throughput   1,113.9 records/sec at batch 60; swept across 60/300/1000/5000
+
+with a per-stage breakdown showing `match_time` growing **linearly**:
+
+    n=60    match 0.0016s
+    n=300   match 0.0068s
+    n=1000  match 0.0327s
+    n=5000  match 0.1439s
+
+Re-running the benchmark during Upgrade 2.2 produced something else
+entirely:
+
+    n=60    match 0.0041s     1,348.5 rec/s
+    n=300   match 0.0786s     2,254.4 rec/s
+    n=1000  match 0.8360s     1,052.1 rec/s
+    n=5000  match 27.3259s      179.2 rec/s
+
+Five times the records costs twenty to thirty times the matching time.
+The engine is **O(n²)**, and had been reported as linear.
+
+**How it was found.** Not by looking for it. Upgrade 2.2 made the payment
+gateway's fee method-dependent, which meant regenerating the dataset and
+rebuilding every evaluation artifact — including the throughput
+benchmark, which had not been rebuilt in a long time.
+
+**First conclusion, and it was wrong.** The obvious reading was that I had
+just introduced a performance regression: UPI is zero-rated, so a third of
+records now have `fee = 0` and therefore `expected_net == gross`, which
+looked like it could cluster amounts and make the candidate scan do more
+work.
+
+That hypothesis was testable, so I tested it — the same discipline that
+disproved the fuzzy-precision explanation in §37. Running the identical
+batch through both fee models:
+
+    OLD flat 2%          run_matching(1500) = 1.68s   1502 pairs pass the gate
+    NEW method-aware     run_matching(1500) = 1.72s   1500 pairs pass the gate
+
+**No difference.** The MDR change was not the cause, and the O(n²)
+behaviour was already there.
+
+**The actual cause.** `git log` on the two files:
+
+    data/throughput_benchmark.json   last written at bea9957  (phase-4-final)
+    find_bank_ambiguity_candidates   added at      520a489  (Phase 5B)
+
+The ambiguity scan is **newer than the recorded benchmark**. It walks the
+entire bank pool for every PG record, asking *"does a competing record
+exist?"* — an O(n²) sweep, and the price of detecting ambiguity at all.
+
+The benchmark was never wrong when it was recorded. It was recorded
+against a matching engine that did not yet contain the scan, and then
+never re-recorded. Every phase since has quoted it.
+
+**The part that stings.** `benchmark_throughput.py` prints this at the end
+of every run, and has since Phase 4:
+
+> *"Note: match_time growth relative to n_records indicates the matching
+> engine's actual complexity behavior on this hardware — if match_time
+> grows faster than linearly, that's real evidence of an O(n^2)
+> bottleneck worth investigating, not a claim to hide."*
+
+The instrument was correct, the warning was already written, and the
+stale artifact meant nobody ever saw the growth it was warning about. I
+wrote a check for exactly this condition and then stopped running it.
+
+**Fix.** Benchmark re-recorded. `README.md` now reports 1,348.5 rec/sec at
+batch 60 **and** the quadratic growth, with the per-stage table, rather
+than a single flattering figure. The cost is stated as a real ceiling for
+production scale rather than left for a reviewer to discover.
+
+**Not fixed: the O(n²) itself.** Making ambiguity detection sub-quadratic
+means bucketing candidates by (rounded amount, date window) instead of
+scanning the pool — a real change to `candidates.py`, which is core
+matching logic, three days before a deadline. At the 61-record batch this
+system targets, matching costs 4 milliseconds. Recorded as a scaling limit
+in `ARCHITECTURE.md`, not papered over.
+
+**What I took from this.** A generated artifact is a measurement with a
+timestamp, and it silently stops being true the moment the code it
+measured changes. Source code has tests to keep it honest; a JSON file
+committed months ago has nothing.
+
+The four drift incidents now share one shape: **something written down
+once, and then not re-derived when the thing it described moved.** The
+countermeasure that would have caught all four is the same — regenerate
+every artifact and re-grep every published number before claiming
+anything, rather than trusting the last recorded value.
+
+---
+
+# 55. Three traps in making the fee method-dependent
+
+Upgrade 2.2 replaced a flat 2% MDR with `config.MDR_BY_METHOD`. The change
+itself is four lines. Three separate things would have broken silently,
+and all three were found by reading the code that consumed the fee rather
+than by running the tests — which passed throughout.
+
+**Trap 1 — the audit trail could not explain the fee.**
+
+`payment_method` was written into the raw JSON by the generator and was
+**not** a field on `PGSettlementRecord`. A field absent from the Pydantic
+model never reaches `NormalizedRecord.raw_ref`, so it was silently dropped
+at ingestion.
+
+That was harmless while the fee was a flat percentage. The moment the fee
+depends on the method, an audit trail recording a fee with no way to
+explain it is a real gap. Added as an optional field.
+
+**Trap 2 — a zero fee makes the injected GST error a no-op.**
+
+`build_tax_mismatch()` injects a wrong GST as a percentage of the fee:
+
+    wrong_gst = money(fee * 0.12)     instead of    money(fee * 0.18)
+
+Under a flat 2% MDR that is always a real discrepancy. With UPI at zero
+MDR it is not:
+
+    money(0 * 0.12) == money(0 * 0.18) == 0.00
+
+The record would carry a `TAX_MISMATCH` ground-truth label over an invoice
+that is arithmetically correct — a false divergence that would appear in
+the accuracy report as an **engine** failure. Exactly the shape of L1 and
+L2 (§14, §15).
+
+Fixed by drawing `tax_mismatch` from `FEE_BEARING_METHODS`, and by adding
+`_verify_tax_mismatch_is_detectable()` — a generation-time check that
+every record labelled `tax_mismatch` actually contains a discrepancy the
+engine can find.
+
+**Trap 3 — the ambiguous sibling would have stopped colliding.**
+
+`build_ambiguous_sibling()` hardcoded `fee = money(gross * 0.02)`.
+
+Ambiguity is detected by comparing expected nets, and
+`net = gross − fee − gst − tds`. If the counterpart paid by UPI (fee 0)
+and the sibling were charged 2%, their nets would differ by ~2% of gross
+— orders of magnitude above `AMOUNT_TOLERANCE` — and **the collision that
+creates the ambiguity would silently fail to exist.**
+
+That is precisely the original fail-open bug from §4, where the sibling's
+bank row was never synced and six records were auto-matched that should
+have gone to a human. Six fail-opens, while 162 tests passed.
+
+Fixed by mirroring the counterpart's payment method, so the pair is
+economically identical by construction.
+`_verify_ambiguous_pairs_collide()` — the guard added after §4 — still
+checks it independently, and reported 3 pairs colliding after the change.
+
+**What the three have in common.** None would have failed a test. The
+suite stayed at 326 passing through the entire upgrade. Each one is a
+consumer of the fee that assumed the fee was a constant, and the
+assumption was invisible until the constant became a variable.
+
+The generator now runs **six** generation-time checks rather than four.
+Two were added here, and both exist because the same class of defect —
+ground truth asserting a condition the data does not contain — has now
+occurred four times in this project (§4, §14, §15, and Trap 2 above).
+
+**One thing worth stating plainly.** Making UPI zero-rated added a genuine
+new edge case the system did not previously have: a legitimate ₹0 fee
+implying a legitimate ₹0 GST, which must **not** be flagged as a tax
+error. 17 of 61 records now carry it, none are wrongly flagged, and 8 of
+them reach `MATCHED` cleanly. That case did not exist under a flat MDR.

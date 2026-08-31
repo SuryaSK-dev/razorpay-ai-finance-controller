@@ -205,8 +205,8 @@ happened, it was the harness. See below.
 | `HUMAN_REVIEW` | 19 | Amount mismatch, duplicate, degraded signals, or fuzzy-only linkage |
 | `TAX_MISMATCH` | 7 | GST or TDS variance against statutory expectation |
 | `AMBIGUOUS` | 6 | A competing record exists; no safe automatic choice |
-| `UNMATCHED` | 3 | Bank row absent, or malformed record rejected at ingestion |
-| `PARTIAL_MATCH` | 2 | Invoice missing — tax could not be verified |
+| `PARTIAL_MATCH` | 3 | Invoice missing — tax could not be verified |
+| `UNMATCHED` | 2 | Bank row absent, or malformed record rejected at ingestion |
 | **Total** | **61** | Every record, unfiltered |
 
 **Match rate: 39.34%** — and that number needs its context. The dataset is deliberately
@@ -256,9 +256,40 @@ Limitations.
 | Decision policy coverage | **2048/2048** context combinations resolve deterministically |
 | Gold baseline (per-case E2E) | **0 unexplained divergences** · 51 exact · 6 not-evaluable · 6 known-policy |
 | Fuzzy tier | **6 of 61 records reach it** (was 0). Precision 1.00, recall 1.00 through threshold 90, 0.50 at 95 |
-| Throughput | **1,113.9 records/sec** at batch 60; swept across 60/300/1000/5000 |
+| Throughput | **1,348.5 records/sec** at batch 60. Matching is **O(n²)** — 179.2 rec/sec at 5,000. See below |
 | Explanation faithfulness | 8/8 status preserved · 8/8 amounts preserved · 8/8 tax preserved · **0 unsupported claims** · **0 safety-critical failures** |
 | Real-model agent verification | **6/6** data invariant held · 6/6 tool selection matched expectation |
+
+### Throughput scales quadratically, and the published figure hid it
+
+| Batch | Match time | Total | Records/sec |
+|---|---|---|---|
+| 60 | 0.004s | 0.04s | 1,348.5 |
+| 300 | 0.079s | 0.13s | 2,254.4 |
+| 1,000 | 0.836s | 0.95s | 1,052.1 |
+| 5,000 | **27.3s** | 27.9s | **179.2** |
+
+Five times the records costs roughly **twenty to thirty times** the
+matching time. The cause is `find_bank_ambiguity_candidates()`, which
+scans the full bank pool for every PG record to answer *"does a competing
+record exist?"* — an O(n²) sweep, and the price of detecting ambiguity
+at all.
+
+**The previously published sweep was measured before that scan existed.**
+`data/throughput_benchmark.json` was last written at `phase-4-final`;
+the ambiguity scan arrived in Phase 5B. Every figure quoted since
+described an engine that no longer ran. The number was not wrong when
+recorded — it was never re-recorded.
+
+`benchmark_throughput.py` had predicted it in its own output the whole
+time: *"if match_time grows faster than linearly, that's real evidence of
+an O(n²) bottleneck worth investigating, not a claim to hide."* The stale
+artifact is what hid it. Written up in [`FAILURE_LOG.md`](FAILURE_LOG.md)
+§54.
+
+At the 61-record batch this system targets, the cost is 4 milliseconds.
+It is a real ceiling for production scale and is stated as one rather
+than left for a reviewer to discover.
 
 ### The invariant that matters
 
@@ -312,6 +343,10 @@ Stated plainly so none of the above is read as more than it is.
   What it would take — which layers change, which do not, and the paise-netting trap that
   makes a per-line tolerance unsafe at batch scale — is specified in
   [`ARCHITECTURE.md`](ARCHITECTURE.md#n1-batched-settlement--the-design).
+- **MDR is method-aware but simplified.** UPI is zero-rated, cards 2%, netbanking
+  1.8% — drawn from `config.MDR_BY_METHOD` rather than a flat percentage. Real netbanking
+  is often a *flat* per-transaction fee, and capped RuPay debit and ~3% international cards
+  are not modelled at all.
 - **Bank narration formats are invented.** Five formats now instead of one, drawn from what
   Indian banks emit, but still synthetic. Only `reference_mismatch_fuzzy` uses a bank-native
   reference; every other category still uses `BANKREF_<txn_id>`, a convention no real bank
