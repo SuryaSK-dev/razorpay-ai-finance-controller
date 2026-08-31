@@ -119,6 +119,7 @@ razorpay-ai-finance-controller/
 │   ├── ground_truth.json             Never read by the pipeline — evaluation only
 │   └── eval/                         Recorded benchmark and real-model artifacts
 │
+├── ARCHITECTURE.md                   Where truth lives; the N:1 design not built
 ├── FAILURE_LOG.md                    Every defect, including the embarrassing ones
 └── requirements.txt
 ```
@@ -308,6 +309,9 @@ Stated plainly so none of the above is read as more than it is.
 - **Settlement is modelled 1:1.** One PG transaction to one bank credit. Real settlements are
   *batched* — many transactions net into one transfer, minus refunds and chargebacks. The
   hard part of real reconciliation is decomposing that, and this system never has to.
+  What it would take — which layers change, which do not, and the paise-netting trap that
+  makes a per-line tolerance unsafe at batch scale — is specified in
+  [`ARCHITECTURE.md`](ARCHITECTURE.md#n1-batched-settlement--the-design).
 - **Bank narration formats are invented.** Five formats now instead of one, drawn from what
   Indian banks emit, but still synthetic. Only `reference_mismatch_fuzzy` uses a bank-native
   reference; every other category still uses `BANKREF_<txn_id>`, a convention no real bank
