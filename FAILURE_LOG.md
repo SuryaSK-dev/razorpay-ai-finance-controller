@@ -1047,7 +1047,7 @@ raw (12) == divergent (0) + not_evaluable (6) + known_policy (6)
 # 45. Current state
 
 ```
-359 / 359 tests passing
+360 / 360 tests passing
 
 Gold baseline:            stable
 Baseline divergences:     0
@@ -1782,3 +1782,58 @@ colloquial."* A held-out case a reader cannot evaluate is not a held-out
 set, it is a list of strings. I fixed the dataset rather than lowering
 the threshold — which is the same choice as keeping the engine and taking
 90.16% in section 44, at a much smaller scale.
+
+---
+
+# 57. A documented command deleted a measurement
+
+Found by the Stage 5 cold-clone freeze, which is the only reason it was
+found at all.
+
+**What happened.** `README.md` documents two ways to run the
+tool-selection evaluation:
+
+    python scripts/eval_agent_tool_selection.py            # baseline, hermetic
+    python scripts/eval_agent_tool_selection.py --model    # + live Gemini
+
+The first one overwrote `agent_tool_selection_report.json` with
+`"model": null`, deleting 399 lines — the recorded live-Gemini result of
+31/32, which costs 32 API calls to reproduce.
+
+A judge cloning the repo and running the hermetic command, exactly as the
+README instructs, would have destroyed it. Silently. The script printed
+"Model not evaluated" and exited zero.
+
+**How it was found.** Not by a test. By cloning the repository into a
+temporary directory, building a fresh virtualenv, and running every
+command the README documents. `git status` in the clone showed
+`data/eval/agent_tool_selection_report.json` modified, which should have
+been impossible for a read-only measurement of a fixed dataset.
+
+**Why no test caught it.** Every test ran in a working tree where the
+artifact already existed and where nothing checked whether running the
+script *changed* it. The evaluation's own integrity tests assert the
+report's arithmetic reconciles — they never asked whether the report
+still contained what it had contained a minute earlier.
+
+**Fix.** A baseline-only run now loads any previously recorded model
+section and carries it forward, flagged `model_is_from_a_previous_run:
+true` so a reader can tell it was not measured in this run. The script
+says so in its output rather than implying the model was simply not
+evaluated.
+
+**Regression protection.**
+`test_a_baseline_only_run_does_not_destroy_the_model_result()` runs the
+script in a subprocess with no API key and asserts the recorded figure
+survives and is correctly flagged.
+
+**The pattern.** This is section 54 in a different direction. There, an
+artifact stopped describing reality because the code moved underneath it.
+Here, an artifact stopped describing reality because a documented command
+destroyed it. Both are the same underlying gap: **a generated file has no
+test keeping it honest, and the ways it can quietly stop being true are
+not limited to going stale.**
+
+The freeze exists to run the repository the way someone else will, rather
+than the way its author does. That is the entire value of it, and it paid
+for itself on the first pass.

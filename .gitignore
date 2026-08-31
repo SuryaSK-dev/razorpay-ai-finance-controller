@@ -22,6 +22,11 @@ test_output.txt
 *.log
 data/_benchmark_tmp/
 
+# Editor / IDE local configuration
+.cursor/
+.vscode/
+.idea/
+
 # Personal study / interview-preparation notes.
 # Deliberately NOT part of the repository deliverable.
 FULL_SCOPE.md
