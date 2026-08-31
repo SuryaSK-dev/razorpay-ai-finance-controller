@@ -42,6 +42,44 @@ TDS_RATE_SECTION_393 = Decimal("0.001")
 TDS_ANNUAL_THRESHOLD = Decimal("500000")  # ₹5,00,000 (five lakh)
 
 # =======================================================================
+# MERCHANT DISCOUNT RATE (MDR)
+# The payment gateway's fee, charged to the merchant. It is NOT a flat
+# percentage in reality -- it depends on how the customer paid.
+#
+#   UPI         P2M merchant transactions are zero-rated in India. The
+#               gateway earns nothing on the fee line, so GST on that fee
+#               is also zero. A zero fee is CORRECT here, not a missing
+#               charge -- the tax layer must not flag it.
+#
+#   CARD        ~2% is a representative domestic credit-card rate.
+#
+#   NETBANKING  ~1.8%. Real netbanking is frequently a FLAT per-transaction
+#               fee rather than a percentage; modelled as a percentage here
+#               to avoid a flat fee exceeding a small transaction's value.
+#               Documented as a simplification in ARCHITECTURE.md.
+#
+# International cards (~3%) and capped RuPay debit are not modelled --
+# the generator only emits these three methods.
+# =======================================================================
+
+MDR_BY_METHOD = {
+    "UPI": Decimal("0.0000"),
+    "CARD": Decimal("0.0200"),
+    "NETBANKING": Decimal("0.0180"),
+}
+
+# Methods that actually produce a fee, and therefore a GST base. The
+# tax_mismatch category must draw from these: a GST error injected as a
+# percentage of a ZERO fee is not an error at all, and the record would
+# be labelled TAX_MISMATCH while the engine correctly finds nothing
+# wrong. See _verify_tax_mismatch_is_detectable() in generate_data.py.
+FEE_BEARING_METHODS = [
+    method
+    for method, rate in MDR_BY_METHOD.items()
+    if rate > 0
+]
+
+# =======================================================================
 # MATCHING SCORE WEIGHTS
 # Explicit per-source constants rather than a shared dict split at
 # runtime (e.g. SCORE_TXN_ID_EXACT // 2) -- self-documenting, and a

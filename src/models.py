@@ -121,6 +121,16 @@ class PGSettlementRecord(BaseModel):
     # explicitly so the synthetic data is self-consistent and every
     # TDS decision is independently verifiable, not just internally
     # consistent with the generator's own private state.
+    payment_method: Optional[str] = None
+    # How the customer paid: UPI / CARD / NETBANKING. This is the reason
+    # pg_fee is what it is -- MDR is method-dependent (config.MDR_BY_METHOD),
+    # not a flat percentage.
+    #
+    # It was previously written into the raw JSON and then SILENTLY
+    # DROPPED here, because a field absent from this model never reaches
+    # NormalizedRecord.raw_ref. The audit trail therefore recorded a fee
+    # with no way to explain it. Optional so a feed without the field
+    # still ingests rather than failing validation.
     utr: Optional[str] = None          # intentionally optional — some
                                         # synthetic records omit it
     timestamp: datetime

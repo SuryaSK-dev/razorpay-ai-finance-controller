@@ -81,7 +81,7 @@
     "expected_status": "MATCHED",
     "expected_exception_code": "NONE",
     "category": "exact_match",
-    "notes": "Clean match across all three sources; TDS applied (merchant crossed INR 500000 threshold)."
+    "notes": "Clean match across all three sources; no discrepancies."
   },
   {
     "txn_id": "TXN_00013",
@@ -109,7 +109,7 @@
     "expected_status": "MATCHED",
     "expected_exception_code": "NONE",
     "category": "exact_match",
-    "notes": "Clean match across all three sources; TDS applied (merchant crossed INR 500000 threshold)."
+    "notes": "Clean match across all three sources; no discrepancies."
   },
   {
     "txn_id": "TXN_00017",
@@ -144,7 +144,7 @@
     "expected_status": "MATCHED",
     "expected_exception_code": "NONE",
     "category": "timing_difference",
-    "notes": "T+2 settlement lag with exact amounts; normal, not an exception."
+    "notes": "T+3 settlement lag with exact amounts; normal, not an exception."
   },
   {
     "txn_id": "TXN_00022",
@@ -158,7 +158,7 @@
     "expected_status": "MATCHED",
     "expected_exception_code": "NONE",
     "category": "timing_difference",
-    "notes": "T+2 settlement lag with exact amounts; normal, not an exception."
+    "notes": "T+3 settlement lag with exact amounts; normal, not an exception."
   },
   {
     "txn_id": "TXN_00024",
@@ -228,28 +228,28 @@
     "expected_status": "HUMAN_REVIEW",
     "expected_exception_code": "AMOUNT_MISMATCH",
     "category": "amount_fee_discrepancy",
-    "notes": "Bank-credited amount is short by INR 20.00; genuine discrepancy, not rounding noise."
+    "notes": "Bank-credited amount is short by INR 5.00; genuine discrepancy, not rounding noise."
   },
   {
     "txn_id": "TXN_00034",
     "expected_status": "HUMAN_REVIEW",
     "expected_exception_code": "AMOUNT_MISMATCH",
     "category": "amount_fee_discrepancy",
-    "notes": "Bank-credited amount is short by INR 20.00; genuine discrepancy, not rounding noise."
+    "notes": "Bank-credited amount is short by INR 5.00; genuine discrepancy, not rounding noise."
   },
   {
     "txn_id": "TXN_00035",
     "expected_status": "HUMAN_REVIEW",
     "expected_exception_code": "AMOUNT_MISMATCH",
     "category": "amount_fee_discrepancy",
-    "notes": "Bank-credited amount is short by INR 5.00; genuine discrepancy, not rounding noise."
+    "notes": "Bank-credited amount is short by INR 0.75; genuine discrepancy, not rounding noise."
   },
   {
     "txn_id": "TXN_00036",
     "expected_status": "HUMAN_REVIEW",
     "expected_exception_code": "AMOUNT_MISMATCH",
     "category": "amount_fee_discrepancy",
-    "notes": "Bank-credited amount is short by INR 5.00; genuine discrepancy, not rounding noise."
+    "notes": "Bank-credited amount is short by INR 20.00; genuine discrepancy, not rounding noise."
   },
   {
     "txn_id": "TXN_00037",
@@ -282,16 +282,16 @@
   {
     "txn_id": "TXN_00041",
     "expected_status": "TAX_MISMATCH",
-    "expected_exception_code": "ERR_TDS_VARIANCE",
+    "expected_exception_code": "ERR_GST_MISMATCH",
     "category": "tax_mismatch",
-    "notes": "Invoice uses stale 1% Section 393 TDS rate instead of current 0.1%."
+    "notes": "Claimed GST on fee reflects a 12% slab instead of the correct 18%."
   },
   {
     "txn_id": "TXN_00042",
     "expected_status": "TAX_MISMATCH",
-    "expected_exception_code": "ERR_TDS_VARIANCE",
+    "expected_exception_code": "ERR_GST_MISMATCH",
     "category": "tax_mismatch",
-    "notes": "Invoice uses stale 1% Section 393 TDS rate instead of current 0.1%."
+    "notes": "Claimed GST on fee reflects a 12% slab instead of the correct 18%."
   },
   {
     "txn_id": "TXN_00043",
@@ -303,23 +303,23 @@
   {
     "txn_id": "TXN_00044",
     "expected_status": "TAX_MISMATCH",
-    "expected_exception_code": "ERR_TDS_VARIANCE",
+    "expected_exception_code": "ERR_GST_MISMATCH",
     "category": "tax_mismatch",
-    "notes": "Invoice uses stale 1% Section 393 TDS rate instead of current 0.1%."
+    "notes": "Claimed GST on fee reflects a 12% slab instead of the correct 18%."
   },
   {
     "txn_id": "TXN_00045",
     "expected_status": "TAX_MISMATCH",
-    "expected_exception_code": "ERR_TDS_VARIANCE",
+    "expected_exception_code": "ERR_GST_MISMATCH",
     "category": "tax_mismatch",
-    "notes": "Invoice uses stale 1% Section 393 TDS rate instead of current 0.1%."
+    "notes": "Claimed GST on fee reflects a 12% slab instead of the correct 18%."
   },
   {
     "txn_id": "TXN_00046",
-    "expected_status": "UNMATCHED",
-    "expected_exception_code": "MISSING_IN_BANK",
+    "expected_status": "PARTIAL_MATCH",
+    "expected_exception_code": "MISSING_IN_INVOICE",
     "category": "missing_in_source",
-    "notes": "PG and invoice agree; settlement not yet reflected in the bank feed."
+    "notes": "PG and bank agree; invoice not generated, so tax cannot be verified."
   },
   {
     "txn_id": "TXN_00047",
@@ -330,10 +330,10 @@
   },
   {
     "txn_id": "TXN_00048",
-    "expected_status": "PARTIAL_MATCH",
-    "expected_exception_code": "MISSING_IN_INVOICE",
+    "expected_status": "UNMATCHED",
+    "expected_exception_code": "MISSING_IN_BANK",
     "category": "missing_in_source",
-    "notes": "PG and bank agree; invoice not generated, so tax cannot be verified."
+    "notes": "PG and invoice agree; settlement not yet reflected in the bank feed."
   },
   {
     "txn_id": "TXN_00049",
@@ -344,10 +344,10 @@
   },
   {
     "txn_id": "TXN_00050",
-    "expected_status": "UNMATCHED",
-    "expected_exception_code": "MISSING_IN_BANK",
+    "expected_status": "PARTIAL_MATCH",
+    "expected_exception_code": "MISSING_IN_INVOICE",
     "category": "missing_in_source",
-    "notes": "PG and invoice agree; settlement not yet reflected in the bank feed."
+    "notes": "PG and bank agree; invoice not generated, so tax cannot be verified."
   },
   {
     "txn_id": "TXN_00051",

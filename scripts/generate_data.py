@@ -46,7 +46,9 @@ sys.path.append(str(Path(__file__).resolve().parent.parent))
 from src.config import (
     RANDOM_SEED,
     BATCH_DISTRIBUTION,
+    FEE_BEARING_METHODS,
     GST_RATE_ON_FEE,
+    MDR_BY_METHOD,
     TDS_RATE_SECTION_393,
     TDS_ANNUAL_THRESHOLD,
     money,
@@ -93,7 +95,9 @@ OUTPUT_DIR = Path(__file__).resolve().parent.parent / "data"
 RAW_DIR = OUTPUT_DIR / "raw"
 RAW_DIR.mkdir(parents=True, exist_ok=True)
 
-PAYMENT_METHODS = ["UPI", "CARD", "NETBANKING"]
+# Drawn from the MDR table rather than written out, so a method can
+# never exist without a rate (or a rate without a method).
+PAYMENT_METHODS = sorted(MDR_BY_METHOD)
 NARRATION_METHODS = ["UPI", "NEFT", "IMPS"]
 
 
@@ -258,10 +262,27 @@ def _bank_native_ref() -> str:
 txn_counter = [0]
 
 
-def build_clean_transaction(merchant, txn_id, date_offset_days):
-    """Baseline: a fully correct, fully matchable transaction."""
+def build_clean_transaction(
+    merchant, txn_id, date_offset_days, payment_method=None
+):
+    """
+    Baseline: a fully correct, fully matchable transaction.
+
+    UPGRADE 2.2. `pg_fee` is now derived from the payment method via
+    MDR_BY_METHOD rather than a flat 2%. UPI is zero-rated, so roughly a
+    third of the batch carries fee = 0 and therefore GST = 0 -- which is
+    CORRECT, not a missing charge, and the tax layer must not flag it.
+
+    `payment_method` may be forced by a caller that needs a fee-bearing
+    method (tax_mismatch) or needs to mirror a counterpart's economics
+    (the ambiguous sibling). Left None, it is drawn at random.
+    """
     gross = _draw_gross()
-    fee = money(gross * Decimal("0.02"))
+
+    if payment_method is None:
+        payment_method = rng.choice(PAYMENT_METHODS)
+
+    fee = money(gross * MDR_BY_METHOD[payment_method])
     gst = money(fee * GST_RATE_ON_FEE)
 
     # Captured BEFORE this transaction is applied -- the merchant's
@@ -278,7 +299,6 @@ def build_clean_transaction(merchant, txn_id, date_offset_days):
     ts = BASE_DATE + timedelta(days=date_offset_days, hours=rng.randint(0, 23))
     utr = f"UTR{rng.randint(100000000, 999999999)}"
     order_id = f"ORD_{txn_id}"
-    payment_method = rng.choice(PAYMENT_METHODS)
     narration_method = rng.choice(NARRATION_METHODS)
 
     pg = {
@@ -433,7 +453,35 @@ def build_amount_discrepancy(merchant, txn_id, date_offset_days):
 
 
 def build_tax_mismatch(merchant, txn_id, date_offset_days):
-    pg, bank, invoice, gt = build_clean_transaction(merchant, txn_id, date_offset_days)
+    """
+    An invoice claiming the wrong tax.
+
+    UPGRADE 2.2 -- WHY THE METHOD IS FORCED
+    ---------------------------------------
+    The GST error is injected as a percentage of the FEE:
+
+        wrong_gst = fee * 0.12    instead of    fee * 0.18
+
+    Under a flat 2% MDR that always produced a real discrepancy. With
+    method-dependent MDR it does not: UPI is zero-rated, so fee = 0, and
+
+        money(0 * 0.12) == money(0 * 0.18) == 0.00
+
+    The "defect" would be arithmetically identical to the correct value.
+    The record would carry a TAX_MISMATCH label while the engine
+    correctly found nothing wrong -- a false divergence, and one that
+    would look like an engine failure rather than a generator bug.
+
+    Drawing from FEE_BEARING_METHODS guarantees a non-zero GST base.
+    _verify_tax_mismatch_is_detectable() asserts it at generation time
+    rather than leaving it to be discovered three harness runs later.
+    """
+    pg, bank, invoice, gt = build_clean_transaction(
+        merchant,
+        txn_id,
+        date_offset_days,
+        payment_method=rng.choice(FEE_BEARING_METHODS),
+    )
     error_type = rng.choice(["stale_tds_rate", "wrong_gst_pct"])
     if error_type == "stale_tds_rate":
         gross = Decimal(pg["gross_amount"])
@@ -594,7 +642,23 @@ def build_ambiguous_sibling(merchant, txn_id, counterpart_pg, counterpart_bank):
     accidental collision was removed.
     """
     gross = Decimal(counterpart_pg["gross_amount"])
-    fee = money(gross * Decimal("0.02"))
+
+    # UPGRADE 2.2. The fee rate must MIRROR the counterpart's, not be
+    # hardcoded. Ambiguity is detected by comparing expected nets, and
+    # net = gross - fee - gst - tds. If the counterpart paid by UPI
+    # (fee 0) and this sibling were charged 2%, their nets would differ
+    # by ~2% of gross -- orders of magnitude above AMOUNT_TOLERANCE --
+    # and the collision that CREATES the ambiguity would silently fail
+    # to exist.
+    #
+    # That is precisely the shape of the original fail-open bug
+    # (FAILURE_LOG.md section 4), where the sibling's bank row was never
+    # synced and six records were auto-matched that should have gone to
+    # a human. Copying the method keeps the pair economically identical
+    # by construction; _verify_ambiguous_pairs_collide() still checks it.
+    payment_method = counterpart_pg["payment_method"]
+
+    fee = money(gross * MDR_BY_METHOD[payment_method])
     gst = money(fee * GST_RATE_ON_FEE)
 
     opening_gross = merchant["annual_gross_so_far"]
@@ -606,7 +670,6 @@ def build_ambiguous_sibling(merchant, txn_id, counterpart_pg, counterpart_bank):
     net = money(gross - fee - gst - tds)
     ts = datetime.fromisoformat(counterpart_pg["timestamp"])
     utr = f"UTR{rng.randint(100000000, 999999999)}"
-    payment_method = rng.choice(PAYMENT_METHODS)
     narration_method = rng.choice(NARRATION_METHODS)
 
     pg = {
@@ -856,6 +919,91 @@ def _verify_fuzzy_tier_is_reachable(ground_truth: list, bank_records: list):
               f"with no UTR and no BANKREF convention")
 
 
+def _verify_tax_mismatch_is_detectable(ground_truth: list, pg_records: list,
+                                       invoice_records: list):
+    """
+    UPGRADE 2.2 instrumentation.
+
+    Every tax_mismatch record must contain a discrepancy the engine can
+    actually find. The GST variant injects `fee * 0.12` in place of
+    `fee * 0.18`, which is only a discrepancy when the fee is non-zero.
+    UPI is zero-rated, so a UPI-drawn record would carry a TAX_MISMATCH
+    label over an invoice that is arithmetically correct.
+
+    Checking it here rather than discovering a false divergence in the
+    accuracy report, where it would look like an engine failure.
+    """
+    pg_by_id = {r["txn_id"]: r for r in pg_records}
+    inv_by_id = {r["txn_id"]: r for r in invoice_records}
+
+    ids = [g["txn_id"] for g in ground_truth
+           if g["category"] == "tax_mismatch"]
+
+    problems = []
+    gst_cases = 0
+    tds_cases = 0
+
+    for txn_id in ids:
+        pg = pg_by_id.get(txn_id)
+        invoice = inv_by_id.get(txn_id)
+        if pg is None or invoice is None:
+            continue
+
+        fee = Decimal(pg["pg_fee"])
+        expected_gst = money(fee * GST_RATE_ON_FEE)
+        claimed_gst = Decimal(invoice["claimed_gst"])
+
+        expected_tds = Decimal(pg["tds_withheld"])
+        claimed_tds = Decimal(invoice["claimed_tds"])
+
+        gst_wrong = abs(expected_gst - claimed_gst) > Decimal("0.01")
+        tds_wrong = abs(expected_tds - claimed_tds) > Decimal("0.01")
+
+        if gst_wrong:
+            gst_cases += 1
+        if tds_wrong:
+            tds_cases += 1
+
+        if not (gst_wrong or tds_wrong):
+            problems.append(
+                f"{txn_id}: labelled tax_mismatch but invoice is correct "
+                f"(fee={fee}, method={pg.get('payment_method')}) -- a zero "
+                f"fee makes the injected GST error a no-op"
+            )
+
+    if problems:
+        print()
+        print("  WARNING: undetectable tax_mismatch records:")
+        for problem in problems:
+            print(f"    {problem}")
+    else:
+        print(f"  tax_mismatch detectability verified: {len(ids)} record(s) "
+              f"({gst_cases} GST, {tds_cases} TDS)")
+
+
+def _report_mdr_distribution(pg_records: list):
+    """
+    UPGRADE 2.2. MDR is method-dependent, so the method mix determines
+    how much of the batch has a zero fee -- and therefore how much of it
+    exercises GST verification at all.
+    """
+    counts: dict[str, int] = {}
+    zero_fee = 0
+
+    for record in pg_records:
+        if record["gross_amount"] == "NOT_A_NUMBER":
+            continue
+        method = record.get("payment_method", "UNKNOWN")
+        counts[method] = counts.get(method, 0) + 1
+        if Decimal(record["pg_fee"]) == 0:
+            zero_fee += 1
+
+    summary = ", ".join(f"{m} {n}" for m, n in sorted(counts.items()))
+    print(f"  payment-method mix: {summary}")
+    print(f"  zero-fee records (UPI, zero-rated): {zero_fee} "
+          f"-- correct, not a missing charge")
+
+
 def _verify_label_reachability(ground_truth: list):
     """Fail loudly if a category emits a status outside its declared
     set. The guard that would have caught FIX (L1) and FIX (L2) at
@@ -887,7 +1035,8 @@ def _verify_label_reachability(ground_truth: list):
         print(f"  label reachability verified: {len(ground_truth)} entries")
 
 
-def print_summary(category_counts, ground_truth, pg_records, bank_records):
+def print_summary(category_counts, ground_truth, pg_records, bank_records,
+                  invoice_records):
     print(f"\nGenerated dataset (seed={RANDOM_SEED})\n")
     label_width = max(len(k) for k in category_counts) + 2
     for category, count in category_counts.items():
@@ -907,6 +1056,8 @@ def print_summary(category_counts, ground_truth, pg_records, bank_records):
     _verify_label_reachability(ground_truth)
     _report_accidental_net_collisions(ground_truth, pg_records)
     _verify_fuzzy_tier_is_reachable(ground_truth, bank_records)
+    _report_mdr_distribution(pg_records)
+    _verify_tax_mismatch_is_detectable(ground_truth, pg_records, invoice_records)
 
 
 def main():
@@ -922,7 +1073,8 @@ def main():
     write_csv(bank_records, RAW_DIR / "bank_statement.csv")
     write_csv(invoice_records, RAW_DIR / "merchant_invoice.csv")
 
-    print_summary(category_counts, ground_truth, pg_records, bank_records)
+    print_summary(category_counts, ground_truth, pg_records, bank_records,
+                  invoice_records)
     print(f"\nWrote JSON + CSV sources to {RAW_DIR}")
     print(f"Wrote ground_truth.json to {OUTPUT_DIR} "
           f"-- the pipeline must NEVER read this file.")

@@ -1,506 +1,514 @@
 [
   {
     "bank_ref": "BANKREF_TXN_00045",
-    "utr": "UTR654782505",
-    "credited_amount": "7856.66",
+    "utr": "UTR966486989",
+    "credited_amount": "1204.78",
     "value_date": "2026-08-06",
-    "narration": "NEFT-HDFC0000123-UTR654782505-MERCH_001",
+    "narration": "BY TRANSFER-NEFT*ICIC*UTR966486989*RAZORPAY-",
     "bank_charges": "0.00"
   },
   {
-    "bank_ref": "KKBK0005678N24740534",
+    "bank_ref": "ICIC0001234N14464105",
     "utr": null,
-    "credited_amount": "12555.13",
+    "credited_amount": "4189.09",
     "value_date": "2026-08-06",
-    "narration": "UPI-UTIB0000456-UTR604916937-MERCH_006",
+    "narration": "IMPS-HDFC0000123-U1R234711811-MERCH_001",
     "bank_charges": "0.00"
   },
   {
     "bank_ref": "BANKREF_TXN_00004",
-    "utr": "UTR812857215",
+    "utr": "UTR275886452",
     "credited_amount": "1010.73",
     "value_date": "2026-08-05",
-    "narration": "IMPS CR UTR812857215 MERCH_003 SETTLEMENT",
-    "bank_charges": "0.00"
-  },
-  {
-    "bank_ref": "BANKREF_TXN_00055",
-    "utr": "UTR988927745",
-    "credited_amount": "40834.13",
-    "value_date": "2026-08-15",
-    "narration": "UPI-HDFC0000123-UTR988927745-MERCH_004",
-    "bank_charges": "0.00"
-  },
-  {
-    "bank_ref": "ICIC0001234N93967175",
-    "utr": null,
-    "credited_amount": "38595.66",
-    "value_date": "2026-08-11",
-    "narration": "IMPS CR UTR106012093 MERCH_005 SETTLEMENT",
-    "bank_charges": "0.00"
-  },
-  {
-    "bank_ref": "BANKREF_TXN_00051",
-    "utr": "UTR289321853",
-    "credited_amount": "46648.99",
-    "value_date": "2026-08-12",
-    "narration": "IMPS/405575290606/UTR289321853/SETTLEMENT",
-    "bank_charges": "0.00"
-  },
-  {
-    "bank_ref": "BANKREF_TXN_00005",
-    "utr": "UTR502655738",
-    "credited_amount": "39521.18",
-    "value_date": "2026-08-06",
-    "narration": "IMPS-KKBK0005678-UTR502655738-MERCH_011",
-    "bank_charges": "0.00"
-  },
-  {
-    "bank_ref": "BANKREF_TXN_00017",
-    "utr": "UTR576836395",
-    "credited_amount": "449.48",
-    "value_date": "2026-08-18",
-    "narration": "NEFT/UTR576836395/MERCH_015/NET STLMNT",
-    "bank_charges": "0.00"
-  },
-  {
-    "bank_ref": "BANKREF_TXN_00009",
-    "utr": "UTR650317792",
-    "credited_amount": "3181.22",
-    "value_date": "2026-08-10",
-    "narration": "NEFT CR UTR650317792 MERCH_013 SETTLEMENT",
-    "bank_charges": "0.00"
-  },
-  {
-    "bank_ref": "BANKREF_TXN_00060",
-    "utr": "UTR447283283",
-    "credited_amount": "612.13",
-    "value_date": "2026-08-18",
-    "narration": "BY TRANSFER-NEFT*ICIC*UTR447283283*RAZORPAY-",
-    "bank_charges": "0.00"
-  },
-  {
-    "bank_ref": "BANKREF_TXN_00018",
-    "utr": "UTR384680619",
-    "credited_amount": "5894.92",
-    "value_date": "2026-08-19",
-    "narration": "UPI-ICIC0001234-UTR384680619-MERCH_012",
-    "bank_charges": "0.00"
-  },
-  {
-    "bank_ref": "BANKREF_TXN_00056",
-    "utr": "UTR727763735",
-    "credited_amount": "713.90",
-    "value_date": "2026-08-16",
-    "narration": "NEFT CR UTR727763735 MERCH_008 SETTLEMENT",
-    "bank_charges": "0.00"
-  },
-  {
-    "bank_ref": "BANKREF_TXN_00020",
-    "utr": "UTR181050023",
-    "credited_amount": "9640.98",
-    "value_date": "2026-08-22",
-    "narration": "IMPS/559735237504/UTR181050023/SETTLEMENT",
-    "bank_charges": "0.00"
-  },
-  {
-    "bank_ref": "BANKREF_TXN_00053",
-    "utr": "UTR549325370",
-    "credited_amount": "80740.57",
-    "value_date": "2026-08-14",
-    "narration": "UPI/UTR549325370/MERCH_005/NET STLMNT",
-    "bank_charges": "0.00"
-  },
-  {
-    "bank_ref": "BANKREF_TXN_00035",
-    "utr": "UTR789759261",
-    "credited_amount": "591.44",
-    "value_date": "2026-08-16",
-    "narration": "IMPS CR UTR789759261 MERCH_008 SETTLEMENT",
-    "bank_charges": "0.00"
-  },
-  {
-    "bank_ref": "BANKREF_TXN_00039",
-    "utr": "UTR627838752",
-    "credited_amount": "92920.39",
-    "value_date": "2026-08-20",
-    "narration": "BY TRANSFER-IMPS*ICIC*UTR627838752*RAZORPAY-",
-    "bank_charges": "0.00"
-  },
-  {
-    "bank_ref": "BANKREF_TXN_00006",
-    "utr": "UTR961032749",
-    "credited_amount": "3191.76",
-    "value_date": "2026-08-07",
-    "narration": "IMPS CR UTR961032749 MERCH_014 SETTLEMENT",
-    "bank_charges": "0.00"
-  },
-  {
-    "bank_ref": "BANKREF_TXN_00063",
-    "utr": null,
-    "credited_amount": "8789.67",
-    "value_date": "2026-08-29",
-    "narration": "IMPS/UTR595581190/MERCH_001/NET STLMNT",
-    "bank_charges": "0.00"
-  },
-  {
-    "bank_ref": "BANKREF_TXN_00032",
-    "utr": "UTR768926291",
-    "credited_amount": "2271.03",
-    "value_date": "2026-08-13",
-    "narration": "IMPS CR UTR768926291 MERCH_006 SETTLEMENT",
+    "narration": "IMPS CR UTR275886452 MERCH_003 SETTLEMENT",
     "bank_charges": "0.00"
   },
   {
     "bank_ref": "BANKREF_TXN_00054",
-    "utr": "UTR906364121",
-    "credited_amount": "40834.13",
+    "utr": "UTR288295073",
+    "credited_amount": "43943.96",
     "value_date": "2026-08-15",
-    "narration": "IMPS/294169684690/UTR906364121/SETTLEMENT",
+    "narration": "IMPS-HDFC0000123-UTR288295073-MERCH_005",
     "bank_charges": "0.00"
   },
   {
-    "bank_ref": "BANKREF_TXN_00036",
-    "utr": "UTR389761938",
-    "credited_amount": "9587.58",
-    "value_date": "2026-08-17",
-    "narration": "NEFT/UTR389761938/MERCH_006/NET STLMNT",
-    "bank_charges": "0.00"
-  },
-  {
-    "bank_ref": "KKBK0005678N24555499",
+    "bank_ref": "HDFC0000123N63378317",
     "utr": null,
-    "credited_amount": "3818.79",
-    "value_date": "2026-08-09",
-    "narration": "NEFT/UTR634369463/MERCH_004/NET STLMNT",
+    "credited_amount": "777.01",
+    "value_date": "2026-08-11",
+    "narration": "NEFT-SBIN0004521-UTR396655849-MERCH_011",
     "bank_charges": "0.00"
   },
   {
-    "bank_ref": "BANKREF_TXN_00042",
-    "utr": "UTR572720973",
-    "credited_amount": "850.19",
-    "value_date": "2026-08-03",
-    "narration": "IMPS/208469888656/UTR572720973/SETTLEMENT",
+    "bank_ref": "BANKREF_TXN_00050",
+    "utr": "UTR242107991",
+    "credited_amount": "616.37",
+    "value_date": "2026-08-11",
+    "narration": "IMPS/985730341991/UTR242107991/SETTLEMENT",
     "bank_charges": "0.00"
   },
   {
-    "bank_ref": "BANKREF_TXN_00015",
-    "utr": "UTR244982797",
-    "credited_amount": "42836.05",
-    "value_date": "2026-08-16",
-    "narration": "IMPS/420266537263/UTR244982797/SETTLEMENT",
+    "bank_ref": "BANKREF_TXN_00005",
+    "utr": "UTR349775005",
+    "credited_amount": "40476.43",
+    "value_date": "2026-08-06",
+    "narration": "IMPS-KKBK0005678-UTR349775005-MERCH_011",
+    "bank_charges": "0.00"
+  },
+  {
+    "bank_ref": "BANKREF_TXN_00017",
+    "utr": "UTR755383737",
+    "credited_amount": "5102.35",
+    "value_date": "2026-08-18",
+    "narration": "NEFT CR UTR755383737 MERCH_008 SETTLEMENT",
+    "bank_charges": "0.00"
+  },
+  {
+    "bank_ref": "BANKREF_TXN_00009",
+    "utr": "UTR114836691",
+    "credited_amount": "730.16",
+    "value_date": "2026-08-10",
+    "narration": "IMPS/UTR114836691/MERCH_009/NET STLMNT",
     "bank_charges": "0.00"
   },
   {
     "bank_ref": "BANKREF_TXN_00059",
     "utr": "UTR849567478",
-    "credited_amount": "71239.94",
+    "credited_amount": "9707.10",
     "value_date": "2026-08-17",
-    "narration": "NEFT-HDFC0000123-UTR849567478-MERCH_005",
+    "narration": "BY TRANSFER-NEFT*SBIN*UTR849567478*RAZORPAY-",
     "bank_charges": "0.00"
   },
   {
-    "bank_ref": "BANKREF_TXN_00037",
-    "utr": "UTR591559610",
-    "credited_amount": "8047.27",
-    "value_date": "2026-08-18",
-    "narration": "NEFT/UTR591559610/MERCH_006/NET STLMNT",
+    "bank_ref": "BANKREF_TXN_00018",
+    "utr": "UTR102185114",
+    "credited_amount": "379.64",
+    "value_date": "2026-08-19",
+    "narration": "IMPS/UTR102185114/MERCH_008/NET STLMNT",
     "bank_charges": "0.00"
   },
   {
-    "bank_ref": "BANKREF_TXN_00008",
-    "utr": "UTR864157675",
-    "credited_amount": "160.76",
-    "value_date": "2026-08-09",
-    "narration": "IMPS/980445121094/UTR864157675/SETTLEMENT",
+    "bank_ref": "BANKREF_TXN_00063",
+    "utr": null,
+    "credited_amount": "517.95",
+    "value_date": "2026-08-29",
+    "narration": "UPI-UTIB0000456-UTR430226857-MERCH_011",
     "bank_charges": "0.00"
   },
   {
-    "bank_ref": "BANKREF_TXN_00031",
-    "utr": "UTR347439911",
-    "credited_amount": "6710.01",
-    "value_date": "2026-08-12",
-    "narration": "UPI-SBIN0004521-UTR347439911-MERCH_006",
+    "bank_ref": "BANKREF_TXN_00020",
+    "utr": "UTR187893071",
+    "credited_amount": "634.19",
+    "value_date": "2026-08-22",
+    "narration": "UPI CR UTR187893071 MERCH_013 SETTLEMENT",
     "bank_charges": "0.00"
   },
   {
-    "bank_ref": "BANKREF_TXN_00014",
-    "utr": "UTR651050288",
-    "credited_amount": "50543.62",
-    "value_date": "2026-08-15",
-    "narration": "NEFT CR UTR651050288 MERCH_011 SETTLEMENT",
+    "bank_ref": "BANKREF_TXN_00052_DUP",
+    "utr": "UTR413178598",
+    "credited_amount": "4986.56",
+    "value_date": "2026-08-13",
+    "narration": "IMPS CR UTR413178598 MERCH_004 SETTLEMENT",
     "bank_charges": "0.00"
   },
   {
-    "bank_ref": "BANKREF_TXN_00011",
-    "utr": "UTR275602993",
-    "credited_amount": "3337.78",
-    "value_date": "2026-08-12",
-    "narration": "NEFT/UTR275602993/MERCH_015/NET STLMNT",
+    "bank_ref": "BANKREF_TXN_00035",
+    "utr": "UTR906492090",
+    "credited_amount": "3409.67",
+    "value_date": "2026-08-16",
+    "narration": "BY TRANSFER-NEFT*ICIC*UTR906492090*RAZORPAY-",
+    "bank_charges": "0.00"
+  },
+  {
+    "bank_ref": "BANKREF_TXN_00039",
+    "utr": "UTR345452411",
+    "credited_amount": "4007.20",
+    "value_date": "2026-08-20",
+    "narration": "IMPS/207006990126/UTR345452411/SETTLEMENT",
+    "bank_charges": "0.00"
+  },
+  {
+    "bank_ref": "BANKREF_TXN_00006",
+    "utr": "UTR819095468",
+    "credited_amount": "3268.91",
+    "value_date": "2026-08-07",
+    "narration": "UPI/UTR819095468/MERCH_014/NET STLMNT",
     "bank_charges": "0.00"
   },
   {
     "bank_ref": "BANKREF_TXN_00062",
     "utr": null,
-    "credited_amount": "63968.66",
+    "credited_amount": "83113.61",
     "value_date": "2026-08-28",
-    "narration": "NEFT-UTIB0000456-UTR518584072-MERCH_007",
+    "narration": "IMPS CR UTR455622579 MERCH_004 SETTLEMENT",
     "bank_charges": "0.00"
   },
   {
-    "bank_ref": "BANKREF_TXN_00021",
-    "utr": "UTR555579834",
-    "credited_amount": "3354.19",
-    "value_date": "2026-08-03",
-    "narration": "BY TRANSFER-UPI*ICIC*UTR555579834*RAZORPAY-",
-    "bank_charges": "0.00"
-  },
-  {
-    "bank_ref": "BANKREF_TXN_00022",
-    "utr": "UTR721041977",
-    "credited_amount": "717.87",
-    "value_date": "2026-08-05",
-    "narration": "IMPS/493128479900/UTR721041977/SETTLEMENT",
-    "bank_charges": "0.00"
-  },
-  {
-    "bank_ref": "BANKREF_TXN_00040",
-    "utr": "UTR836650738",
-    "credited_amount": "17328.12",
-    "value_date": "2026-08-21",
-    "narration": "IMPS/170310800231/UTR836650738/SETTLEMENT",
-    "bank_charges": "0.00"
-  },
-  {
-    "bank_ref": "BANKREF_TXN_00012",
-    "utr": "UTR298485996",
-    "credited_amount": "938.37",
+    "bank_ref": "BANKREF_TXN_00032",
+    "utr": "UTR131133326",
+    "credited_amount": "61403.42",
     "value_date": "2026-08-13",
-    "narration": "UPI CR UTR298485996 MERCH_003 SETTLEMENT",
-    "bank_charges": "0.00"
-  },
-  {
-    "bank_ref": "BANKREF_TXN_00033",
-    "utr": "UTR400626496",
-    "credited_amount": "6800.32",
-    "value_date": "2026-08-14",
-    "narration": "NEFT CR UTR400626496 MERCH_013 SETTLEMENT",
-    "bank_charges": "0.00"
-  },
-  {
-    "bank_ref": "ICIC0001234N54227716",
-    "utr": null,
-    "credited_amount": "1316.91",
-    "value_date": "2026-08-07",
-    "narration": "UPI/UTR431626123/MERCH_010/NET STLMNT",
-    "bank_charges": "0.00"
-  },
-  {
-    "bank_ref": "BANKREF_TXN_00019",
-    "utr": "UTR746882649",
-    "credited_amount": "136.67",
-    "value_date": "2026-08-22",
-    "narration": "BY TRANSFER-NEFT*UTIB*UTR746882649*RAZORPAY-",
-    "bank_charges": "0.00"
-  },
-  {
-    "bank_ref": "BANKREF_TXN_00052",
-    "utr": "UTR699379633",
-    "credited_amount": "7770.58",
-    "value_date": "2026-08-13",
-    "narration": "IMPS CR UTR699379633 MERCH_011 SETTLEMENT",
-    "bank_charges": "0.00"
-  },
-  {
-    "bank_ref": "BANKREF_TXN_00013",
-    "utr": "UTR297913261",
-    "credited_amount": "2839.12",
-    "value_date": "2026-08-14",
-    "narration": "IMPS/534547441922/UTR297913261/SETTLEMENT",
-    "bank_charges": "0.00"
-  },
-  {
-    "bank_ref": "BANKREF_TXN_00001",
-    "utr": "UTR307942293",
-    "credited_amount": "479.83",
-    "value_date": "2026-08-02",
-    "narration": "IMPS-UTIB0000456-UTR307942293-MERCH_002",
-    "bank_charges": "0.00"
-  },
-  {
-    "bank_ref": "BANKREF_TXN_00041",
-    "utr": "UTR367363175",
-    "credited_amount": "3643.15",
-    "value_date": "2026-08-02",
-    "narration": "BY TRANSFER-IMPS*KKBK*UTR367363175*RAZORPAY-",
-    "bank_charges": "0.00"
-  },
-  {
-    "bank_ref": "BANKREF_TXN_00038",
-    "utr": "UTR242044074",
-    "credited_amount": "58670.64",
-    "value_date": "2026-08-19",
-    "narration": "BY TRANSFER-NEFT*HDFC*UTR242044074*RAZORPAY-",
-    "bank_charges": "0.00"
-  },
-  {
-    "bank_ref": "BANKREF_TXN_00024",
-    "utr": "UTR918747559",
-    "credited_amount": "63061.82",
-    "value_date": "2026-08-07",
-    "narration": "BY TRANSFER-NEFT*UTIB*UTR918747559*RAZORPAY-",
-    "bank_charges": "0.00"
-  },
-  {
-    "bank_ref": "BANKREF_TXN_00010",
-    "utr": "UTR491150281",
-    "credited_amount": "6598.75",
-    "value_date": "2026-08-11",
-    "narration": "IMPS-HDFC0000123-UTR491150281-MERCH_003",
-    "bank_charges": "0.00"
-  },
-  {
-    "bank_ref": "BANKREF_TXN_00003",
-    "utr": "UTR303980213",
-    "credited_amount": "8328.85",
-    "value_date": "2026-08-04",
-    "narration": "NEFT-HDFC0000123-UTR303980213-MERCH_003",
-    "bank_charges": "0.00"
-  },
-  {
-    "bank_ref": "BANKREF_TXN_00058",
-    "utr": "UTR541113249",
-    "credited_amount": "71239.94",
-    "value_date": "2026-08-17",
-    "narration": "NEFT-SBIN0004521-UTR541113249-MERCH_006",
-    "bank_charges": "0.00"
-  },
-  {
-    "bank_ref": "BANKREF_TXN_00016",
-    "utr": "UTR147287609",
-    "credited_amount": "429.86",
-    "value_date": "2026-08-17",
-    "narration": "IMPS-KKBK0005678-UTR147287609-MERCH_003",
-    "bank_charges": "0.00"
-  },
-  {
-    "bank_ref": "BANKREF_TXN_00043",
-    "utr": "UTR311431648",
-    "credited_amount": "2419.49",
-    "value_date": "2026-08-04",
-    "narration": "BY TRANSFER-NEFT*ICIC*UTR311431648*RAZORPAY-",
-    "bank_charges": "0.00"
-  },
-  {
-    "bank_ref": "BANKREF_TXN_00057",
-    "utr": "UTR175131984",
-    "credited_amount": "713.90",
-    "value_date": "2026-08-16",
-    "narration": "NEFT CR UTR175131984 MERCH_011 SETTLEMENT",
-    "bank_charges": "0.00"
-  },
-  {
-    "bank_ref": "BANKREF_TXN_00051_DUP",
-    "utr": "UTR289321853",
-    "credited_amount": "46648.99",
-    "value_date": "2026-08-12",
-    "narration": "IMPS/405575290606/UTR289321853/SETTLEMENT",
-    "bank_charges": "0.00"
-  },
-  {
-    "bank_ref": "HDFC0000123N32979555",
-    "utr": null,
-    "credited_amount": "3421.63",
-    "value_date": "2026-08-10",
-    "narration": "IMPS CR UTR669586504 MERCH_015 SETTLEMENT",
-    "bank_charges": "0.00"
-  },
-  {
-    "bank_ref": "BANKREF_TXN_00044",
-    "utr": "UTR968295917",
-    "credited_amount": "8263.07",
-    "value_date": "2026-08-05",
-    "narration": "UPI CR UTR968295917 MERCH_013 SETTLEMENT",
-    "bank_charges": "0.00"
-  },
-  {
-    "bank_ref": "BANKREF_TXN_00048",
-    "utr": "UTR744323004",
-    "credited_amount": "6656.92",
-    "value_date": "2026-08-09",
-    "narration": "IMPS-SBIN0004521-UTR744323004-MERCH_003",
-    "bank_charges": "0.00"
-  },
-  {
-    "bank_ref": "BANKREF_TXN_00023",
-    "utr": "UTR322616528",
-    "credited_amount": "217.92",
-    "value_date": "2026-08-05",
-    "narration": "IMPS-UTIB0000456-UTR322616528-MERCH_001",
-    "bank_charges": "0.00"
-  },
-  {
-    "bank_ref": "BANKREF_TXN_00047",
-    "utr": "UTR698644561",
-    "credited_amount": "6629.94",
-    "value_date": "2026-08-08",
-    "narration": "IMPS/585437000605/UTR698644561/SETTLEMENT",
-    "bank_charges": "0.00"
-  },
-  {
-    "bank_ref": "BANKREF_TXN_00002",
-    "utr": "UTR694016622",
-    "credited_amount": "38323.69",
-    "value_date": "2026-08-03",
-    "narration": "NEFT/UTR694016622/MERCH_005/NET STLMNT",
-    "bank_charges": "0.00"
-  },
-  {
-    "bank_ref": "BANKREF_TXN_00052_DUP",
-    "utr": "UTR699379633",
-    "credited_amount": "7770.58",
-    "value_date": "2026-08-13",
-    "narration": "IMPS CR UTR699379633 MERCH_011 SETTLEMENT",
-    "bank_charges": "0.00"
-  },
-  {
-    "bank_ref": "BANKREF_TXN_00007",
-    "utr": "UTR993573194",
-    "credited_amount": "307.70",
-    "value_date": "2026-08-08",
-    "narration": "BY TRANSFER-UPI*ICIC*UTR993573194*RAZORPAY-",
-    "bank_charges": "0.00"
-  },
-  {
-    "bank_ref": "BANKREF_TXN_00034",
-    "utr": "UTR855392155",
-    "credited_amount": "5276.94",
-    "value_date": "2026-08-15",
-    "narration": "BY TRANSFER-IMPS*HDFC*UTR855392155*RAZORPAY-",
-    "bank_charges": "0.00"
-  },
-  {
-    "bank_ref": "BANKREF_TXN_00061",
-    "utr": "UTR350756405",
-    "credited_amount": "315.94",
-    "value_date": "2026-08-19",
-    "narration": "IMPS/115707280205/UTR350756405/SETTLEMENT",
-    "bank_charges": "0.00"
-  },
-  {
-    "bank_ref": "HDFC0000123N85239862",
-    "utr": null,
-    "credited_amount": "2823.58",
-    "value_date": "2026-08-08",
-    "narration": "UPI/3TR694524394/MERCH_004/NET STLMNT",
+    "narration": "UPI CR UTR131133326 MERCH_014 SETTLEMENT",
     "bank_charges": "0.00"
   },
   {
     "bank_ref": "BANKREF_TXN_00053_DUP",
-    "utr": "UTR549325370",
-    "credited_amount": "80740.57",
+    "utr": "UTR149431783",
+    "credited_amount": "5829.04",
     "value_date": "2026-08-14",
-    "narration": "UPI/UTR549325370/MERCH_005/NET STLMNT",
+    "narration": "IMPS/308336977837/UTR149431783/SETTLEMENT",
+    "bank_charges": "0.00"
+  },
+  {
+    "bank_ref": "BANKREF_TXN_00036",
+    "utr": "UTR446286528",
+    "credited_amount": "4921.30",
+    "value_date": "2026-08-17",
+    "narration": "IMPS-KKBK0005678-UTR446286528-MERCH_015",
+    "bank_charges": "0.00"
+  },
+  {
+    "bank_ref": "HDFC0000123N79542489",
+    "utr": null,
+    "credited_amount": "4881.01",
+    "value_date": "2026-08-09",
+    "narration": "IMPS/506651311447/UTR579676240/SETTLEMENT",
+    "bank_charges": "0.00"
+  },
+  {
+    "bank_ref": "BANKREF_TXN_00042",
+    "utr": "UTR411325416",
+    "credited_amount": "317.19",
+    "value_date": "2026-08-03",
+    "narration": "IMPS/239588088017/UTR411325416/SETTLEMENT",
+    "bank_charges": "0.00"
+  },
+  {
+    "bank_ref": "BANKREF_TXN_00015",
+    "utr": "UTR709739339",
+    "credited_amount": "6412.55",
+    "value_date": "2026-08-16",
+    "narration": "NEFT-ICIC0001234-UTR709739339-MERCH_012",
+    "bank_charges": "0.00"
+  },
+  {
+    "bank_ref": "BANKREF_TXN_00058",
+    "utr": "UTR254779740",
+    "credited_amount": "9707.10",
+    "value_date": "2026-08-17",
+    "narration": "NEFT-SBIN0004521-UTR254779740-MERCH_012",
+    "bank_charges": "0.00"
+  },
+  {
+    "bank_ref": "BANKREF_TXN_00037",
+    "utr": "UTR247230269",
+    "credited_amount": "7859.57",
+    "value_date": "2026-08-18",
+    "narration": "IMPS/UTR247230269/MERCH_001/NET STLMNT",
+    "bank_charges": "0.00"
+  },
+  {
+    "bank_ref": "BANKREF_TXN_00008",
+    "utr": "UTR184356111",
+    "credited_amount": "179.80",
+    "value_date": "2026-08-09",
+    "narration": "BY TRANSFER-NEFT*ICIC*UTR184356111*RAZORPAY-",
+    "bank_charges": "0.00"
+  },
+  {
+    "bank_ref": "BANKREF_TXN_00031",
+    "utr": "UTR117768840",
+    "credited_amount": "3622.27",
+    "value_date": "2026-08-12",
+    "narration": "IMPS/970083215680/UTR117768840/SETTLEMENT",
+    "bank_charges": "0.00"
+  },
+  {
+    "bank_ref": "BANKREF_TXN_00014",
+    "utr": "UTR172698743",
+    "credited_amount": "78350.05",
+    "value_date": "2026-08-15",
+    "narration": "IMPS/UTR172698743/MERCH_007/NET STLMNT",
+    "bank_charges": "0.00"
+  },
+  {
+    "bank_ref": "BANKREF_TXN_00011",
+    "utr": "UTR409555121",
+    "credited_amount": "3057.35",
+    "value_date": "2026-08-12",
+    "narration": "UPI-KKBK0005678-UTR409555121-MERCH_006",
+    "bank_charges": "0.00"
+  },
+  {
+    "bank_ref": "BANKREF_TXN_00061",
+    "utr": "UTR509575761",
+    "credited_amount": "286.15",
+    "value_date": "2026-08-19",
+    "narration": "UPI CR UTR509575761 MERCH_007 SETTLEMENT",
+    "bank_charges": "0.00"
+  },
+  {
+    "bank_ref": "BANKREF_TXN_00021",
+    "utr": "UTR442897829",
+    "credited_amount": "14949.17",
+    "value_date": "2026-08-04",
+    "narration": "IMPS/633003792360/UTR442897829/SETTLEMENT",
+    "bank_charges": "0.00"
+  },
+  {
+    "bank_ref": "BANKREF_TXN_00022",
+    "utr": "UTR405060750",
+    "credited_amount": "68485.09",
+    "value_date": "2026-08-05",
+    "narration": "IMPS/680224250561/UTR405060750/SETTLEMENT",
+    "bank_charges": "0.00"
+  },
+  {
+    "bank_ref": "BANKREF_TXN_00040",
+    "utr": "UTR168882681",
+    "credited_amount": "2257.80",
+    "value_date": "2026-08-21",
+    "narration": "BY TRANSFER-UPI*ICIC*UTR168882681*RAZORPAY-",
+    "bank_charges": "0.00"
+  },
+  {
+    "bank_ref": "BANKREF_TXN_00012",
+    "utr": "UTR383767074",
+    "credited_amount": "2938.33",
+    "value_date": "2026-08-13",
+    "narration": "IMPS CR UTR383767074 MERCH_011 SETTLEMENT",
+    "bank_charges": "0.00"
+  },
+  {
+    "bank_ref": "BANKREF_TXN_00033",
+    "utr": "UTR676796421",
+    "credited_amount": "56967.89",
+    "value_date": "2026-08-14",
+    "narration": "IMPS/631295816653/UTR676796421/SETTLEMENT",
+    "bank_charges": "0.00"
+  },
+  {
+    "bank_ref": "ICIC0001234N73293001",
+    "utr": null,
+    "credited_amount": "5779.14",
+    "value_date": "2026-08-07",
+    "narration": "IMPS/UTR336280534/MERCH_008/NET STLMNT",
+    "bank_charges": "0.00"
+  },
+  {
+    "bank_ref": "BANKREF_TXN_00019",
+    "utr": "UTR323932521",
+    "credited_amount": "2844.94",
+    "value_date": "2026-08-22",
+    "narration": "NEFT-SBIN0004521-UTR323932521-MERCH_002",
+    "bank_charges": "0.00"
+  },
+  {
+    "bank_ref": "BANKREF_TXN_00051_DUP",
+    "utr": "UTR437183381",
+    "credited_amount": "3470.19",
+    "value_date": "2026-08-12",
+    "narration": "IMPS/UTR437183381/MERCH_003/NET STLMNT",
+    "bank_charges": "0.00"
+  },
+  {
+    "bank_ref": "BANKREF_TXN_00013",
+    "utr": "UTR288936256",
+    "credited_amount": "1258.68",
+    "value_date": "2026-08-14",
+    "narration": "NEFT/UTR288936256/MERCH_001/NET STLMNT",
+    "bank_charges": "0.00"
+  },
+  {
+    "bank_ref": "BANKREF_TXN_00001",
+    "utr": "UTR390173186",
+    "credited_amount": "480.99",
+    "value_date": "2026-08-02",
+    "narration": "IMPS-UTIB0000456-UTR390173186-MERCH_002",
+    "bank_charges": "0.00"
+  },
+  {
+    "bank_ref": "BANKREF_TXN_00041",
+    "utr": "UTR438220244",
+    "credited_amount": "60780.55",
+    "value_date": "2026-08-02",
+    "narration": "NEFT/UTR438220244/MERCH_011/NET STLMNT",
+    "bank_charges": "0.00"
+  },
+  {
+    "bank_ref": "BANKREF_TXN_00038",
+    "utr": "UTR842950376",
+    "credited_amount": "31490.57",
+    "value_date": "2026-08-19",
+    "narration": "IMPS/506970015387/UTR842950376/SETTLEMENT",
+    "bank_charges": "0.00"
+  },
+  {
+    "bank_ref": "BANKREF_TXN_00024",
+    "utr": "UTR479597317",
+    "credited_amount": "7751.89",
+    "value_date": "2026-08-07",
+    "narration": "IMPS-KKBK0005678-UTR479597317-MERCH_001",
+    "bank_charges": "0.00"
+  },
+  {
+    "bank_ref": "BANKREF_TXN_00010",
+    "utr": "UTR228185053",
+    "credited_amount": "4815.00",
+    "value_date": "2026-08-11",
+    "narration": "IMPS/641509675440/UTR228185053/SETTLEMENT",
+    "bank_charges": "0.00"
+  },
+  {
+    "bank_ref": "BANKREF_TXN_00003",
+    "utr": "UTR998797368",
+    "credited_amount": "8328.85",
+    "value_date": "2026-08-04",
+    "narration": "BY TRANSFER-NEFT*SBIN*UTR998797368*RAZORPAY-",
+    "bank_charges": "0.00"
+  },
+  {
+    "bank_ref": "BANKREF_TXN_00057",
+    "utr": "UTR511885599",
+    "credited_amount": "4548.97",
+    "value_date": "2026-08-16",
+    "narration": "IMPS/913765566698/UTR511885599/SETTLEMENT",
+    "bank_charges": "0.00"
+  },
+  {
+    "bank_ref": "BANKREF_TXN_00016",
+    "utr": "UTR716377475",
+    "credited_amount": "577.05",
+    "value_date": "2026-08-17",
+    "narration": "UPI-HDFC0000123-UTR716377475-MERCH_002",
+    "bank_charges": "0.00"
+  },
+  {
+    "bank_ref": "BANKREF_TXN_00043",
+    "utr": "UTR852989679",
+    "credited_amount": "1462.79",
+    "value_date": "2026-08-04",
+    "narration": "IMPS/989249920519/UTR852989679/SETTLEMENT",
+    "bank_charges": "0.00"
+  },
+  {
+    "bank_ref": "BANKREF_TXN_00056",
+    "utr": "UTR126912568",
+    "credited_amount": "4548.97",
+    "value_date": "2026-08-16",
+    "narration": "UPI CR UTR126912568 MERCH_013 SETTLEMENT",
+    "bank_charges": "0.00"
+  },
+  {
+    "bank_ref": "BANKREF_TXN_00051",
+    "utr": "UTR437183381",
+    "credited_amount": "3470.19",
+    "value_date": "2026-08-12",
+    "narration": "IMPS/UTR437183381/MERCH_003/NET STLMNT",
+    "bank_charges": "0.00"
+  },
+  {
+    "bank_ref": "KKBK0005678N61652961",
+    "utr": null,
+    "credited_amount": "7988.70",
+    "value_date": "2026-08-10",
+    "narration": "IMPS/957431148997/U2R599888640/SETTLEMENT",
+    "bank_charges": "0.00"
+  },
+  {
+    "bank_ref": "BANKREF_TXN_00044",
+    "utr": "UTR285951080",
+    "credited_amount": "78894.20",
+    "value_date": "2026-08-05",
+    "narration": "UPI CR UTR285951080 MERCH_007 SETTLEMENT",
+    "bank_charges": "0.00"
+  },
+  {
+    "bank_ref": "BANKREF_TXN_00047",
+    "utr": "UTR927145454",
+    "credited_amount": "2482.05",
+    "value_date": "2026-08-08",
+    "narration": "IMPS/UTR927145454/MERCH_001/NET STLMNT",
+    "bank_charges": "0.00"
+  },
+  {
+    "bank_ref": "BANKREF_TXN_00023",
+    "utr": "UTR670822020",
+    "credited_amount": "763.12",
+    "value_date": "2026-08-06",
+    "narration": "IMPS/962268449438/UTR670822020/SETTLEMENT",
+    "bank_charges": "0.00"
+  },
+  {
+    "bank_ref": "BANKREF_TXN_00046",
+    "utr": "UTR456010442",
+    "credited_amount": "64229.72",
+    "value_date": "2026-08-07",
+    "narration": "UPI/UTR456010442/MERCH_004/NET STLMNT",
+    "bank_charges": "0.00"
+  },
+  {
+    "bank_ref": "BANKREF_TXN_00002",
+    "utr": "UTR300584681",
+    "credited_amount": "39249.99",
+    "value_date": "2026-08-03",
+    "narration": "NEFT/UTR300584681/MERCH_005/NET STLMNT",
+    "bank_charges": "0.00"
+  },
+  {
+    "bank_ref": "BANKREF_TXN_00052",
+    "utr": "UTR413178598",
+    "credited_amount": "4986.56",
+    "value_date": "2026-08-13",
+    "narration": "IMPS CR UTR413178598 MERCH_004 SETTLEMENT",
+    "bank_charges": "0.00"
+  },
+  {
+    "bank_ref": "BANKREF_TXN_00007",
+    "utr": "UTR261353825",
+    "credited_amount": "308.44",
+    "value_date": "2026-08-08",
+    "narration": "IMPS/475977736015/UTR261353825/SETTLEMENT",
+    "bank_charges": "0.00"
+  },
+  {
+    "bank_ref": "BANKREF_TXN_00034",
+    "utr": "UTR437924120",
+    "credited_amount": "245.84",
+    "value_date": "2026-08-15",
+    "narration": "NEFT CR UTR437924120 MERCH_012 SETTLEMENT",
+    "bank_charges": "0.00"
+  },
+  {
+    "bank_ref": "BANKREF_TXN_00060",
+    "utr": "UTR447283283",
+    "credited_amount": "231.33",
+    "value_date": "2026-08-18",
+    "narration": "IMPS/300354935571/UTR447283283/SETTLEMENT",
+    "bank_charges": "0.00"
+  },
+  {
+    "bank_ref": "HDFC0000123N45601684",
+    "utr": null,
+    "credited_amount": "44800.09",
+    "value_date": "2026-08-08",
+    "narration": "BY TRANSFER-UPI*KKBK*U8R886353322*RAZORPAY-",
+    "bank_charges": "0.00"
+  },
+  {
+    "bank_ref": "BANKREF_TXN_00053",
+    "utr": "UTR149431783",
+    "credited_amount": "5829.04",
+    "value_date": "2026-08-14",
+    "narration": "IMPS/308336977837/UTR149431783/SETTLEMENT",
+    "bank_charges": "0.00"
+  },
+  {
+    "bank_ref": "BANKREF_TXN_00055",
+    "utr": "UTR380718342",
+    "credited_amount": "43943.96",
+    "value_date": "2026-08-15",
+    "narration": "UPI-KKBK0005678-UTR380718342-MERCH_004",
     "bank_charges": "0.00"
   }
 ]
