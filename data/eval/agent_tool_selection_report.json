@@ -484,5 +484,5 @@
     ]
   },
   "interpretation": "The baseline is a keyword router with hand-tuned ordering. It is the honest floor for this task. A model that does not beat it is not earning its place in the selection step.",
-  "model_minus_baseline_pct": 12.5
+  "model_is_from_a_previous_run": true
 }

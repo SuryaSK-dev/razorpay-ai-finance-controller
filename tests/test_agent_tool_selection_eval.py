@@ -367,6 +367,54 @@ def test_report_covers_every_registered_tool():
     assert set(report["registered_tools"]) == set(TOOL_REGISTRY)
 
 
+def test_a_baseline_only_run_does_not_destroy_the_model_result():
+    """
+    REGRESSION (FAILURE_LOG.md section 57).
+
+    Found by the cold-clone freeze. Running the documented hermetic
+    command --
+
+        python scripts/eval_agent_tool_selection.py
+
+    -- overwrote the artifact with model=null, deleting 399 lines and a
+    measurement that costs 32 API calls to reproduce. A judge following
+    the README would have wiped it with no signal that anything was lost.
+
+    The baseline-only path now carries a previously recorded model
+    section forward and flags it as not-from-this-run.
+    """
+    import subprocess
+
+    if not REPORT_PATH.exists():
+        return
+
+    before = json.loads(REPORT_PATH.read_text(encoding="utf-8"))
+    if before.get("model") is None:
+        return          # nothing recorded to protect
+
+    import os
+    env = dict(os.environ)
+    env["GEMINI_API_KEY"] = ""
+
+    completed = subprocess.run(
+        [sys.executable, str(ROOT / "scripts" / "eval_agent_tool_selection.py")],
+        capture_output=True, text=True, env=env, cwd=str(ROOT), timeout=180,
+    )
+    assert completed.returncode == 0, completed.stderr[-1500:]
+
+    after = json.loads(REPORT_PATH.read_text(encoding="utf-8"))
+
+    assert after["model"] is not None, (
+        "a baseline-only run deleted the recorded live-model result"
+    )
+    assert (after["model"]["metrics"]["tool_accuracy_pct"]
+            == before["model"]["metrics"]["tool_accuracy_pct"])
+    assert after.get("model_is_from_a_previous_run") is True, (
+        "a carried-forward model result must be flagged as such, or a "
+        "reader cannot tell it was not measured in this run"
+    )
+
+
 def test_report_baseline_arithmetic_reconciles():
     report = json.loads(REPORT_PATH.read_text(encoding="utf-8"))
     metrics = report["baseline"]["metrics"]

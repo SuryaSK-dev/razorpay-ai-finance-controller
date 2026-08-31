@@ -427,6 +427,24 @@ def main() -> None:
     print_confusion("baseline", baseline_matrix)
     print_failures("baseline", baseline_results)
 
+    # A baseline-only run must NOT destroy a recorded live-model result.
+    #
+    # Found by the cold-clone freeze: running the documented hermetic
+    # command overwrote the artifact with model=null, silently deleting
+    # a measurement that costs 32 API calls to reproduce. A judge
+    # following the README would have wiped it without any signal.
+    #
+    # Same failure shape as FAILURE_LOG.md section 54 -- an artifact
+    # that stops describing reality, except here the mechanism is
+    # destruction rather than staleness.
+    previous_model = None
+    if OUTPUT_PATH.exists():
+        try:
+            existing = json.loads(OUTPUT_PATH.read_text(encoding="utf-8"))
+            previous_model = existing.get("model")
+        except (json.JSONDecodeError, OSError):
+            previous_model = None
+
     report = {
         "report_version": "agent-selection-v1",
         "dataset_version": dataset["dataset_version"],
@@ -437,7 +455,7 @@ def main() -> None:
             "metrics": baseline_metrics,
             "confusion": baseline_matrix,
         },
-        "model": None,
+        "model": previous_model,
         "interpretation": (
             "The baseline is a keyword router with hand-tuned ordering. It "
             "is the honest floor for this task. A model that does not beat "
@@ -483,6 +501,7 @@ def main() -> None:
         delta = (model_metrics["tool_accuracy_pct"]
                  - baseline_metrics["tool_accuracy_pct"])
         report["model_minus_baseline_pct"] = round(delta, 2)
+        report["model_is_from_a_previous_run"] = False
 
         print(RULE)
         print("COMPARISON")
@@ -499,8 +518,17 @@ def main() -> None:
             print("  That is a result, not a bug to tune away. Report it.")
             print()
     else:
-        print("  Model not evaluated. Re-run with --model and "
-              "GEMINI_API_KEY set.")
+        if previous_model:
+            recorded = previous_model["metrics"]["tool_accuracy_pct"]
+            report["model_is_from_a_previous_run"] = True
+            print("  Model not evaluated in THIS run. The recorded result")
+            print(f"  ({recorded}% on {previous_model['provider']}) is carried")
+            print("  forward rather than discarded -- re-running the")
+            print("  baseline must not delete a measurement that costs 32")
+            print("  API calls to reproduce.")
+        else:
+            print("  Model not evaluated. Re-run with --model and "
+                  "GEMINI_API_KEY set.")
         print()
 
     with OUTPUT_PATH.open("w", encoding="utf-8") as handle:
