@@ -7,7 +7,7 @@
 ![Python](https://img.shields.io/badge/python-3.11-blue)
 ![Pydantic](https://img.shields.io/badge/contracts-Pydantic%20v2-e92063)
 ![Gemini](https://img.shields.io/badge/model-Gemini%203.1%20Flash--Lite-4285F4)
-![Tests](https://img.shields.io/badge/tests-350%20passing-brightgreen)
+![Tests](https://img.shields.io/badge/tests-359%20passing-brightgreen)
 ![Status](https://img.shields.io/badge/status-phase%206%20complete-brightgreen)
 ![Track](https://img.shields.io/badge/Razorpay%20Buildathon-Track%2004-002970)
 
@@ -113,7 +113,9 @@ razorpay-ai-finance-controller/
 │           └── candidate_lookup.py   Read-only index consumer
 │
 ├── scripts/                          Generation, verification, evaluation, demo
-├── tests/                            350 tests across 27 files
+│   ├── run_pipeline.py               The deterministic core alone — no model, no key
+│   └── demo_agent.py                 The agent on top of it
+├── tests/                            359 tests across 28 files
 ├── data/
 │   ├── raw/                          Generated PG / bank / invoice sources
 │   ├── ground_truth.json             Never read by the pipeline — evaluation only
@@ -252,7 +254,7 @@ Limitations.
 
 | Measure | Result |
 |---|---|
-| Test suite | **350 passing** across 27 files |
+| Test suite | **359 passing** across 28 files |
 | Decision policy coverage | **2048/2048** context combinations resolve deterministically |
 | Gold baseline (per-case E2E) | **0 unexplained divergences** · 51 exact · 6 not-evaluable · 6 known-policy |
 | Fuzzy tier | **6 of 61 records reach it** (was 0). Precision 1.00, recall 1.00 through threshold 90, 0.50 at 95 |
@@ -451,6 +453,20 @@ python -m venv .venv
 source .venv/Scripts/activate      # Windows Git Bash
 pip install -r requirements.txt
 ```
+
+### See it work — no credentials needed
+
+```bash
+python scripts/run_pipeline.py
+```
+
+The deterministic core on its own: ingestion (including the two rejected
+records and why), bank-linkage resolution by tier, the decision table's
+output, **the complete 37-record exception list with the rule that fired
+for each**, and the batch in rupees. No API key, no network, no model —
+`test_script_imports_no_provider` asserts that structurally.
+
+`--json` prints the same summary machine-readably.
 
 ### Run the full test suite
 
