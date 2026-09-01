@@ -1047,7 +1047,7 @@ raw (12) == divergent (0) + not_evaluable (6) + known_policy (6)
 # 45. Current state
 
 ```
-360 / 360 tests passing
+366 / 366 tests passing
 
 Gold baseline:            stable
 Baseline divergences:     0
@@ -1837,3 +1837,215 @@ not limited to going stale.**
 The freeze exists to run the repository the way someone else will, rather
 than the way its author does. That is the entire value of it, and it paid
 for itself on the first pass.
+
+---
+
+# 58. The TDS threshold was reconstructed from batch order, and the batch had no order
+
+This one is older than the numbered entries and lived only in a module
+docstring until now. It is being written up because it is the most
+production-relevant bug in the project and it was invisible to anyone who
+did not open `src/tax/seller_ledger.py`.
+
+**What happened.** TDS under Section 393 applies only once a seller's
+cumulative annual gross crosses INR 5,00,000. That threshold is a property
+of the seller's YEAR, so the engine needs to know where each merchant
+stood immediately before each transaction.
+
+The first version reconstructed it: sort the batch by `date_utc`, walk it
+in order, accumulate a running total per merchant, and compare.
+
+**Why it was wrong.** The generator's `day_cursor` cycles and resets across
+synthetic categories -- `day_cursor = (day_cursor + 1) % 20` runs inside a
+loop over categories, so a `tax_mismatch` record generated late can carry
+an earlier date than an `exact_match` record generated first.
+
+Transaction dates therefore do not reflect generation order, and no
+batch-level ordering recovers it. The running totals were being accumulated
+in an order that had nothing to do with the sequence the balances actually
+came from, so merchants near the threshold were evaluated against the wrong
+opening position.
+
+**Why it was hard to see.** The failure is silent and partial. Most
+merchants are nowhere near INR 5,00,000, so their TDS is zero either way
+and the wrong ordering produces the right answer. Only the near-threshold
+cohort -- merchants 1 to 3, seeded at INR 495,000 -- is sensitive to it,
+and only for transactions that straddle the boundary.
+
+**Fix.** Stop reconstructing. Each PG record already carries
+`merchant_ytd_gross_opening`, written by the generator at the moment it
+built the record -- the merchant's true starting point, as real data rather
+than private generator state.
+
+```python
+def seller_gross_after_transaction(match_result) -> Decimal:
+    opening = match_result.pg_record.raw_ref.get("merchant_ytd_gross_opening")
+    opening_decimal = Decimal(str(opening)) if opening is not None else Decimal("0")
+    return opening_decimal + match_result.pg_record.amount
+```
+
+Simpler AND strictly more accurate than the version it replaced, which is
+an unusual combination and worth noticing when it happens.
+
+`build_seller_annual_gross()` keeps the same return shape
+(`dict[txn_id -> Decimal]`), so `decide_batch()` needed no change.
+
+**Regression protection.** `test_seller_ledger_reads_opening_balance_directly`
+in `tests/test_tax_decision.py`.
+
+**The generalisable version, and the reason this belongs in the log.**
+
+> A running balance comes from a ledger. It is not re-derived from
+> whatever ordering a batch happens to have.
+
+In production `merchant_ytd_gross_opening` would come from a real merchant
+ledger rather than a generated field, and the code shape does not change --
+`seller_ledger.py` reads it per record either way. That is the point of
+reading it per record instead of accumulating: the same function works
+against a ledger, and the ordering assumption that would break it never
+existed.
+
+**Why it was not logged at the time.** It was fixed early, during Phase 4,
+before the log had a numbered structure, and the reasoning went into the
+module docstring instead. Recording it now because a defect documented only
+where the fix lives is a defect nobody learns from.
+
+---
+
+# 59. The hard boundary was guarded in the wrong place
+
+Found by a full read of the repository against its own claims, not by any
+instrument in it.
+
+## The finding
+
+`README.md` and `ARCHITECTURE.md` both make the same claim: deterministic
+code owns financial truth, and the model sits outside it. That is a claim
+about DIRECTION -- the agent layer may depend on the core, and the core
+must not depend on the agent layer.
+
+An AST walk over all 26 tracked files under `src/` found one arrow pointing
+the wrong way:
+
+    src/matching/candidates.py:829
+        from src.agent.narration_extractor import extract_txn_id_via_llm
+
+The deterministic matching layer importing the AI layer.
+
+## Why it is latent rather than live
+
+Two things make it inert today, and both were verified rather than assumed:
+
+- The import is FUNCTION-LOCAL, inside
+  `find_bank_candidates_with_llm_assist`. Importing
+  `src.matching.candidates` does not load `src.agent` -- checked by
+  inspecting `sys.modules` after import in a clean interpreter.
+- That function is deliberately disconnected (section 50).
+
+So no production behaviour is affected. This is a latent structural
+defect, not a live one.
+
+## The part that actually mattered
+
+**There was no test asserting the deterministic core does not import the
+agent layer.**
+
+Meanwhile `test_script_imports_no_provider` in `tests/test_run_pipeline.py`
+structurally guards `scripts/run_pipeline.py` -- a REPORTING SCRIPT --
+against importing a provider.
+
+The weaker boundary was guarded and the stronger one was not. The claim the
+whole architecture rests on had a structural test for a script and none for
+matching, tax or decisioning.
+
+That asymmetry is the finding. The import itself is a footnote.
+
+## Fix
+
+`tests/test_architecture_boundary.py`, six tests, two levels:
+
+    STATIC   no src/ module outside src/agent/ may reference src.agent,
+             with ONE named exemption
+    RUNTIME  importing the whole deterministic pipeline in a clean
+             subprocess must not load src.agent -- nor a provider SDK
+
+The exemption is NAMED rather than the check being weakened:
+
+```python
+EXEMPTIONS = {
+    ("src/matching/candidates.py", "src.agent.narration_extractor"),
+}
+```
+
+so a reader sees exactly one hole and why it is there, and a SECOND core
+module importing the agent layer fails immediately.
+
+Three supporting guards make the exemption safe rather than a loophole:
+
+- `test_every_exemption_still_exists()` -- an exemption for an import that
+  has since been removed is dead permission, and would silently re-allow
+  the dependency later.
+- `test_the_exempted_import_is_still_deferred()` -- asserts the import
+  stays inside a function body. A module-level import at the same site
+  would load the agent package for every consumer of matching, which is
+  the difference between latent and live.
+- `test_the_agent_layer_may_depend_on_the_core()` -- asserts the REVERSE
+  direction still works, so the rule is not mistaken for "these must never
+  touch". `query_tools.py` reading `decide_batch()` output is the
+  architecture working.
+
+**Verified by injecting a violation.** Adding a module-level
+`from src.agent.contracts import Explanation` to `src/tax/validator.py`
+failed two tests -- the static one naming `src/tax/validator.py:18`, and
+the runtime one reporting `['src.agent', 'src.agent.contracts']` loaded.
+Both passed again on revert.
+
+## The related finding, same review
+
+`src/exceptions/manager.py` defined its own
+`_MONEY_TOLERANCE = Decimal("0.01")` while `config.py` already held
+`AMOUNT_TOLERANCE` with the same value.
+
+`config.py`'s own module docstring forbids exactly this:
+
+> "every rate, threshold, weight, or tolerance used anywhere in this
+>  codebase MUST be imported from this file. No module outside config.py
+>  may hardcode a financial constant."
+
+Nothing was wrong -- the values agree -- but it meant the amount GATE in
+`matching/candidates.py` and the amount CONTROL in `manager.py` were
+reading two different constants that happened to be equal.
+
+**Same defect class as section 52**, which is the uncomfortable part: the
+project wrote a log entry about one financial expression existing in four
+places, and a second instance of the pattern survived one file away from
+it.
+
+It matters beyond tidiness because N:1 batched settlement requires the
+tolerance to move from per-line to per-batch, and that is a change to a
+constant whose second definition was invisible to anyone reading
+`config.py`. `ARCHITECTURE.md` already listed unifying it as N:1
+prerequisite #1.
+
+Fixed by importing `AMOUNT_TOLERANCE`. Verified behaviour-identical: a
+full-batch decision snapshot -- status, exception code, confidence, tax
+state and reason codes for all 61 records -- hashed to `473399a391a78745`
+before and after.
+
+## What I take from this
+
+Section 52 said some defects are only visible by reading, because a
+divergence that has not happened yet is invisible to every assertion about
+current behaviour. Both findings here are that same class, and one of them
+is literally the same pattern in a neighbouring file.
+
+The narrower lesson is about where structural tests get written. Both
+`test_script_imports_no_provider` and `test_tools_expose_no_mutation_surface`
+were written while building the thing they guard -- so the guards clustered
+around the newest code rather than the most important. The core got
+structural tests for its FORMULAS (section 52) and none for its
+DEPENDENCIES until someone read the import graph.
+
+> A structural test protects the claim you were thinking about when you
+> wrote it. It does not protect the claim you were most confident about,
+> which is exactly the one nobody thinks to test.

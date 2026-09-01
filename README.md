@@ -7,7 +7,7 @@
 ![Python](https://img.shields.io/badge/python-3.11-blue)
 ![Pydantic](https://img.shields.io/badge/contracts-Pydantic%20v2-e92063)
 ![Gemini](https://img.shields.io/badge/model-Gemini%203.1%20Flash--Lite-4285F4)
-![Tests](https://img.shields.io/badge/tests-360%20passing-brightgreen)
+![Tests](https://img.shields.io/badge/tests-366%20passing-brightgreen)
 ![Status](https://img.shields.io/badge/status-phase%206%20complete-brightgreen)
 ![Track](https://img.shields.io/badge/Razorpay%20Buildathon-Track%2004-002970)
 
@@ -115,7 +115,7 @@ razorpay-ai-finance-controller/
 ├── scripts/                          Generation, verification, evaluation, demo
 │   ├── run_pipeline.py               The deterministic core alone — no model, no key
 │   └── demo_agent.py                 The agent on top of it
-├── tests/                            360 tests across 28 files
+├── tests/                            366 tests across 29 files
 ├── data/
 │   ├── raw/                          Generated PG / bank / invoice sources
 │   ├── ground_truth.json             Never read by the pipeline — evaluation only
@@ -138,6 +138,7 @@ razorpay-ai-finance-controller/
 | `exceptions/manager.py` | Builds the decision context; preserves *every* violation in `reason_codes` while `status` stays single-valued |
 | `agent/guardrails.py` | Real preemptive timeout — a 15s hang returns in under 12s, verified by regression test |
 | `agent/tools/query_tools.py` | Five read-only tools, including the cash position in rupees. No method recomputes a financial outcome; the absence is asserted structurally, not left to review. |
+| `tests/test_architecture_boundary.py` | The dependency graph only points one way. The core may not import the agent layer — asserted statically **and** by loading the pipeline in a clean subprocess and checking `sys.modules`. |
 | `agent/controller.py` | `ask()` — select tool → dispatch deterministically → phrase the real result |
 
 ---
@@ -254,14 +255,51 @@ Limitations.
 
 | Measure | Result |
 |---|---|
-| Test suite | **360 passing** across 28 files |
+| Test suite | **366 passing** across 29 files |
 | Decision policy coverage | **2048/2048** context combinations resolve deterministically |
 | Gold baseline (per-case E2E) | **0 unexplained divergences** · 51 exact · 6 not-evaluable · 6 known-policy |
 | Fuzzy tier | **6 of 61 records reach it** (was 0). Precision 1.00, recall 1.00 through threshold 90, 0.50 at 95 |
 | Throughput | **1,348.5 records/sec** at batch 60. Matching is **O(n²)** — 179.2 rec/sec at 5,000. See below |
-| Explanation faithfulness | 8/8 status preserved · 8/8 amounts preserved · 8/8 tax preserved · **0 unsupported claims** · **0 safety-critical failures** |
+| Explanation faithfulness — safety | 8/8 status preserved · 8/8 amounts preserved · 8/8 tax preserved · **0 unsupported claims** · **0 safety-critical failures** |
+| Explanation faithfulness — quality | Semantic faithfulness **6/8** · reason codes **7/8** · evidence **6/8**. Quality gaps, not safety failures — see below |
 | Tool selection (32 held-out questions) | Model **31/32 (96.88%)** vs keyword baseline 27/32 (84.38%) — **+12.5 points** |
 | Real-model agent verification | **6/6** data invariant held on the demo questions |
+
+### Explanation faithfulness: the safety line and the quality line are different
+
+`data/eval/explanation_faithfulness_report_5C4_5.json` reports eight
+measures across 8 held-out cases, and they do not all read the same way:
+
+| | Result |
+|---|---|
+| Status preserved | 8/8 |
+| Amounts preserved | 8/8 |
+| Tax preserved | 8/8 |
+| Unsupported financial claims | 0 |
+| Safety-critical failures | 0 |
+| **Reason codes preserved** | **7/8 (87.5%)** |
+| **Evidence items preserved** | **6/8 (75%)** |
+| **Semantically faithful overall** | **6/8 (75%)** |
+
+The first five are the safety line: the model never contradicted a status,
+never invented an amount, never made a claim the facts did not support.
+
+The last three are the quality line: on two of eight cases the prose
+dropped a reason code or an evidence item it should have mentioned. That is
+a **worse explanation**, not a **wrong one** — nothing false was asserted,
+something true was omitted.
+
+The artifact keeps these apart deliberately, and
+`test_quality_gap_is_not_safety_failure` asserts the separation holds:
+
+> *"Reason-code and evidence gaps are reported as explanation-quality
+> limitations. They are not reclassified as financial safety failures
+> unless they also produce a contradiction or unsupported financial
+> claim."*
+
+Both lines are reported here because quoting only the first would describe
+a 75% result as a 100% one. Eight cases is a small sample either way — see
+Known Limitations.
 
 ### Tool selection, measured against a router with no model
 
