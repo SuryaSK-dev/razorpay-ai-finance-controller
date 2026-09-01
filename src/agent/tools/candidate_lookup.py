@@ -4,7 +4,7 @@ Agent tool: looks up whether an LLM-proposed txn_id exists as a real
 candidate in the EXISTING, UNMODIFIED Phase 3 index. This file calls
 into candidates.py/matching engine as a read-only consumer -- it
 never modifies matching logic, never adds a new tier inside
-candidates.py itself. Phase 0-4 remains frozen at v0.8-phase4-final.
+candidates.py itself. Phase 0-4 remains frozen at phase-4-final.
 """
 
 from __future__ import annotations
