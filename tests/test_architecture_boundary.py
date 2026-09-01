@@ -253,3 +253,109 @@ def test_the_agent_layer_may_depend_on_the_core():
     assert "from src.exceptions.manager import" in query_tools
     assert "from src.matching.engine import" in query_tools
     assert "from src.financial import" in query_tools
+
+
+# ======================================================================
+# THE SECOND DIRECTION — THE ANSWER KEY MUST NOT REACH THE ENGINE
+# ======================================================================
+#
+# README.md: "Ground truth is generated alongside the data and never read
+# by the pipeline." ARCHITECTURE.md repeats it. Every accuracy number in
+# the repository depends on it -- an engine that can see the answer key
+# is not being measured, it is being graded on a test it wrote.
+#
+# The property held before this test existed. It held by convention.
+# The import-direction boundary above is enforced structurally and this
+# one was not, which is the same asymmetry FAILURE_LOG.md section 63
+# records for the guardrail sweep.
+
+GROUND_TRUTH_MARKERS = ("ground_truth", "GroundTruthRecord")
+
+# src/models.py DEFINES GroundTruthRecord. Defining the type is not
+# reading the file -- the evaluation scripts need somewhere to get the
+# contract from, and models.py is where every contract in this system
+# lives. What matters is that no pipeline module LOADS the data.
+DEFINITION_ONLY = {"src/models.py"}
+
+
+def test_the_pipeline_never_reads_ground_truth():
+    """
+    No module under src/ may reference the answer key.
+
+    Checked as text rather than by import graph on purpose: the failure
+    mode worth catching is a path string -- open("data/ground_truth.json")
+    -- which no import analysis would see.
+    """
+    offenders = []
+
+    for relative, path in _core_files():
+        if relative in DEFINITION_ONLY:
+            continue
+
+        for lineno, line in enumerate(
+            path.read_text(encoding="utf-8").splitlines(), start=1
+        ):
+            code = line.split("#", 1)[0]
+            for marker in GROUND_TRUTH_MARKERS:
+                if marker in code:
+                    offenders.append(f"{relative}:{lineno} {line.strip()}")
+
+    assert not offenders, (
+        "the deterministic pipeline references ground truth:\n  "
+        + "\n  ".join(offenders)
+        + "\n\nEvery accuracy figure in this repository assumes the "
+        "engine cannot see the answer key. If a module genuinely needs "
+        "the GroundTruthRecord type, add it to DEFINITION_ONLY with the "
+        "reasoning -- do not delete this test."
+    )
+
+
+def test_the_agent_layer_never_reads_ground_truth_either():
+    """
+    The tool layer answers operator questions from `decide_batch()`
+    output. A tool that could read ground truth would let the agent
+    report the expected answer instead of the produced one, which is the
+    same defect one layer out and harder to notice because the number
+    would look better.
+    """
+    offenders = []
+
+    for path in sorted((SRC / "agent").rglob("*.py")):
+        relative = str(path.relative_to(ROOT)).replace("\\", "/")
+
+        for lineno, line in enumerate(
+            path.read_text(encoding="utf-8").splitlines(), start=1
+        ):
+            code = line.split("#", 1)[0]
+            if any(m in code for m in GROUND_TRUTH_MARKERS):
+                offenders.append(f"{relative}:{lineno} {line.strip()}")
+
+    assert not offenders, (
+        "the agent layer references ground truth:\n  "
+        + "\n  ".join(offenders)
+    )
+
+
+def test_the_ground_truth_file_exists_so_the_check_is_not_vacuous():
+    """
+    THE CONTROL.
+
+    Both tests above pass trivially if `ground_truth` is simply not a
+    concept in this repository any more -- a renamed file would make the
+    guard green and meaningless. This asserts there is something real
+    being kept out, and that the evaluation layer genuinely reads it.
+    """
+    assert (ROOT / "data" / "ground_truth.json").exists(), (
+        "data/ground_truth.json is missing -- the two tests above are "
+        "now asserting the absence of something that does not exist"
+    )
+
+    readers = [
+        path.name
+        for path in sorted((ROOT / "scripts").glob("*.py"))
+        if "ground_truth" in path.read_text(encoding="utf-8")
+    ]
+    assert readers, (
+        "no script reads ground truth -- if the evaluation layer stopped "
+        "using the answer key, the accuracy numbers have no source"
+    )

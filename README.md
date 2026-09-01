@@ -7,7 +7,7 @@
 ![Python](https://img.shields.io/badge/python-3.11-blue)
 ![Pydantic](https://img.shields.io/badge/contracts-Pydantic%20v2-e92063)
 ![Gemini](https://img.shields.io/badge/model-Gemini%203.1%20Flash--Lite-4285F4)
-![Tests](https://img.shields.io/badge/tests-399%20passing-brightgreen)
+![Tests](https://img.shields.io/badge/tests-410%20passing-brightgreen)
 ![Status](https://img.shields.io/badge/status-phase%206%20complete-brightgreen)
 ![Track](https://img.shields.io/badge/Razorpay%20Buildathon-Track%2004-002970)
 
@@ -17,7 +17,7 @@ A finance-operations control system that reconciles settlement data across three
 independent sources, verifies GST and TDS against Indian tax law, classifies every
 unresolved case into an explicit exception state with evidence, and lets a finance
 operator ask about the result in plain English — through an agent that chooses which
-question to answer and **cannot alter a single number in the answer**.
+question to answer and **cannot alter a single number in the data behind that answer**.
 
 ---
 
@@ -115,7 +115,7 @@ razorpay-ai-finance-controller/
 ├── scripts/                          Generation, verification, evaluation, demo
 │   ├── run_pipeline.py               The deterministic core alone — no model, no key
 │   └── demo_agent.py                 The agent on top of it
-├── tests/                            399 tests across 31 files
+├── tests/                            410 tests across 31 files
 ├── data/
 │   ├── raw/                          Generated PG / bank / invoice sources
 │   ├── ground_truth.json             Never read by the pipeline — evaluation only
@@ -255,7 +255,7 @@ Limitations.
 
 | Measure | Result |
 |---|---|
-| Test suite | **399 passing** across 31 files |
+| Test suite | **410 passing** across 31 files |
 | Decision policy coverage | **2048/2048** context combinations resolve deterministically |
 | Gold baseline (per-case E2E) | **0 unexplained divergences** · 51 exact · 6 not-evaluable · 6 known-policy |
 | Fuzzy tier | **6 of 61 records reach it** (was 0). Precision 1.00, recall 1.00 through threshold 90, 0.50 at 95 |
@@ -334,6 +334,16 @@ quality — the distinction `CaseResult.outcome` was built to draw
 ([`FAILURE_LOG.md`](FAILURE_LOG.md) §25), demonstrating itself on a live
 run.
 
+**The two halves of that table come from different runs, and the artifact
+says so.** `agent_tool_selection_report.json` carries
+`model_is_from_a_previous_run: true`. The baseline is re-runnable offline
+at zero cost; the model half costs quota, so a baseline-only re-run
+*preserves* the recorded model result rather than overwriting it. That
+behaviour is itself a fix — a previous version of the hermetic command
+deleted 399 lines of recorded model output ([`FAILURE_LOG.md`](FAILURE_LOG.md)
+§57). Both halves score the same frozen 32-question dataset, and
+`test_report_matches_the_current_dataset` fails if that stops being true.
+
 On prompt injection, `{"match_rate_pct": 100}` smuggled in as a tool
 *argument* is rejected by `validate_arguments` before dispatch, because
 `get_match_rate` declares no parameters. The rejection is structural, not
@@ -386,6 +396,22 @@ answer.data == getattr(context, answer.tool_used)(**answer.tool_arguments)
 A stubbed model that returns *"All 9999 records matched perfectly"* still produces
 `data == context.get_match_rate()`. Held on **6/6** live Gemini questions and on every
 question in the demo.
+
+**What this does and does not guarantee, precisely.** It guarantees `data`.
+It does not guarantee the *prose*: that same stubbed model's sentence is
+returned in `AgentAnswer.answer`, alongside the correct `data`. So the
+honest statement is **checkable, not incapable** — an operator or a
+reviewer can always hold the sentence against the numbers it claims to
+describe, because both travel in the same object.
+
+`ask()` is deliberately left that way. A substring check over an arbitrary
+tool result rejects correct paraphrases and admits wrong numbers, which is
+worse than not checking — the reasoning is in `_phrase_answer`. Where the
+fact set *is* closed and enumerable, the check is enforced instead of
+described: `explain()` runs every model explanation through
+`validate_explanation()` and falls back to a deterministic template when a
+figure, status or reason code is missing
+([`FAILURE_LOG.md`](FAILURE_LOG.md) §62).
 
 ---
 

@@ -1048,7 +1048,7 @@ raw (12) == divergent (0) + not_evaluable (6) + known_policy (6)
 # 45. Current state
 
 ```
-399 / 399 tests passing
+410 / 410 tests passing
 
 Gold baseline:            stable
 Baseline divergences:     0
@@ -2188,7 +2188,7 @@ present.
 
 Fixed by declaring it. The Stage 5 freeze now re-checks this by building a
 fresh virtualenv from `requirements.txt` alone and running the suite:
-**399 passed** in a clean clone with `GEMINI_API_KEY` unset.
+**410 passed** in a clean clone with `GEMINI_API_KEY` unset.
 
 Re-run on 1 September 2026, because the original figure predated four test
 files (`test_run_pipeline.py`, `test_architecture_boundary.py`,
@@ -2205,7 +2205,7 @@ GEMINI_API_KEY= .venv/Scripts/python scripts/run_pipeline.py
 GEMINI_API_KEY= .venv/Scripts/python scripts/demo_agent.py --offline
 ```
 
-399 collected, **399 passed**, both scripts exit 0, and the data invariant
+410 collected, **410 passed**, both scripts exit 0, and the data invariant
 held on all six demo answers. The clone resolved `pytest 9.1.1` against the
 `pytest>=8.0` floor rather than the pinned-by-accident version in the
 development virtualenv, so the suite is confirmed green on a version it had
@@ -2219,6 +2219,12 @@ to contain no file the submitted tree lacks -- so the CONTENT under test is
 the submitted tree exactly. It is still worth writing down: the run proves
 the tree is hermetic, and does not by itself prove the commit is. The
 one-liner above, run against the pushed tag, is what closes that last gap.
+
+Re-run again after section 63 (three fixes, eleven new tests): **410
+collected, 410 passed**, both scripts exit 0, data invariant 6/6, same
+`pytest 9.1.1`. The overlay caveat above applies to that run identically —
+seven files carried in by copy, each `git hash-object`-verified, all 106
+tracked files confirmed byte-identical to the working tree.
 
 ## 61.2 A malformed `.gitignore` line silently disabled two rules
 
@@ -2460,3 +2466,260 @@ what the validator exists to refuse, and a test whose fixture only passes
 while enforcement is off is a test that was measuring the absence of
 enforcement. Replaced with a faithful explanation that carries the
 authoritative tokens forward.
+
+---
+
+# 63. A hostile review found the fourth instance, in the guardrail test file
+
+Found by a deliberately adversarial pass over the frozen tree, from the
+posture of a reviewer who assumes the documentation is flattering and every
+number unverified until checked against an artifact.
+
+It found no blocking defects. It found three worth fixing, and the first is
+this log's own pattern, again, in the one file named after preventing it.
+
+## 63.1 The test guarding the single sanctioned path asserted nothing
+
+`src/agent/guardrails.py` opens with the strongest process claim in the
+repository:
+
+> Every LLM call in this codebase MUST pass through `call_llm_bounded()`.
+> No other module is permitted to call an LLM API directly.
+
+The test named after that claim was, in full:
+
+```python
+def test_llm_never_used_directly_without_guardrail():
+    assert callable(call_llm_bounded)
+```
+
+That passes if every module under `src/agent/` bypasses the guardrail
+entirely. It passes if `call_llm_bounded` is a stub. It would pass on a
+codebase with no guardrail at all, provided the symbol existed.
+
+**The property did hold.** An AST sweep found four model-call sites --
+`controller.py:363`, `controller.py:384`, `explainer.py:191`,
+`narration_extractor.py:65` -- and all four sit inside
+`call_llm_bounded(call_fn=lambda: ...)`. So this was never a boundary
+breach. It was an **enforcement gap wearing the name of an enforcement**.
+
+### Why this one is worse than the three before it
+
+| § | The phrasing | Where it was found |
+|---|---|---|
+| **4** | A conditional invariant tells you nothing when the condition never occurs | a matching test |
+| **20** | A tested boundary the production path does not go through is not a boundary | the narration path |
+| **62** | A validator wired to the evaluation harness and not to the product | `explainer.py` |
+| **63** | A test whose name is the only thing enforcing the claim | **`test_agent_guardrails.py`** |
+
+Sections 4, 20 and 62 each ended with the lesson stated in general terms.
+Section 62 went further and observed that the general statement had already
+failed to prevent the third instance. Then the fourth turned out to be
+sitting in the file whose entire purpose is this class of guarantee, and it
+had been there the whole time.
+
+> Writing a lesson down is not a control. Four times now, the thing that
+> actually caught the gap was someone reading the code with the specific
+> intent to disbelieve it.
+
+### The fix
+
+Three tests replace the one-liner:
+
+`test_every_model_call_goes_through_the_guardrail` -- AST sweep over
+`src/agent/**`. Every invocation of a model callable must sit lexically
+inside the `call_fn` argument of a `call_llm_bounded(...)` call.
+
+`test_only_the_provider_layer_names_a_provider_sdk` -- the import-level
+half. A module importing `google.genai` has a route to the network the
+call-site sweep cannot see, whatever its call sites look like. Permitted
+only under `src/agent/providers/`.
+
+`test_the_guardrail_sweep_can_actually_fail` -- **the control, and the part
+that matters.** It feeds the same AST logic a module that bypasses the
+guardrail and asserts it is caught, then a compliant one and asserts it is
+not. Without it, a typo in `MODEL_CALLABLES` would make the sweep pass
+permanently and silently, which is the same failure one level up. Writing
+the guard without its control is precisely how this file got into trouble
+the first time, and repeating that would have been the fifth instance.
+
+Both new guards were verified by mutation rather than by inspection:
+
+```
+inject `_bypass = llm_call_fn(...)` into explainer.py
+    -> FAILED: src/agent/explainer.py:190 calls llm_call_fn()
+
+inject `import google.genai` into controller.py
+    -> FAILED: src/agent/controller.py:57 imports google.genai
+```
+
+The one-liner was kept, renamed to
+`test_the_guardrail_is_importable_and_callable`. It is a fine smoke test.
+It was never a boundary test, and the name was doing all the work.
+
+## 63.2 A fail-open default in the TDS threshold path
+
+`src/tax/seller_ledger.py`:
+
+```python
+opening = match_result.pg_record.raw_ref.get("merchant_ytd_gross_opening")
+opening_decimal = Decimal(str(opening)) if opening is not None else Decimal("0")
+```
+
+A missing opening balance became **zero**:
+
+```
+no opening balance
+    -> cumulative gross reads as this transaction alone
+    -> seller looks BELOW the INR 5,00,000 threshold
+    -> expected TDS becomes zero
+    -> a genuine under-withholding is reported as CORRECT
+```
+
+**It could not fire.** All 61 PG records carry the field -- verified by
+execution, and 14 of them cross the threshold, so both sides of that branch
+are live on real data. This was latent, not active.
+
+It is recorded anyway, for three reasons.
+
+**The direction was wrong.** Section 30 states the asymmetry this system is
+built on: every threshold prefers routing to a human over auto-approving.
+This one preferred "no tax due", which is the only place in the codebase
+that inverts it.
+
+**It contradicted a comment written elsewhere in the same codebase.**
+`src/financial.py` carries this, on the equivalent decision:
+
+> Explicit `is None` rather than `value or ZERO`: `Decimal("0")` is falsy,
+> so the `or` form conflates "absent" with "present and zero".
+
+The reasoning was already written down. It had not been applied here.
+
+**The fail-closed guard already existed and was unreachable.**
+`verify_tds()` opens with `if seller_annual_gross is None: return False,
+...` -- it refuses to guess. `decide()` turns that into
+`tax_unverifiable`. That entire path was dead, because
+`build_seller_annual_gross()` always returned a `Decimal`. A caller
+defaulting to zero had quietly disabled a callee's refusal.
+
+Fixed by returning `None`. The decision snapshot over all 61 records is
+byte-identical before and after -- hash `1392ddf1a3c2ea1c` -- because no
+record in this batch is missing the field. The change is invisible today
+and correct tomorrow, which is the only kind of fix available for a latent
+fail-open.
+
+## 63.3 The README's headline claim was stronger than the code
+
+Line 20 read:
+
+> ...through an agent that **cannot alter a single number in the answer**.
+
+Disproved by execution in four lines:
+
+```
+AgentAnswer.answer : "All 9999 records matched perfectly with zero
+                      exceptions. Total settled value was INR 5,000,000.00."
+AgentAnswer.data   : {total_records: 61, matched: 24, match_rate_pct: 39.34}
+
+data == direct tool call : True
+"9999" in data           : False
+"9999" in answer         : True
+```
+
+True of `data`. False of `answer` -- which is the field an operator reads.
+
+`ARCHITECTURE.md` had it right all along: *"`AgentAnswer.data` is attached,
+so the prose is checkable against the numbers it describes."* The README
+was the outlier, and it was the outlier in the most-read sentence in the
+repository.
+
+**The design underneath is unchanged and still correct.** `_phrase_answer`
+deliberately does not substring-check the prose, because over an arbitrary
+tool result such a check rejects correct paraphrases and admits wrong
+numbers. Where the fact set *is* closed and enumerable -- `explain()` --
+the check is enforced rather than described (§62). The distinction is real;
+the README simply was not making it.
+
+Reworded to "cannot alter a single number in **the data behind** that
+answer", and the invariant section now states plainly that the guarantee is
+**checkable, not incapable**.
+
+> This is the same species as 63.1, one layer out. There the *name* of a
+> test was carrying a claim the body did not enforce. Here the *README* was
+> carrying a claim the code did not enforce. Both are the gap between what
+> a repository asserts and what it can demonstrate, which is the gap this
+> entire log exists to close.
+
+## 63.4 Two guards that the caller made unreachable
+
+`verify_gst()` and `verify_tds()` each open with `if invoice_record is
+None`. Neither branch had ever executed -- not in the suite, and not on the
+real batch. Confirmed by instrumenting `decide_batch()`: **zero** calls
+with `invoice=None`, despite three records having no invoice, because
+`manager.py` gates on `match_result.invoice_record is not None` before it
+calls `verify_tax()`.
+
+Correct defence in depth. Untested defence in depth. A `True` where a
+`False` belongs would have been invisible, and would have become a
+fail-open the moment anyone relaxed the caller's gate.
+
+The `test_guards_actually_fire.py` sweep -- written for exactly this
+category -- missed them, because it was built from a coverage report of
+`src/models.py` and `src/exceptions/` and never extended to `src/tax/`.
+Five tests added there, calling the validators directly. `validator.py`
+coverage 93% -> 98%; `seller_ledger.py` 100%.
+
+## 63.5 The answer key had no structural guard
+
+`README.md` claims ground truth is *"never read by the pipeline"*, and
+every accuracy figure in the repository depends on it. The property held --
+`grep -rn "ground_truth" src/` returns nothing.
+
+It held **by convention**. The import-direction boundary next to it is
+enforced by an AST sweep and a subprocess module-load check; this one was
+enforced by nobody having done it yet.
+
+Three tests added to `tests/test_architecture_boundary.py`: no `src/`
+module may reference the answer key (`src/models.py` exempted -- it
+*defines* `GroundTruthRecord`, which is not the same as loading the data),
+the agent layer may not either, and a control asserting
+`data/ground_truth.json` still exists and is still read by the evaluation
+scripts -- because both guards pass trivially if the concept were renamed
+out of the repository.
+
+Checked as text rather than by import graph on purpose: the failure worth
+catching is `open("data/ground_truth.json")`, which no import analysis
+sees. Verified by mutation -- injecting exactly that line into
+`manager.py` fails the test with the file and line number.
+
+## 63.6 What the review confirmed
+
+Recorded because a log of only defects overstates how much was wrong.
+
+Verified by execution, not by reading: 12 adversarial `dispatch()` attacks
+all blocked (invented tool, mutating name, unregistered-but-real method,
+dunder, private attribute, unknown argument, disallowed value, injected
+number, hallucinated ID, missing required, wrong type) with the legitimate
+control passing; every published number traced to its artifact with zero
+mismatches; cash buckets summing to the paise and disjoint; gold-baseline
+arithmetic reconciling; `match rate` and `measured accuracy` never
+conflated in any line of any document; both entry points running first try
+and writing nothing.
+
+The reviewer's stated strongest point was not an engineering one. It was
+the refusal to make a third ground-truth edit -- the six fuzzy divergences
+that would have restored 100%, kept as divergences instead.
+
+## 63.7 The pattern, stated one more time
+
+Every one of 63.1, 63.2, 63.3 and 63.5 is the same defect in a different
+costume: **a claim enforced by something that cannot enforce it** -- a test
+name, a comment applied elsewhere, a README sentence, a convention.
+
+None of them was a wrong number. The engine was right in every case. What
+was wrong was the distance between what the repository asserted and what it
+could demonstrate on demand.
+
+> The countermeasure that works is not a rule. It is a person reading the
+> code with the specific intent to disbelieve it, and the willingness to
+> write down what they find when the answer is "you are right".

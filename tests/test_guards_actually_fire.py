@@ -401,3 +401,155 @@ def test_evaluate_would_raise_if_the_catch_all_were_ever_removed():
         "raise. The catch-all is what prevents that."
     )
     assert rule.name == "catch_all_unresolved_state"
+
+
+# ======================================================================
+# THE TAX GUARDS THE CALLER MAKES UNREACHABLE — validator.py:59 and :86
+# ======================================================================
+#
+# `verify_gst` and `verify_tds` each open with `if invoice_record is
+# None`. Neither branch executes anywhere in the suite, and neither
+# executes on the real batch either -- confirmed by instrumenting
+# decide_batch(): 0 calls with invoice=None, despite 3 records having no
+# invoice at all. manager.py gates on `match_result.invoice_record is not
+# None` before it calls verify_tax(), so the callee's own check is
+# defence in depth that has never been reached.
+#
+# That is fine as design and not fine as coverage. A typo in either
+# branch -- a `True` where a `False` belongs -- would be invisible today
+# and would become a fail-open the moment anyone relaxed the caller's
+# gate. These call the callee directly, which is the only way to reach
+# them. Recorded in FAILURE_LOG.md section 63.
+
+def test_gst_verification_without_an_invoice_is_refused_not_assumed():
+    """
+    No invoice means no claimed GST to check against.
+
+    The expected figure is still returned -- it derives from the PG fee
+    alone and is useful evidence -- but `verified` must be False. An
+    absent statutory document is not a passing one.
+    """
+    from src.tax.validator import verify_gst
+
+    pg = _normalized("pg", "1000.00")
+    pg.fee = Decimal("20.00")
+
+    verified, expected_gst, claimed_gst, delta = verify_gst(pg, None)
+
+    assert verified is False, (
+        "GST reported as verified with no invoice to verify against"
+    )
+    assert expected_gst == Decimal("3.60")   # 20.00 * 0.18
+    assert claimed_gst is None
+    assert delta is None
+
+
+def test_tds_verification_without_an_invoice_is_refused_not_assumed():
+    """
+    Same shape on the TDS side, and it keeps `threshold_applicable`.
+
+    Whether the seller is over the threshold is knowable without an
+    invoice -- it comes from the cumulative gross. Returning it while
+    still refusing to verify is the honest split: we know the rule
+    applies, we cannot confirm what was withheld.
+    """
+    from src.tax.validator import verify_tds
+
+    pg = _normalized("pg", "1000.00")
+
+    verified, expected_tds, claimed_tds, delta, applicable = verify_tds(
+        pg, None, seller_annual_gross=Decimal("600000")
+    )
+
+    assert verified is False
+    assert applicable is True, (
+        "threshold applicability is derivable without an invoice and "
+        "should survive the refusal"
+    )
+    assert expected_tds == Decimal("1.00")   # 1000.00 * 0.001
+    assert claimed_tds is None
+    assert delta is None
+
+
+def test_tds_with_no_cumulative_figure_refuses_before_it_looks_at_threshold():
+    """
+    THE FAIL-CLOSED BRANCH THAT SECTION 63 MADE REACHABLE.
+
+    Until then, `build_seller_annual_gross` defaulted a missing opening
+    balance to Decimal("0"), so this branch could not be reached from the
+    production path -- a fail-closed guard bypassed by its own caller,
+    and the caller failed OPEN.
+
+    `threshold_applicable` must be None, not False. False would assert
+    the seller is under the threshold, which is a claim; None says we do
+    not know, which is the truth.
+    """
+    from src.tax.validator import verify_tds
+
+    pg = _normalized("pg", "1000.00")
+    invoice = _normalized("invoice", "1000.00")
+
+    verified, expected_tds, claimed_tds, delta, applicable = verify_tds(
+        pg, invoice, seller_annual_gross=None
+    )
+
+    assert verified is False
+    assert applicable is None, (
+        "an unknown cumulative gross was reported as 'under threshold' "
+        "-- that is the fail-open section 63 closed"
+    )
+    assert expected_tds == Decimal("0")
+    assert claimed_tds is None
+
+
+def test_a_missing_opening_balance_yields_none_not_zero():
+    """
+    SECTION 63, AT THE SOURCE.
+
+    A PG record with no `merchant_ytd_gross_opening` must produce None.
+    Zero would place the seller below the INR 5,00,000 threshold, make
+    expected TDS zero, and report a genuine under-withholding as
+    correct -- in a system where every other threshold prefers routing to
+    a human.
+    """
+    from src.tax.seller_ledger import (
+        build_seller_annual_gross,
+        seller_gross_after_transaction,
+    )
+
+    pg = _normalized("pg", "400000.00")
+    pg.raw_ref = {}                     # ledger lookup missed
+
+    result = MatchResult(
+        txn_id=pg.txn_id, pg_record=pg, bank_record=None,
+        invoice_record=None, sources_present=["pg"],
+    )
+
+    assert seller_gross_after_transaction(result) is None, (
+        "a missing opening balance defaulted to zero -- fail-open"
+    )
+    assert build_seller_annual_gross([result]) == {pg.txn_id: None}
+
+
+def test_a_present_opening_balance_still_adds_this_transaction():
+    """
+    THE CONTROL for the test above.
+
+    Returning None on absence is only correct if presence still works --
+    otherwise the fix would silently make every record unverifiable, and
+    every test asserting a refusal would pass for the wrong reason.
+    """
+    from src.tax.seller_ledger import seller_gross_after_transaction
+
+    pg = _normalized("pg", "10000.00")
+    pg.raw_ref = {"merchant_ytd_gross_opening": "495000.00"}
+
+    result = MatchResult(
+        txn_id=pg.txn_id, pg_record=pg, bank_record=None,
+        invoice_record=None, sources_present=["pg"],
+    )
+
+    # 495,000 + 10,000 = 505,000 -> over the 5L threshold, which is the
+    # near-boundary cohort section 58 showed the old ordering-based
+    # reconstruction got wrong.
+    assert seller_gross_after_transaction(result) == Decimal("505000.00")

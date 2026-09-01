@@ -137,7 +137,7 @@ phrasing is always checkable against the numbers it describes.
 | Supplies a bad value | Rejected against `allowed_values`. Never coerced |
 | Hallucinates a `txn_id` | `TxnNotFoundError` → an honest "no record of that". Never a fabricated record |
 | Returns malformed output | `parse_selection` raises; `call_llm_bounded` contains it |
-| Writes wrong prose about right data — `ask()` | `AgentAnswer.data` is attached, so the prose is checkable against the numbers it describes |
+| Writes wrong prose about right data — `ask()` | **Checkable, not prevented.** `AgentAnswer.data` is attached, so the prose can always be held against the numbers it claims to describe — but a wrong figure *can* appear in `answer`. A substring check over an arbitrary tool result would reject correct paraphrases and admit wrong numbers (`FAILURE_LOG.md` §63.3) |
 | Writes wrong prose about right data — `explain()` | **Rejected at runtime.** `validate_explanation()` sits in the guardrail's `validate_fn`; an explanation that drops the status, a reason code, or a settlement figure never reaches the operator (`FAILURE_LOG.md` §62) |
 | Fails entirely | Deterministic fallback renders the real numbers |
 
@@ -212,6 +212,26 @@ test uses a function that sleeps 15 seconds and requires return within 12
 **Honest limitation:** Python cannot forcibly kill a running thread. The
 guarantee is *"the pipeline does not wait"*, not *"the provider call is
 terminated."*
+
+**And the claim above it is enforced, not just asserted.** *"the ONLY
+sanctioned LLM call path"* is checked structurally by
+`test_every_model_call_goes_through_the_guardrail` — an AST sweep requiring
+every model call under `src/agent/` to sit inside a
+`call_llm_bounded(call_fn=...)` — plus
+`test_only_the_provider_layer_names_a_provider_sdk` for the import-level
+half. Until `FAILURE_LOG.md` §63 the test carrying that name asserted
+`callable(call_llm_bounded)` and nothing else.
+
+**A second honest limitation, at concurrency.** `_executor` has
+`max_workers=4` and is created at module scope. Module scope is
+deliberate — a `with` block would block on `__exit__` awaiting the thread
+this design abandons, silently defeating the timeout. But four
+simultaneous hangs occupy all four workers permanently, since the threads
+cannot be reclaimed. The fifth caller still returns in 10s, so the
+guarantee holds; sustained provider degradation degrades to every call
+timing out. There is no worker-saturation metric and no test above
+concurrency 1. Single-call semantics are proven; concurrent semantics are
+not.
 
 **Every call site has a deterministic fallback:**
 
@@ -524,6 +544,15 @@ transaction dates do not reflect true sequence.
 
 > A running balance should come from a ledger, never be re-derived from
 > whatever ordering a batch happens to have.
+
+A missing opening balance now returns `None`, not `Decimal("0")`. Zero
+would place the seller below the ₹5,00,000 threshold, make expected TDS
+zero, and report a genuine under-withholding as correct — the one place in
+the codebase that inverted the fail-closed asymmetry. `verify_tds()`
+already refused to guess when the cumulative figure is unknown; that
+branch was simply unreachable while this function always returned a
+`Decimal` (`FAILURE_LOG.md` §63.2). This matters more once the value comes
+from a real ledger, where a lookup **can** miss.
 
 ## Idempotency
 
