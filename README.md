@@ -251,6 +251,37 @@ case. Two earlier label corrections (`duplicate`, `unresolvable`) are disclosed 
 adversarial categories. That is narrower than "handles reconciliation" — see Known
 Limitations.
 
+### Cash position — the batch in rupees, not record counts
+
+*"Run the books **and the cash position**."* Record counts answer how many
+exceptions there are. They do not answer the question a finance lead
+actually asks, which is how much money is not moving.
+
+| Bucket | Amount (INR) | Records |
+|---|---|---|
+| Settled and verified | 292,353.70 | 24 |
+| Awaiting tax verification | 67,328.14 | 3 |
+| **Blocked behind exceptions** | **601,761.49** | **32** |
+| Expected, not yet credited | 38,456.77 | 2 |
+| **Total expected settlement** | **999,900.10** | **61** |
+
+Bank actually credited **961,259.33** across 59 transactions — a variance
+of **38,640.77**.
+
+**60.2% of the batch's value is blocked behind exceptions, while only 39.34%
+of records matched.** Those two numbers are not the same shape, and that
+is the point: a record count treats a ₹200 timing difference and a
+₹90,000 amount mismatch as one exception each. The rupee view is what
+tells an operator which queue to work first.
+
+Two records were rejected at ingestion with unparseable amounts. Their
+value is **unknown and excluded from every figure above** rather than
+counted as zero — reporting an unknown as zero is how corrupted money
+quietly balances a book.
+
+Reproduce with `python scripts/run_pipeline.py`, or ask the agent
+*"how much money is stuck?"* — both read the same `get_cash_position()`.
+
 ### Verification
 
 | Measure | Result |

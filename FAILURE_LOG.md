@@ -1,6 +1,6 @@
 # Failure Log
 
-## AI Finance Controller — Phases 0 through 6
+## AI Finance Controller — Phases 0–6, Upgrades A–B, Stages 1–8
 
 This is a record of things that went wrong while building this system, how
 they were found, and what was done about them.
@@ -26,11 +26,128 @@ Each entry has:
 - **Fix**
 - **Still open** (where anything remains)
 
-Entries are grouped by phase. Sections 36–40 correct things recorded
-earlier in this same log that later turned out to be wrong.
+Entries are grouped by phase up to §44. From §45 they are standalone,
+because they postdate Phase 6 — the hardening stages, and two rounds of
+adversarial review.
+
+**This log corrects itself in four places, and those are the entries worth
+reading first.** §36–40 correct earlier entries that turned out to be
+wrong. §29 records that the log itself fell behind the code. §61.1 records
+a historical figure being overwritten by a sweep that should not have
+matched inside a dated record. §64 records that the tests proving a hung
+call cannot block the pipeline were themselves leaking hung calls into the
+pipeline's thread pool.
+
+Nothing here was found by a tool that was looking for it. Every entry from
+§59 onward was found by reading the repository against its own claims.
 
 ---
 
+## Index — all 64 sections
+
+Grouped as they appear. Sections 45+ are standalone rather than
+phase-scoped, because they postdate Phase 6.
+
+**If you only read three:** the three marked ★ below — six records
+fail-opening while 162 tests passed, throughput published as linear for
+four phases while the engine was quadratic, and a guardrail test that
+asserted nothing.
+
+**Phase 0–2 — Contracts, data, ingestion**
+
+- [**1.** Raw source formats were leaking into business logic](#1-raw-source-formats-were-leaking-into-business-logic)
+- [**2.** The PYT narration pattern silently dropped its prefix](#2-the-pyt-narration-pattern-silently-dropped-its-prefix)
+
+**Phase 3 — Matching**
+
+- [**3.** Fuzzy candidate guard compared the wrong amount](#3-fuzzy-candidate-guard-compared-the-wrong-amount)
+- ★ [**4.** Ambiguity was flagged but the data never contained any](#4-ambiguity-was-flagged-but-the-data-never-contained-any)
+
+**Phase 4 — Tax and decisions**
+
+- [**5.** GST and TDS were suppressing each other](#5-gst-and-tds-were-suppressing-each-other)
+- [**6.** Only one violation was surviving into the output](#6-only-one-violation-was-surviving-into-the-output)
+- [**7.** Decision logic was an if/elif chain](#7-decision-logic-was-an-ifelif-chain)
+- [**8.** fully_clean was missing from the context](#8-fullyclean-was-missing-from-the-context)
+- [**9.** The 512-combination sweep found a state with no rule](#9-the-512-combination-sweep-found-a-state-with-no-rule)
+- [**10.** The catch-all then fired on real data](#10-the-catch-all-then-fired-on-real-data)
+- [**11.** Throughput was claimed but never measured](#11-throughput-was-claimed-but-never-measured)
+- [**12.** C3 — the amount check was gated on confidence derived from the amount](#12-c3-the-amount-check-was-gated-on-confidence-derived-from-the-amount)
+- [**13.** C4 — tax_verified was True on records where tax never ran](#13-c4-taxverified-was-true-on-records-where-tax-never-ran)
+
+**Phase 1 (revisited) — ground truth was wrong twice**
+
+- [**14.** L1 — duplicates were labelled AMBIGUOUS](#14-l1-duplicates-were-labelled-ambiguous)
+- [**15.** L2 — "unresolvable" was labelled UNMATCHED](#15-l2-unresolvable-was-labelled-unmatched)
+- [**16.** A1 — six fixed amounts were manufacturing collisions](#16-a1-six-fixed-amounts-were-manufacturing-collisions)
+
+**Phase 5A — the AI boundary**
+
+- [**17.** The first timeout did not actually time out](#17-the-first-timeout-did-not-actually-time-out)
+- [**18.** AI outputs were bare strings](#18-ai-outputs-were-bare-strings)
+- [**19.** Confidence was fabricated](#19-confidence-was-fabricated)
+- [**20.** The contract existed but the real path bypassed it](#20-the-contract-existed-but-the-real-path-bypassed-it)
+- [**21.** Smaller interface bugs after the contract migration](#21-smaller-interface-bugs-after-the-contract-migration)
+
+**Phase 5B — real model integration**
+
+- [**22.** What is built](#22-what-is-built)
+- [**23.** The provider test could not run without secrets](#23-the-provider-test-could-not-run-without-secrets)
+- [**24.** LLM-assisted candidate matching is still not connected](#24-llm-assisted-candidate-matching-is-still-not-connected)
+
+**Phase 5C — evaluation**
+
+- [**25.** CaseResult gained a required field and the tests did not follow](#25-caseresult-gained-a-required-field-and-the-tests-did-not-follow)
+- [**26.** The per-case E2E harness cannot see batch-relational properties](#26-the-per-case-e2e-harness-cannot-see-batch-relational-properties)
+- [**27.** A test had unreachable assertions on keys that never existed](#27-a-test-had-unreachable-assertions-on-keys-that-never-existed)
+- [**28.** A .pyc file was tracked in git](#28-a-pyc-file-was-tracked-in-git)
+- [**29.** This log fell a milestone behind the code](#29-this-log-fell-a-milestone-behind-the-code)
+
+**Phase 6 — the agent**
+
+- [**30.** What was actually missing](#30-what-was-actually-missing)
+- [**31.** What Phase 6 built](#31-what-phase-6-built)
+- [**32.** The tool answered a question nobody asked](#32-the-tool-answered-a-question-nobody-asked)
+- [**33.** The demo script demonstrated nothing for a long time](#33-the-demo-script-demonstrated-nothing-for-a-long-time)
+- [**34.** The tests are hermetic; the scripts are not](#34-the-tests-are-hermetic-the-scripts-are-not)
+- [**35.** Measured accuracy, and what it does not mean](#35-measured-accuracy-and-what-it-does-not-mean)
+
+**Corrections to earlier entries**
+
+- [**36.** The fuzzy precision figure is withdrawn](#36-the-fuzzy-precision-figure-is-withdrawn)
+- [**37.** The stated cause was tested and disproven](#37-the-stated-cause-was-tested-and-disproven)
+- [**38.** The real cause — the metric counted correct matches as errors](#38-the-real-cause-the-metric-counted-correct-matches-as-errors)
+- [**39.** The fuzzy tier was unreachable, and that was already documented](#39-the-fuzzy-tier-was-unreachable-and-that-was-already-documented)
+- [**40.** The pattern across all of this](#40-the-pattern-across-all-of-this)
+
+**Upgrade B — realistic narration, and a reachable fuzzy tier**
+
+- [**41.** The tier is now reachable](#41-the-tier-is-now-reachable)
+- [**42.** BANKREF_<txn_id> was load-bearing in four files](#42-bankreftxnid-was-load-bearing-in-four-files)
+- [**43.** The sweep's truth linkage broke for the same reason — twice](#43-the-sweeps-truth-linkage-broke-for-the-same-reason-twice)
+- [**44.** Fail-closed behaviour became visible only once the tier ran](#44-fail-closed-behaviour-became-visible-only-once-the-tier-ran)
+- [**45.** Current state](#45-current-state)
+- [**46.** What is not done](#46-what-is-not-done)
+- [**47.** Milestones](#47-milestones)
+- [**48.** Closing](#48-closing)
+- [**49.** A verification script asserted a property the data did not have](#49-a-verification-script-asserted-a-property-the-data-did-not-have)
+- [**50.** We looked for a job for the LLM in matching and could not honestly find one](#50-we-looked-for-a-job-for-the-llm-in-matching-and-could-not-honestly-find-one)
+- [**51.** The README's decision table was not updated for Upgrade B](#51-the-readmes-decision-table-was-not-updated-for-upgrade-b)
+- [**52.** The most important formula in the system existed four times](#52-the-most-important-formula-in-the-system-existed-four-times)
+- [**53.** A HUMAN_REVIEW decision with nothing in its reason codes](#53-a-humanreview-decision-with-nothing-in-its-reason-codes)
+- ★ [**54.** The throughput figure described an engine that no longer existed](#54-the-throughput-figure-described-an-engine-that-no-longer-existed)
+- [**55.** Three traps in making the fee method-dependent](#55-three-traps-in-making-the-fee-method-dependent)
+- [**56.** The model earns its place in routing — but not where I expected](#56-the-model-earns-its-place-in-routing-but-not-where-i-expected)
+- [**57.** A documented command deleted a measurement](#57-a-documented-command-deleted-a-measurement)
+- [**58.** The TDS threshold was reconstructed from batch order, and the batch had no order](#58-the-tds-threshold-was-reconstructed-from-batch-order-and-the-batch-had-no-order)
+- [**59.** The hard boundary was guarded in the wrong place](#59-the-hard-boundary-was-guarded-in-the-wrong-place)
+- [**60.** The README reported the favourable half of a measurement](#60-the-readme-reported-the-favourable-half-of-a-measurement)
+- [**61.** Four smaller things the same review found](#61-four-smaller-things-the-same-review-found)
+- [**62.** The faithfulness validator was never on the path that runs](#62-the-faithfulness-validator-was-never-on-the-path-that-runs)
+- ★ [**63.** A hostile review found the fourth instance, in the guardrail test file](#63-a-hostile-review-found-the-fourth-instance-in-the-guardrail-test-file)
+- [**64.** The timeout was proven for one caller and assumed for the rest](#64-the-timeout-was-proven-for-one-caller-and-assumed-for-the-rest)
+
+---
 # Phase 0–2 — Contracts, data, ingestion
 
 ## 1. Raw source formats were leaking into business logic
