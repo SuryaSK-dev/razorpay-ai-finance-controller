@@ -627,6 +627,7 @@ Five steps:
 
 ```
 query_tools.py     four read-only tools over decide_batch() output
+                   (five after Stage 2.1 added get_cash_position)
 registry.py        tool specs, strict argument validation, envelopes
 tool_selection.py  frozen ToolSelection contract and strict parser
 controller.ask()   select -> dispatch -> phrase
@@ -1047,7 +1048,7 @@ raw (12) == divergent (0) + not_evaluable (6) + known_policy (6)
 # 45. Current state
 
 ```
-366 / 366 tests passing
+399 / 399 tests passing
 
 Gold baseline:            stable
 Baseline divergences:     0
@@ -2187,7 +2188,37 @@ present.
 
 Fixed by declaring it. The Stage 5 freeze now re-checks this by building a
 fresh virtualenv from `requirements.txt` alone and running the suite:
-**366 passed** in a clean clone with `GEMINI_API_KEY` unset.
+**399 passed** in a clean clone with `GEMINI_API_KEY` unset.
+
+Re-run on 1 September 2026, because the original figure predated four test
+files (`test_run_pipeline.py`, `test_architecture_boundary.py`,
+`test_guards_actually_fire.py`, `test_runtime_explanation_faithfulness.py`)
+and `test_architecture_boundary.py` in particular asserts what a FRESH
+interpreter loads -- exactly the property a warm environment cannot check.
+
+```
+git clone <repo> coldclone && cd coldclone
+python -m venv .venv
+.venv/Scripts/python -m pip install -r requirements.txt
+GEMINI_API_KEY= .venv/Scripts/python -m pytest tests/ -q
+GEMINI_API_KEY= .venv/Scripts/python scripts/run_pipeline.py
+GEMINI_API_KEY= .venv/Scripts/python scripts/demo_agent.py --offline
+```
+
+399 collected, **399 passed**, both scripts exit 0, and the data invariant
+held on all six demo answers. The clone resolved `pytest 9.1.1` against the
+`pytest>=8.0` floor rather than the pinned-by-accident version in the
+development virtualenv, so the suite is confirmed green on a version it had
+not previously been run against.
+
+One honest qualification about method. Four files in this run were carried
+into the clone by copy rather than by commit, because the section 62 fix was
+not yet committed when the freeze check ran. Each was verified
+`git hash-object`-identical to the working tree, and the clone was checked
+to contain no file the submitted tree lacks -- so the CONTENT under test is
+the submitted tree exactly. It is still worth writing down: the run proves
+the tree is hermetic, and does not by itself prove the commit is. The
+one-liner above, run against the pushed tag, is what closes that last gap.
 
 ## 61.2 A malformed `.gitignore` line silently disabled two rules
 
@@ -2252,3 +2283,180 @@ passed.
 **The general point, and the reason this is worth four lines:** a test
 asserting a magic number is a test whose failure mode is being edited. If
 the number is a proxy for a property, assert the property.
+
+---
+
+# 62. The faithfulness validator was never on the path that runs
+
+Found during the final hardening pass, by reading `explain()` end to end
+rather than by any instrument in the repository.
+
+## The finding
+
+`src/agent/explanation_validator.py` defines a real faithfulness checker:
+
+```python
+def validate_explanation(
+    facts: ExplanationFacts,
+    response: ExplanationResponse,
+) -> tuple[bool, list[str]]:
+```
+
+It is called by `scripts/eval_explanation_quality.py`. It is covered by
+`tests/test_explanation_validator.py`. It produced the 5C.4.5 faithfulness
+report. What it never did was run when the agent actually explained
+something.
+
+The live path handed the guardrail this instead:
+
+```python
+def _validate_explanation(value: Explanation) -> bool:
+    return True  # __post_init__ already enforced length bounds
+```
+
+So `FinanceControllerAgent.explain()` validated that the model's text was
+between 20 and 2000 characters, and validated nothing else. A confident,
+well-formed, correctly structured explanation containing a fabricated
+settlement figure passed straight through to the operator.
+
+## The third time
+
+This log has already named this shape twice, in two different vocabularies.
+
+Section 4:
+
+> A conditional invariant tells you nothing when the condition never
+> occurs.
+
+Section 20:
+
+> A tested boundary the production path does not go through is not a
+> boundary.
+
+Section 20's version is the exact one. The validator was not weak, not
+buggy, and not under-tested -- `test_explanation_validator.py` passed on
+every commit. It was **wired to the evaluation harness and not to the
+product**, which meant the whole test file could stay green while the
+runtime enforced nothing. Two green suites, one live gap, and no
+instrument capable of noticing because every instrument pointed at the
+half that worked.
+
+The recurrence is the point worth recording. Sections 4 and 20 both ended
+with a lesson stated in general terms, and the general statement did not
+prevent the third instance. What prevents it is a test that starts from
+the caller a user actually reaches.
+
+## What this did NOT cause
+
+No decision was ever wrong because of this, and the log should not imply
+otherwise.
+
+`explain()` narrates a `MatchDecision` that is already final. The
+deterministic pipeline had finished; status, exception code, reason codes,
+confidence and evidence were fixed before the model was called, and
+`test_agent_invariants.py` deep-copies and compares them field by field
+after every call. The model had no route to change them, and did not.
+
+The exposure was narrower and entirely real: **an operator could be told
+something unsupported about a decision that was itself correct.** In a
+reconciliation product that is a trust failure, not an arithmetic one --
+but it is worth naming precisely rather than inflating into a financial
+defect it was not.
+
+## What enforces it now
+
+`explain_decision_via_llm()` builds an `ExplanationFacts` from the
+`MatchDecision` and passes the real `validate_explanation()` into the
+guardrail's `validate_fn` position. Rejection reuses the failure path that
+already existed: `call_llm_bounded()` returns `succeeded=False`, and
+`explain()` falls back to `fallback_template_explanation()`, which returns
+the same `Explanation` type so no caller branches on which path produced
+the text.
+
+The violation list is carried out through `AgentCallResult.error`.
+`validate_fn` can only return a bool and `guardrails.py` is shared with the
+`ask()` path, so the violations are captured in a closure and spliced onto
+the guardrail's generic message:
+
+```
+LLM output failed validation -- rejected, not used -- faithfulness
+violations: ['missing_claimed_amount:1204.78',
+             'missing_expected_amount:1204.78']
+```
+
+A rejection with no recorded reason is a silent failure, which is the
+category this project exists to avoid.
+
+`tests/test_runtime_explanation_faithfulness.py` guards it. Every test in
+that file goes through `FinanceControllerAgent.explain()` over a decision
+produced by the real `decide_batch()` -- deliberately not through
+`validate_explanation()`, because calling the validator is what the
+existing test file already did while the defect was live. It covers the
+rejection, the violation record, three distinct ways to be unfaithful, and
+the control case: a faithful explanation must still return
+`source == "llm"`. A validator that rejects everything is an outage, not a
+validator.
+
+## Four things this surfaced that are recorded, not fixed
+
+**1. The prompt had to change, and that is the correct direction.**
+`validate_explanation()` is a containment check over normalized text.
+`DecisionStatus.TAX_MISMATCH` renders as `TAX_MISMATCH`; a model writing
+the natural phrase "tax mismatch" fails containment on the underscore.
+Two ways out: loosen the check to paraphrase-match, or tell the model to
+quote the tokens verbatim. Loosening it is exactly how a fabricated figure
+gets admitted -- a matcher lenient enough to accept "tax mismatch" for
+`TAX_MISMATCH` is lenient enough to accept `1,204` for `1204.78`. So the
+prompt now lists the required tokens and states that an explanation
+missing any of them is discarded. The check was left alone.
+
+**2. On the recorded real-model run, this validator rejects 7 of 8.**
+`data/eval/real_gemini_explanation_run_5C4.json` records `validator_passed`
+per case. One case passed. The violations are overwhelmingly
+`missing_reason_code` and `missing_evidence` -- the model paraphrasing
+rather than quoting. That run predates the verbatim-token prompt, so it is
+not a prediction of the current rate, and no claim is made about what the
+current rate is: measuring it needs a live key and a fresh run. What can
+be said is that the fallback is now a **normal** path rather than an
+exceptional one, and that this is the safe direction. The template is
+always faithful. Fluent-but-unverifiable prose is the thing worth losing.
+
+**3. The validator's contradiction check is dead at runtime.**
+It keys on `"MATCH"`, `"REVIEW"` and `"REJECT"`. The real enum values are
+`MATCHED`, `PARTIAL_MATCH`, `TAX_MISMATCH`, `AMBIGUOUS`, `HUMAN_REVIEW`,
+`UNMATCHED`. `contradictory_statuses.get(expected_status, set())` therefore
+returns empty for every decision this system can produce, and section 5 of
+the validator never fires. It was written against the hand-built 5C.4
+dataset, whose statuses were single words. Left alone deliberately: the
+hardening pass scoped source changes to `explainer.py`, and rewriting a
+validator's rules while wiring it in makes it impossible to attribute any
+resulting behaviour change to either act.
+
+**4. `MatchDecision` does not carry claimed vs expected tax.**
+`TaxVerification` computes `expected_gst`, `claimed_gst`, `expected_tds`
+and `claimed_tds`; `decide_batch()` does not persist them into `evidence`.
+So `ExplanationFacts.claimed_tax` and `.expected_tax` are set to `None`
+rather than guessed, and a fabricated **GST** figure specifically is not
+caught -- a fabricated **settlement amount** is, via
+`evidence["match_signals"]["amount_bank"]`. Stating this plainly is better
+than a fact pack that looks complete. Adding tax figures to `evidence`
+would change the decision artifact, which the hardening pass put out of
+scope.
+
+## One test changed, and the change is the finding in miniature
+
+`tests/test_agent_invariants.py` stubbed the model with:
+
+```python
+return "This is a sample explanation of the tax mismatch."
+```
+
+and asserted `explanation_source == "llm"`. That passed for the life of the
+project. The moment the validator went live it became a rejection, and the
+test began asserting the opposite of its own name.
+
+The stub was wrong, not the check. Prose that names no fact is precisely
+what the validator exists to refuse, and a test whose fixture only passes
+while enforcement is off is a test that was measuring the absence of
+enforcement. Replaced with a faithful explanation that carries the
+authoritative tokens forward.

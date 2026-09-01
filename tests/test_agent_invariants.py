@@ -26,7 +26,24 @@ def _sample_decision() -> MatchDecision:
 
 
 def _working_llm(prompt: str) -> str:
-    return "This is a sample explanation of the tax mismatch."
+    """
+    A FAITHFUL explanation -- it carries every authoritative token
+    forward verbatim.
+
+    This stub used to return "This is a sample explanation of the tax
+    mismatch." That passed for the whole life of the project because
+    explain() validated text LENGTH only. Once the faithfulness
+    validator was wired into the runtime path (FAILURE_LOG.md section
+    62) it stopped being a successful call and started being a
+    rejection, which made this test assert the opposite of its own
+    name. The stub was wrong, not the check: prose that names no fact
+    is exactly what the validator exists to refuse.
+    """
+    return (
+        "Transaction TXN_INVARIANT was resolved as TAX_MISMATCH. "
+        "Violated conditions: ERR_GST_MISMATCH and ERR_TDS_VARIANCE. "
+        "Confidence 94."
+    )
 
 
 def _broken_llm(prompt: str) -> str:

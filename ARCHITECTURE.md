@@ -137,7 +137,8 @@ phrasing is always checkable against the numbers it describes.
 | Supplies a bad value | Rejected against `allowed_values`. Never coerced |
 | Hallucinates a `txn_id` | `TxnNotFoundError` → an honest "no record of that". Never a fabricated record |
 | Returns malformed output | `parse_selection` raises; `call_llm_bounded` contains it |
-| Writes wrong prose about right data | `AgentAnswer.data` is attached, and the faithfulness evaluation measures it |
+| Writes wrong prose about right data — `ask()` | `AgentAnswer.data` is attached, so the prose is checkable against the numbers it describes |
+| Writes wrong prose about right data — `explain()` | **Rejected at runtime.** `validate_explanation()` sits in the guardrail's `validate_fn`; an explanation that drops the status, a reason code, or a settlement figure never reaches the operator (`FAILURE_LOG.md` §62) |
 | Fails entirely | Deterministic fallback renders the real numbers |
 
 **The designed-for asymmetry:** a wrong tool gives a *true answer to the
@@ -219,9 +220,16 @@ terminated."*
 | Explanation fails | `fallback_template_explanation()` — returns the **same** `Explanation` type, so callers never branch |
 | Tool selection fails | An honest "I could not determine which tool answers that" |
 | Phrasing fails | `_render_fallback()` renders the real numbers directly |
+| Explanation is well-formed but **unfaithful** | `validate_explanation()` rejects it, the violations are recorded on `AgentCallResult.error`, and the same `fallback_template_explanation()` runs |
 
 The last one matters most: by the time phrasing runs, the numbers already
 exist. A cosmetic failure must not discard a correct answer.
+
+The last one is the only fallback that fires on a **successful** provider
+call. The other three are transport or parse failures; this one is the
+system declining to pass along prose it cannot verify. The template is
+always faithful, so falling back is the safe direction -- what is lost is
+fluency, not correctness.
 
 `test_decision_facts_unchanged_after_failed_llm_explanation` deep-copies a
 `MatchDecision`, runs the agent over it with a failing model, and asserts
