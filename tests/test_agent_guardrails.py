@@ -6,6 +6,7 @@ response NEVER changes the deterministic pipeline's output.
 
 import ast
 import sys
+import threading
 import time
 from pathlib import Path
 
@@ -24,8 +25,24 @@ def _failing_llm(prompt: str) -> str:
     raise ConnectionError("simulated API outage")
 
 
+# Released by the timeout test once its assertions have run.
+#
+# This used to be `time.sleep(15)`. The assertion was identical, but the
+# abandoned worker then sat in the SHARED module-level pool for the full
+# 15 seconds -- a quarter of the pool, held for 5s after the test had
+# already finished proving its point, and Python cannot reclaim it. An
+# Event releases the thread the moment the proof is done.
+#
+# The proof is if anything stronger: at assertion time the call provably
+# has NOT completed, because nothing has released it yet. See
+# tests/test_agent_concurrency.py.
+_HANG_UNTIL_RELEASED = threading.Event()
+
+
 def _slow_llm(prompt: str) -> str:
-    time.sleep(15)  # exceeds AGENT_CALL_TIMEOUT_SECONDS (10s)
+    # Ceiling is a backstop against a wedged test run, not the property
+    # under test. AGENT_CALL_TIMEOUT_SECONDS (10s) fires long before it.
+    _HANG_UNTIL_RELEASED.wait(timeout=60)
     return "TXN_00001"
 
 
@@ -259,16 +276,22 @@ def test_real_timeout_returns_before_slow_call_completes():
     preemptive (via ThreadPoolExecutor.future.result(timeout=...)),
     not a post-hoc elapsed-time check after the call already
     returned."""
-    start = time.perf_counter()
-    result = extract_txn_id_via_llm("some narration", _slow_llm)
-    elapsed = time.perf_counter() - start
+    _HANG_UNTIL_RELEASED.clear()
+    try:
+        start = time.perf_counter()
+        result = extract_txn_id_via_llm("some narration", _slow_llm)
+        elapsed = time.perf_counter() - start
 
-    assert result.succeeded is False
-    assert "timeout" in result.error.lower()
-    assert elapsed < 12, (
-        f"Pipeline waited {elapsed:.1f}s for a call that should have "
-        f"timed out at 10s -- timeout is not actually preemptive"
-    )
+        assert result.succeeded is False
+        assert "timeout" in result.error.lower()
+        assert elapsed < 12, (
+            f"Pipeline waited {elapsed:.1f}s for a call that should have "
+            f"timed out at 10s -- timeout is not actually preemptive"
+        )
+    finally:
+        # Return the worker to the shared pool even if an assertion
+        # failed. A leaked worker turns one red test into several.
+        _HANG_UNTIL_RELEASED.set()
 
 
 if __name__ == "__main__":

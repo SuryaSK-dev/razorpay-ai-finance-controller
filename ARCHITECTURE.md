@@ -222,16 +222,35 @@ every model call under `src/agent/` to sit inside a
 half. Until `FAILURE_LOG.md` §63 the test carrying that name asserted
 `callable(call_llm_bounded)` and nothing else.
 
-**A second honest limitation, at concurrency.** `_executor` has
-`max_workers=4` and is created at module scope. Module scope is
-deliberate — a `with` block would block on `__exit__` awaiting the thread
-this design abandons, silently defeating the timeout. But four
-simultaneous hangs occupy all four workers permanently, since the threads
-cannot be reclaimed. The fifth caller still returns in 10s, so the
-guarantee holds; sustained provider degradation degrades to every call
-timing out. There is no worker-saturation metric and no test above
-concurrency 1. Single-call semantics are proven; concurrent semantics are
-not.
+**A second honest limitation, at concurrency — now measured.** `_executor`
+has `max_workers=4` and is created at module scope. Module scope is
+deliberate: a `with` block would block on `__exit__` awaiting the thread
+this design abandons, silently converting the preemptive timeout back into
+*"wait for the provider"*. `test_the_executor_is_module_level_not_a_context_manager`
+asserts that shape where the reasoning lives.
+
+Four simultaneous hangs occupy all four workers for as long as the
+provider stays wedged, because Python cannot reclaim the threads. What
+that degrades *to* is no longer a matter of reasoning —
+`tests/test_agent_concurrency.py` establishes it:
+
+| Condition | Behaviour | Test |
+|---|---|---|
+| 4 concurrent hangs | each returns at the timeout, **concurrently** — not serialised | `test_concurrent_hung_calls_each_return_at_the_timeout` |
+| the 5th caller | still returns at the timeout, having never run | `test_a_caller_beyond_pool_capacity_still_returns` |
+| provider recovers | pool serves normally again — exhaustion is a phase, not terminal | `test_the_pool_recovers_once_hung_calls_release` |
+
+So sustained degradation means every call fails at the timeout, and no
+call hangs. That is bounded failure, which is the weaker of the two things
+you might want and the stronger of the two things you might fear.
+
+**What is still not solved.** There is no circuit breaker and no
+worker-saturation metric, so the system cannot tell an operator it is
+saturated — it can only fail each call honestly. Adding one is a design
+change, not a hardening pass, and it is the first thing to build after
+this submission. `max_workers` is pinned by
+`test_the_worker_count_is_deliberate` precisely because it *is* the
+saturation threshold quoted in this section.
 
 **Every call site has a deterministic fallback:**
 

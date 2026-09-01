@@ -19,6 +19,7 @@ The real Gemini API connectivity is already established by the
 from __future__ import annotations
 
 import sys
+import threading
 import time
 from pathlib import Path
 
@@ -37,12 +38,18 @@ def _failing_provider_call(prompt: str) -> str:
     raise ConnectionError("simulated Gemini API connection failure")
 
 
+# See the matching note in tests/test_agent_guardrails.py: an Event
+# rather than time.sleep(15), so the abandoned worker returns to the
+# shared pool as soon as the assertions have run instead of 5s after.
+_HANG_UNTIL_RELEASED = threading.Event()
+
+
 def _slow_provider_call(prompt: str) -> str:
     """
     Simulates a provider that never responds within the guardrail
-    timeout.
+    timeout, and keeps not responding until the test releases it.
     """
-    time.sleep(15)
+    _HANG_UNTIL_RELEASED.wait(timeout=60)
     return "late response"
 
 
@@ -75,26 +82,32 @@ def test_provider_exception_is_contained_by_guardrail():
 
 
 def test_slow_provider_is_bounded_by_guardrail():
-    start = time.perf_counter()
+    _HANG_UNTIL_RELEASED.clear()
+    try:
+        start = time.perf_counter()
 
-    result = call_llm_bounded(
-        call_fn=lambda: _slow_provider_call("test"),
-        parse_fn=lambda raw: raw,
-        validate_fn=lambda value: True,
-    )
+        result = call_llm_bounded(
+            call_fn=lambda: _slow_provider_call("test"),
+            parse_fn=lambda raw: raw,
+            validate_fn=lambda value: True,
+        )
 
-    elapsed = time.perf_counter() - start
+        elapsed = time.perf_counter() - start
 
-    assert result.succeeded is False
-    assert result.value is None
-    assert result.error is not None
-    assert "timeout" in result.error.lower()
+        assert result.succeeded is False
+        assert result.value is None
+        assert result.error is not None
+        assert "timeout" in result.error.lower()
 
-    # Must return before the simulated 15-second provider call finishes.
-    assert elapsed < 12, (
-        f"Guardrail waited {elapsed:.1f}s for a provider call "
-        "that should have timed out at 10s"
-    )
+        # Must return while the provider call is still outstanding --
+        # nothing has released it at this point, so it demonstrably has
+        # not completed.
+        assert elapsed < 12, (
+            f"Guardrail waited {elapsed:.1f}s for a provider call "
+            "that should have timed out at 10s"
+        )
+    finally:
+        _HANG_UNTIL_RELEASED.set()
 
 
 def test_empty_provider_response_is_rejected():

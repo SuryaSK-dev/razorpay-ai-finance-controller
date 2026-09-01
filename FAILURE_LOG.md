@@ -1048,7 +1048,7 @@ raw (12) == divergent (0) + not_evaluable (6) + known_policy (6)
 # 45. Current state
 
 ```
-410 / 410 tests passing
+415 / 415 tests passing
 
 Gold baseline:            stable
 Baseline divergences:     0
@@ -2188,7 +2188,7 @@ present.
 
 Fixed by declaring it. The Stage 5 freeze now re-checks this by building a
 fresh virtualenv from `requirements.txt` alone and running the suite:
-**410 passed** in a clean clone with `GEMINI_API_KEY` unset.
+**415 passed** in a clean clone with `GEMINI_API_KEY` unset.
 
 Re-run on 1 September 2026, because the original figure predated four test
 files (`test_run_pipeline.py`, `test_architecture_boundary.py`,
@@ -2205,7 +2205,7 @@ GEMINI_API_KEY= .venv/Scripts/python scripts/run_pipeline.py
 GEMINI_API_KEY= .venv/Scripts/python scripts/demo_agent.py --offline
 ```
 
-410 collected, **410 passed**, both scripts exit 0, and the data invariant
+399 collected, **399 passed**, both scripts exit 0, and the data invariant
 held on all six demo answers. The clone resolved `pytest 9.1.1` against the
 `pytest>=8.0` floor rather than the pinned-by-accident version in the
 development virtualenv, so the suite is confirmed green on a version it had
@@ -2220,11 +2220,30 @@ the submitted tree exactly. It is still worth writing down: the run proves
 the tree is hermetic, and does not by itself prove the commit is. The
 one-liner above, run against the pushed tag, is what closes that last gap.
 
-Re-run again after section 63 (three fixes, eleven new tests): **410
-collected, 410 passed**, both scripts exit 0, data invariant 6/6, same
-`pytest 9.1.1`. The overlay caveat above applies to that run identically —
-seven files carried in by copy, each `git hash-object`-verified, all 106
-tracked files confirmed byte-identical to the working tree.
+**The freeze check has now run three times**, and the figure above is the
+first of them. Each number belongs to the tree that produced it:
+
+| After | Suite | Cold clone |
+|---|---|---|
+| section 62 — runtime faithfulness | 399 | 399 collected, 399 passed |
+| section 63 — three hostile-review fixes, eleven tests | 410 | 410 collected, 410 passed |
+| section 64 — five concurrency tests | **415** | **415 collected, 415 passed** |
+
+Both scripts exit 0 and the data invariant holds 6/6 in all three, on
+`pytest 9.1.1`. The overlay caveat above applies to each identically —
+files carried in by copy, every one `git hash-object`-verified, and the
+clone checked to contain no file the submitted tree lacks.
+
+**A correction, because this line was itself wrong for one revision.**
+The 399 above was briefly overwritten with 410 during a sweep that updated
+every test count in the repository at once. That is exactly section 29's
+failure — a *historical* figure edited as though it were a *current* one,
+which silently claimed a clean-clone result for a tree that had not
+produced it. The sweep should never have matched inside a dated record.
+
+> A published number has a tense. Updating every instance of a figure
+> treats them all as present tense, and the ones that were past tense
+> become false without anything looking wrong.
 
 ## 61.2 A malformed `.gitignore` line silently disabled two rules
 
@@ -2723,3 +2742,132 @@ could demonstrate on demand.
 > The countermeasure that works is not a rule. It is a person reading the
 > code with the specific intent to disbelieve it, and the willingness to
 > write down what they find when the answer is "you are right".
+
+---
+
+# 64. The timeout was proven for one caller and assumed for the rest
+
+Section 63.5 closed with a limitation recorded rather than solved: *"single
+call semantics are proven, concurrent semantics are not."* That sentence
+was accurate and it was also an admission that the most-cited guarantee in
+this system had been tested at exactly one point on its domain.
+
+Closing it turned out to need no design change at all. It needed a test,
+and it exposed a defect in two existing ones on the way.
+
+## 64.1 What was actually unknown
+
+`guardrails.py` uses a module-level `ThreadPoolExecutor(max_workers=4)`.
+Module scope is correct -- a `with` block would join the abandoned worker
+on `__exit__` and silently convert the preemptive timeout back into
+"wait for the provider" -- and
+`test_real_timeout_returns_before_slow_call_completes` proves the
+single-call property on the wall clock: 15-second hang, returns under 12.
+
+Python cannot kill an abandoned thread. So a hung call holds its worker
+until the call itself returns, which for a genuinely wedged provider is
+never. Four of those and the pool is full.
+
+Nothing established what happened next. The plausible answers ranged from
+harmless to fatal and the repository could not distinguish them:
+
+    the 5th caller fails at the timeout        bounded, fine
+    the 5th caller queues until a worker frees unbounded wait
+    the 5th caller never returns               deadlock
+
+A guarantee phrased as *"the pipeline does not wait"* is worth nothing if
+the fifth concurrent caller waits forever, and that had never been ruled
+out.
+
+## 64.2 What the tests found
+
+`tests/test_agent_concurrency.py`, five tests. The behaviour is the good
+one, and it is now measured rather than assumed:
+
+| Condition | Behaviour |
+|---|---|
+| 4 concurrent hangs | each returns at the timeout, **concurrently** |
+| the 5th caller | returns at the timeout, having never started |
+| after release | the pool serves normally again |
+
+The concurrency assertion is the one with content. Four hung calls
+complete in roughly *one* timeout, not four -- if they serialised, one
+wedged provider call would delay every other caller's *failure*, and
+"bounded" would quietly mean "bounded by N x timeout".
+
+The recovery test matters for a different reason. Without it, "documented
+limitation" would have been a euphemism: a pool that never recovered would
+mean a process permanently degraded by one bad provider window, with a
+restart as the only remedy. It recovers.
+
+**None of this makes saturation good.** Sustained degradation still means
+every call failing at the timeout, and the system still cannot tell an
+operator it is saturated -- there is no circuit breaker and no
+worker-saturation metric. What changed is that the failure mode is now
+*known* instead of *assumed*, which is the difference between a
+limitation and a blind spot.
+
+## 64.3 The defect the work exposed
+
+Both existing timeout tests hung their worker with `time.sleep(15)`:
+
+```python
+def _slow_llm(prompt: str) -> str:
+    time.sleep(15)          # exceeds AGENT_CALL_TIMEOUT_SECONDS (10s)
+    return "TXN_00001"
+```
+
+The assertion fires at ~10s. The thread sleeps for another 5 -- holding a
+worker in the **shared, module-level, four-worker pool** that every other
+test in the suite draws from, for five seconds after the test had finished
+proving its point. Two such tests existed. Half the pool, leaked, for no
+benefit.
+
+It never caused a failure. Pytest runs serially, the two tests live in
+different files, and three free workers were always enough. That is luck,
+not design: a third such test, a reordering, or `pytest -n auto` would
+have produced timeouts that had nothing to do with the code under test --
+the most expensive kind of flake, because the failure appears in an
+innocent test.
+
+**The irony worth recording:** the tests proving that a hung call does not
+block the pipeline were themselves leaking hung calls into the pipeline's
+pool.
+
+Both now hang on a `threading.Event` released in a `finally`:
+
+```python
+_HANG_UNTIL_RELEASED = threading.Event()
+
+def _slow_llm(prompt: str) -> str:
+    _HANG_UNTIL_RELEASED.wait(timeout=60)
+    return "TXN_00001"
+```
+
+Same real timeout, same wall-clock assertion, unchanged bound of 12
+seconds. The worker returns the instant the assertions are done, and the
+`finally` returns it even when an assertion fails -- so one red test stays
+one red test instead of cascading.
+
+The proof is also slightly stronger than before. With `sleep`, the call
+completes on a timer regardless. With an Event, at assertion time the call
+provably has **not** completed, because nothing has released it yet.
+
+## 64.4 The generalisable version
+
+> A test that abandons a resource into shared state is a test that can
+> fail a different test. Release it in a `finally`, or do not take it.
+
+And the narrower one, which is the fourth time this log has said something
+adjacent:
+
+> A guarantee tested at one point on its domain is a guarantee about that
+> point. "The pipeline does not wait" was true for one caller and unknown
+> for five, and the gap was invisible because the single-caller test was
+> genuinely excellent.
+
+Sections 4, 20, 62 and 63 are all about a claim outrunning its
+enforcement. This one is narrower and worth separating: the enforcement
+existed, was well built, and simply did not cover as much of the claim as
+the claim's phrasing implied. Not an absent guard -- a guard with a
+smaller domain than the sentence describing it.
