@@ -2351,6 +2351,23 @@ Both scripts exit 0 and the data invariant holds 6/6 in all three, on
 files carried in by copy, every one `git hash-object`-verified, and the
 clone checked to contain no file the submitted tree lacks.
 
+**The overlay caveat is now discharged.** Every run above carried some
+files into the clone by copy, because the fix under test was not yet
+committed -- so each proved the *tree* hermetic without proving the
+*commit* was. On 1 September, with everything committed and pushed, the
+check was run once more as a plain `git clone` of the pushed commit,
+with no overlay of any kind:
+
+```
+clone HEAD      c6c9f79
+415 collected, 415 passed        pytest 9.1.1
+run_pipeline.py exit 0           demo_agent.py --offline exit 0, 6/6
+```
+
+That is the one-liner this section asked for, run against the tree that
+was actually pushed. Nothing is now taken on trust between the working
+directory and the remote.
+
 **A correction, because this line was itself wrong for one revision.**
 The 399 above was briefly overwritten with 410 during a sweep that updated
 every test count in the repository at once. That is exactly section 29's
