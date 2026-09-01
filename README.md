@@ -136,7 +136,7 @@ razorpay-ai-finance-controller/
 | `tax/validator.py` | Verifies the GST *relationship* against MDR rather than trusting the claimed value. GST and TDS evaluated independently so neither can suppress the other. |
 | `exceptions/decision_table.py` | Priority-ordered rules, exhaustively tested over all 2¹¹ = 2048 context combinations |
 | `exceptions/manager.py` | Builds the decision context; preserves *every* violation in `reason_codes` while `status` stays single-valued |
-| `agent/guardrails.py` | Real preemptive timeout — a 15s hang returns in under 12s, verified by regression test |
+| `agent/guardrails.py` | Real preemptive timeout — an **indefinitely** hung call returns in under 12s against a 10s timeout, measured on the wall clock. Concurrency is measured too: four simultaneous hangs each fail at the timeout, and the pool recovers |
 | `agent/tools/query_tools.py` | Five read-only tools, including the cash position in rupees. No method recomputes a financial outcome; the absence is asserted structurally, not left to review. |
 | `tests/test_architecture_boundary.py` | The dependency graph only points one way. The core may not import the agent layer — asserted statically **and** by loading the pipeline in a clean subprocess and checking `sys.modules`. |
 | `agent/controller.py` | `ask()` — select tool → dispatch deterministically → phrase the real result |

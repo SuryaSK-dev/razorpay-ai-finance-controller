@@ -2762,7 +2762,9 @@ Module scope is correct -- a `with` block would join the abandoned worker
 on `__exit__` and silently convert the preemptive timeout back into
 "wait for the provider" -- and
 `test_real_timeout_returns_before_slow_call_completes` proves the
-single-call property on the wall clock: 15-second hang, returns under 12.
+single-call property on the wall clock: at the time of writing, a
+15-second sleep returning under 12 (64.3 replaces the sleep with an Event;
+the bound is unchanged).
 
 Python cannot kill an abandoned thread. So a hung call holds its worker
 until the call itself returns, which for a genuinely wedged provider is

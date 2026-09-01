@@ -205,9 +205,16 @@ except concurrent.futures.TimeoutError:
     return AgentCallResult(succeeded=False, ...)
 ```
 
-The timeout is **preemptive**, not measured after the fact. A regression
-test uses a function that sleeps 15 seconds and requires return within 12
-(`test_real_timeout_returns_before_slow_call_completes`).
+The timeout is **preemptive**, not measured after the fact.
+`test_real_timeout_returns_before_slow_call_completes` blocks the provider
+stub on a `threading.Event` that nothing releases until after the
+assertion, and requires return within 12 seconds against the configured
+10-second timeout — so at the moment the assertion runs, the call
+provably has **not** completed.
+
+It used to use `time.sleep(15)`. Same bound, weaker proof, and it
+abandoned a worker into the shared pool for five seconds after the test
+had finished (`FAILURE_LOG.md` §64.3).
 
 **Honest limitation:** Python cannot forcibly kill a running thread. The
 guarantee is *"the pipeline does not wait"*, not *"the provider call is
