@@ -50,6 +50,7 @@ from decimal import Decimal
 from typing import Optional
 
 from src.models import MatchDecision, ExceptionCode
+from src.config import AMOUNT_TOLERANCE
 from src.financial import settlement_expected_net
 from src.matching.engine import MatchResult
 from src.matching.scoring import is_auto_matchable
@@ -58,7 +59,20 @@ from src.tax.seller_ledger import build_seller_annual_gross
 from src.exceptions.decision_table import DecisionContext, evaluate
 
 
-_MONEY_TOLERANCE = Decimal("0.01")
+# The settlement amount tolerance is IMPORTED from config, not restated
+# here. This module used to carry its own copy with the same value, which
+# meant the amount GATE in matching/candidates.py and the amount CONTROL
+# below were reading two different constants that happened to be equal.
+#
+# config.py's own docstring forbids exactly that:
+#
+#     "every rate, threshold, weight, or tolerance used anywhere in this
+#      codebase MUST be imported from this file."
+#
+# It matters beyond tidiness: N:1 batched settlement requires the tolerance
+# to move from per-line to per-batch (ARCHITECTURE.md), and that is a change
+# to a constant whose second definition was invisible to anyone reading
+# config.py. Same defect class as FAILURE_LOG.md section 52.
 
 
 def _tax_was_evaluated(context: DecisionContext) -> bool:
@@ -219,7 +233,7 @@ def _build_context(
 
             amount_mismatch = (
                 abs(bank.amount - expected_net)
-                > _MONEY_TOLERANCE
+                > AMOUNT_TOLERANCE
             )
 
     # ------------------------------------------------------------------

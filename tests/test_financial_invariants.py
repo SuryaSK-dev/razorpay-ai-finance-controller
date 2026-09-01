@@ -100,7 +100,8 @@ def test_amount_control_decision_agrees_with_shared_definition():
     A disagreement here means the engine flagged -- or cleared -- a
     settlement against arithmetic no other layer uses.
     """
-    from src.exceptions.manager import _MONEY_TOLERANCE, decide_batch
+    from src.config import AMOUNT_TOLERANCE
+    from src.exceptions.manager import decide_batch
 
     results = _match_results()
     decisions = {d.txn_id: d for d in decide_batch(results)}
@@ -118,7 +119,7 @@ def test_amount_control_decision_agrees_with_shared_definition():
 
         expected = settlement_expected_net(result.pg_record)
         recomputed = (
-            abs(result.bank_record.amount - expected) > _MONEY_TOLERANCE
+            abs(result.bank_record.amount - expected) > AMOUNT_TOLERANCE
         )
         reported = context["amount_mismatch"]
 
