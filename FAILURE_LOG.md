@@ -1101,7 +1101,13 @@ Listing these explicitly so nothing above is read as a completed claim.
 - **The fuzzy tier is reachable but not stress-tested.** Six records
   reach it and it recovers all six, but the amount guard is doing the
   discriminating work (section 43).
-- **Held-out sets** — 8 cases each; too small to generalise from.
+- **Held-out sets** — explanations 8 cases, narration 20, agent
+  selection 32. The explanation set is the weakest, and the narration set
+  evaluates a `TXN_` format Upgrade B removed, so it no longer reflects
+  production data.
+- **Explanation quality below the safety line** — semantic faithfulness
+  6/8, reason codes 7/8, evidence 6/8 (section 60). Safety-critical
+  failures are zero; quality gaps are not.
 - **Real bank narration** — five formats now, but still invented. Only
   the `reference_mismatch_fuzzy` category has a bank-native reference;
   every other category still uses `BANKREF_<txn_id>`, a convention no
@@ -1109,7 +1115,19 @@ Listing these explicitly so nothing above is read as a completed claim.
 - **Settlement model** — one PG transaction to one bank credit. Real
   settlements are batched: many transactions net into one transfer, minus
   refunds and chargebacks. The hard part of real reconciliation is
-  decomposing that, and this system never has to.
+  decomposing that, and this system never has to. Specified but not built
+  — see `ARCHITECTURE.md`.
+- **No refunds, chargebacks or adjustments.** Every short credit in this
+  dataset is therefore a defect; in production most are not.
+- **MDR is method-aware but simplified.** Netbanking is modelled as a
+  percentage; real netbanking is frequently a flat per-transaction fee.
+  Capped RuPay debit and ~3% international cards are not modelled.
+- **Matching is O(n²).** `find_bank_ambiguity_candidates` scans the full
+  bank pool per PG record: 4ms at n=60, 27s at n=5000 (section 54). The
+  fix — bucketing by quantised amount and date window — is specified in
+  `ARCHITECTURE.md` and not implemented.
+- **No idempotency or persistence.** Every run recomputes all exceptions
+  from scratch, including ones a human already cleared.
 - **Scale** — throughput is a benchmark on one machine, not a capacity
   claim.
 
@@ -2049,3 +2067,188 @@ DEPENDENCIES until someone read the import graph.
 > A structural test protects the claim you were thinking about when you
 > wrote it. It does not protect the claim you were most confident about,
 > which is exactly the one nobody thinks to test.
+
+---
+
+# 60. The README reported the favourable half of a measurement
+
+This is the most uncomfortable entry in this file, because it is not a
+coding error. Nothing was broken. A number was selected.
+
+## What happened
+
+`README.md` reported explanation faithfulness as:
+
+    8/8 status preserved · 8/8 amounts preserved · 8/8 tax preserved
+    0 unsupported claims · 0 safety-critical failures
+
+Every one of those is true and traceable to
+`data/eval/explanation_faithfulness_report_5C4_5.json`.
+
+That artifact contains **eight** measures. The three not quoted:
+
+    semantic_faithfulness_rate_percent   75.0   (6 of 8)
+    reason_codes_preserved               87.5   (7 of 8)
+    evidence_preserved                   75.0   (6 of 8)
+
+The README quoted the three metrics at 100% and the two at zero. It omitted
+the three below 100%, and they were disclosed **nowhere** -- not in
+`README.md`, not in `ARCHITECTURE.md`, not in this log.
+
+## Why it is worse than an ordinary drift
+
+The other four documentation problems in this file (sections 29, 49, 51,
+54) are all the same shape: something was written down and the thing it
+described moved. Nobody chose anything; the document simply fell behind.
+
+This is different. The artifact was correct and current. The summary of it
+selected. Reporting five of eight measures, and specifically the five that
+flatter, is a choice even when it is not a deliberate one.
+
+And it sits against everything else this project claims. It kept 90.16%
+over 100% when a dead code path finally ran (section 44). It withdrew a
+precision figure it had defended twice (section 36). It refused to add a
+minimum-accuracy test because that would create pressure to edit the answer
+key. Then the single place a reviewer looks first reported the good half of
+a measurement.
+
+## The artifact was more honest than the summary of it
+
+The report's own `interpretation.quality` field says:
+
+> "Reason-code and evidence gaps are reported as explanation-quality
+>  limitations. They are not reclassified as financial safety failures
+>  unless they also produce a contradiction or unsupported financial
+>  claim."
+
+So the distinction between a safety failure and a quality gap was drawn
+carefully at the point of measurement, and
+`test_quality_gap_is_not_safety_failure` asserts it holds. Only the
+summary collapsed it -- by reporting one side.
+
+## Fix
+
+`README.md` now reports both lines:
+
+    SAFETY   8/8 status · 8/8 amounts · 8/8 tax
+             0 unsupported claims · 0 safety-critical failures
+
+    QUALITY  semantic faithfulness 6/8 · reason codes 7/8 · evidence 6/8
+
+with the distinction explained rather than assumed: the first five say the
+model never contradicted a status, never invented an amount, never made an
+unsupported claim. The last three say that on two of eight cases the prose
+dropped a reason code or an evidence item it should have mentioned. **A
+worse explanation, not a wrong one** -- nothing false was asserted,
+something true was omitted.
+
+## Why the fixed version is a stronger claim
+
+Quoting only the safety line describes a 75% result as a 100% one.
+Reporting both, and explaining why they differ, demonstrates the
+safety/quality distinction rather than merely benefiting from it -- and
+that distinction is a more sophisticated thing to have built than three
+metrics at 100%.
+
+## How it was found
+
+A full read of the repository against its own documents, cross-checking
+every published number against the artifact it came from. Not by a test,
+and not by anything that could have been a test: no assertion detects that
+a true sentence is an incomplete one.
+
+**The lesson is narrower than "be honest".** It is that a summary is a
+lossy transformation of an artifact, and the loss is not random -- it
+drifts toward the favourable. The countermeasure is mechanical: when
+summarising a measurement, enumerate every field the artifact reports and
+justify each omission, rather than selecting the ones that make the point
+you already wanted to make.
+
+---
+
+# 61. Four smaller things the same review found
+
+None of these is individually interesting. They are recorded together
+because three of the four are the same failure mode as section 29, which
+that section already called "not a lesson you learn once."
+
+## 61.1 `requirements.txt` was missing `google-genai`
+
+Installed by hand during Phase 5B and never declared. Anyone cloning the
+repository and following the README got two collection errors before the
+first test ran.
+
+Found by a cold clone into a temporary directory -- not by any test,
+because every test ran in an environment where the dependency was already
+present.
+
+> "Hermetic" had been taken to mean independent of secrets. It should also
+> have meant independent of setup.
+
+Fixed by declaring it. The Stage 5 freeze now re-checks this by building a
+fresh virtualenv from `requirements.txt` alone and running the suite:
+**366 passed** in a clean clone with `GEMINI_API_KEY` unset.
+
+## 61.2 A malformed `.gitignore` line silently disabled two rules
+
+```
+!.env.exampletest_output.txt
+```
+
+Two intended entries collapsed into one filename. Git read it as a single
+literal path, so:
+
+- `.env.example` was **not** being re-included (it survived only because
+  it was already tracked)
+- `test_output.txt` was **not** being ignored at all
+
+Neither caused visible harm, which is why it survived. Found by reading the
+file during the pre-submission audit rather than by anything failing.
+
+Fixed by splitting into `!.env.example` and `test_output.txt`, and verified
+with `git check-ignore -v` on each path rather than by inspection.
+
+## 61.3 A version string that never existed
+
+`src/agent/tools/candidate_lookup.py` carried:
+
+> "Phase 0-4 remains frozen at v0.8-phase4-final."
+
+Section 29 records that `v0.6` and `v0.8` were milestones that never
+existed and that the real tags have always been `phase-3-final` through
+`phase-6-final`. This was a survivor of that cleanup -- the fifth instance
+of a family the log had already named four times.
+
+Fixed to `phase-4-final`, a tag that exists. No `v0.x` string now remains
+anywhere under `src/` or `scripts/`.
+
+## 61.4 A test that asserted a count instead of a property
+
+`tests/test_tool_registry.py` contained:
+
+```python
+def test_registry_is_not_empty():
+    assert TOOL_REGISTRY
+    assert len(TOOL_REGISTRY) == 4
+```
+
+The count is doing something the test name does not describe, and it fails
+on every legitimate addition. The fix for such a failure is to bump the
+number -- which teaches the next person to bump it without reading, at
+which point it has stopped guarding anything.
+
+Replaced with a named set:
+
+```python
+EXPECTED_TOOLS = {"get_match_rate", "get_exceptions", "get_evidence",
+                  "get_cash_position", "get_throughput_report"}
+```
+
+This is strictly stronger. A count only catches addition; a set also
+catches an accidental **removal**, which is the direction that would
+silently reduce what the agent can answer while every other test still
+passed.
+
+**The general point, and the reason this is worth four lines:** a test
+asserting a magic number is a test whose failure mode is being edited. If
+the number is a proxy for a property, assert the property.
