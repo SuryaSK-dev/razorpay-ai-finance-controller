@@ -16,7 +16,7 @@ from decimal import Decimal, InvalidOperation
 from datetime import datetime, date
 from enum import Enum
 from typing import Optional, Annotated, Any, Literal
-from pydantic import BaseModel, Field, BeforeValidator
+from pydantic import BaseModel, Field, BeforeValidator, AfterValidator
 
 # =======================================================================
 # SHARED MONEY VALIDATOR
@@ -51,6 +51,74 @@ def to_decimal(value: Any) -> Decimal:
         raise ValueError(f"Cannot convert {value!r} to Decimal: {e}")
 
 Money = Annotated[Decimal, BeforeValidator(to_decimal)]
+
+
+# =======================================================================
+# UNSUPPORTED TRANSACTION TYPES
+# A negative transaction value means a refund, a chargeback, a reversal
+# or an adjustment. This system does not model any of them, and the
+# honest response to data it cannot model is to refuse it -- not to
+# process it as though it were a forward settlement.
+#
+# WHY THIS GUARD EXISTS (FAILURE_LOG.md section 65)
+# -------------------------------------------------
+# Before it, a refund row in the bank feed was absorbed in total
+# silence. It ingested cleanly, was discarded by the tier-3 amount gate
+# as a non-candidate, and then appeared in NO decision, NO exception and
+# NO error count -- an injected refund left all of 61 decisions, 37
+# exceptions and 2 ingestion errors completely unchanged.
+#
+# The mechanism is worth understanding, because the guard is not a bug
+# fix. The amount gate that makes fuzzy matching safe is EXACTLY what
+# made the refund invisible: a -1204.78 credit cannot match a +1204.78
+# expected net, so it was correctly rejected as a candidate and then
+# silently forgotten. The system was fail-closed against a wrong MATCH
+# and silent about an unmodelled TRANSACTION TYPE. Those are different
+# properties and only one of them was guarded.
+#
+# A rejected record is reported, counted in total_errors, and printed by
+# run_pipeline.py -- the same treatment the two corrupted records get.
+# Silence is the thing being removed here, not the refund.
+UNSUPPORTED_TRANSACTION_TYPE = "UNSUPPORTED_TRANSACTION_TYPE"
+
+
+def reject_negative(value: Decimal) -> Decimal:
+    """
+    Refuse a negative transaction value.
+
+    Applied to the three fields that carry a TRANSACTION VALUE, never to
+    a component or a balance:
+
+        PGSettlementRecord.gross_amount
+        BankStatementRecord.credited_amount
+        InvoiceRecord.invoice_amount
+
+    Deliberately NOT applied to `pg_fee`, `gst_on_fee`, `tds_withheld`,
+    `net_payout`, `bank_charges`, `claimed_gst` or `claimed_tds`. A
+    negative fee component or a credit-note tax line is a different
+    question with a different answer, and guarding them here would
+    conflate "we do not model refunds" with "this number looks odd".
+    `net_payout` in particular can legitimately go negative when fees
+    exceed a small gross, which is an anomaly rather than an
+    unsupported type.
+    """
+    if value < 0:
+        raise ValueError(
+            f"{UNSUPPORTED_TRANSACTION_TYPE}: negative transaction value "
+            f"{value}. Refunds, chargebacks, reversals and adjustments "
+            f"are not modelled by this system. The record is rejected "
+            f"and reported rather than processed as a forward "
+            f"settlement -- see FAILURE_LOG.md section 65."
+        )
+    return value
+
+
+# A transaction value: the amount that moved. Never negative here,
+# because a negative one means a transaction type this system has
+# decided not to model rather than to model badly.
+SettlementValue = Annotated[
+    Decimal, BeforeValidator(to_decimal), AfterValidator(reject_negative)
+]
 
 # =======================================================================
 # ENUMS
@@ -102,7 +170,7 @@ class PGSettlementRecord(BaseModel):
     settlement_id: str
     txn_id: str
     merchant_id: str
-    gross_amount: Money
+    gross_amount: SettlementValue
     pg_fee: Money
     gst_on_fee: Money
     tds_withheld: Money = Field(default=Decimal("0"))
@@ -139,7 +207,7 @@ class PGSettlementRecord(BaseModel):
 class BankStatementRecord(BaseModel):
     bank_ref: str
     utr: Optional[str] = None
-    credited_amount: Money
+    credited_amount: SettlementValue
     value_date: date
     narration: Optional[str] = None    # messy free text — candidate for
                                         # LLM extraction in the AI sidecar
@@ -152,7 +220,7 @@ class InvoiceRecord(BaseModel):
     irn: Optional[str] = None          # e-invoice reference — can be
                                         # missing, tested explicitly
     gstin: Optional[str] = None
-    invoice_amount: Money
+    invoice_amount: SettlementValue
     claimed_gst: Money
     claimed_tds: Money
     period: str                        # e.g. "2026-08", for GSTR-2B

@@ -7,7 +7,7 @@
 ![Python](https://img.shields.io/badge/python-3.11-blue)
 ![Pydantic](https://img.shields.io/badge/contracts-Pydantic%20v2-e92063)
 ![Gemini](https://img.shields.io/badge/model-Gemini%203.1%20Flash--Lite-4285F4)
-![Tests](https://img.shields.io/badge/tests-415%20passing-brightgreen)
+![Tests](https://img.shields.io/badge/tests-424%20passing-brightgreen)
 ![Status](https://img.shields.io/badge/status-phase%206%20complete-brightgreen)
 ![Track](https://img.shields.io/badge/Razorpay%20Buildathon-Track%2004-002970)
 
@@ -115,7 +115,7 @@ razorpay-ai-finance-controller/
 ├── scripts/                          Generation, verification, evaluation, demo
 │   ├── run_pipeline.py               The deterministic core alone — no model, no key
 │   └── demo_agent.py                 The agent on top of it
-├── tests/                            415 tests across 32 files
+├── tests/                            424 tests across 33 files
 ├── data/
 │   ├── raw/                          Generated PG / bank / invoice sources
 │   ├── ground_truth.json             Never read by the pipeline — evaluation only
@@ -286,7 +286,7 @@ Reproduce with `python scripts/run_pipeline.py`, or ask the agent
 
 | Measure | Result |
 |---|---|
-| Test suite | **415 passing** across 32 files |
+| Test suite | **424 passing** across 33 files |
 | Decision policy coverage | **2048/2048** context combinations resolve deterministically |
 | Gold baseline (per-case E2E) | **0 unexplained divergences** · 51 exact · 6 not-evaluable · 6 known-policy |
 | Fuzzy tier | **6 of 61 records reach it** (was 0). Precision 1.00, recall 1.00 through threshold 90, 0.50 at 95 |

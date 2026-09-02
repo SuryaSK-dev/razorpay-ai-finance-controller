@@ -571,6 +571,25 @@ transaction dates do not reflect true sequence.
 > A running balance should come from a ledger, never be re-derived from
 > whatever ordering a batch happens to have.
 
+## Refunds, chargebacks and adjustments — refused, not modelled
+
+A negative transaction value on `gross_amount`, `credited_amount` or
+`invoice_amount` is rejected at ingestion under its own error code,
+`UNSUPPORTED_TRANSACTION_TYPE`, and reported alongside the corrupted
+records rather than processed as a forward settlement.
+
+This is a **refusal, not an implementation.** Refunds and chargebacks
+are routine in payments and this system does not model them; what it now
+guarantees is that it will not silently absorb one. Before the guard, an
+injected refund left all 61 decisions, 37 exceptions and 2 ingestion
+errors unchanged — the tier-3 amount gate correctly rejected it as a
+candidate and then nothing was responsible for it
+(`FAILURE_LOG.md` §65).
+
+Production would need reversal linkage, adjustment netting against a
+batch net, and the effect on merchant balance — the N:1 design above is
+where those belong.
+
 A missing opening balance now returns `None`, not `Decimal("0")`. Zero
 would place the seller below the ₹5,00,000 threshold, make expected TDS
 zero, and report a genuine under-withholding as correct — the one place in

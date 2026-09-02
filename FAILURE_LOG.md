@@ -1,6 +1,6 @@
 # Failure Log
 
-## AI Finance Controller — Phases 0–6, Upgrades A–B, Stages 1–8
+## AI Finance Controller — Phases 0–6, Upgrades A–B, Stages 1–9
 
 This is a record of things that went wrong while building this system, how
 they were found, and what was done about them.
@@ -43,7 +43,7 @@ Nothing here was found by a tool that was looking for it. Every entry from
 
 ---
 
-## Index — all 64 sections
+## Index — all 65 sections
 
 Grouped as they appear. Sections 45+ are standalone rather than
 phase-scoped, because they postdate Phase 6.
@@ -146,6 +146,7 @@ asserted nothing.
 - [**62.** The faithfulness validator was never on the path that runs](#62-the-faithfulness-validator-was-never-on-the-path-that-runs)
 - ★ [**63.** A hostile review found the fourth instance, in the guardrail test file](#63-a-hostile-review-found-the-fourth-instance-in-the-guardrail-test-file)
 - [**64.** The timeout was proven for one caller and assumed for the rest](#64-the-timeout-was-proven-for-one-caller-and-assumed-for-the-rest)
+- [**65.** A refund was absorbed in complete silence](#65-a-refund-was-absorbed-in-complete-silence)
 
 ---
 # Phase 0–2 — Contracts, data, ingestion
@@ -1165,7 +1166,7 @@ raw (12) == divergent (0) + not_evaluable (6) + known_policy (6)
 # 45. Current state
 
 ```
-415 / 415 tests passing
+424 / 424 tests passing
 
 Gold baseline:            stable
 Baseline divergences:     0
@@ -2305,7 +2306,7 @@ present.
 
 Fixed by declaring it. The Stage 5 freeze now re-checks this by building a
 fresh virtualenv from `requirements.txt` alone and running the suite:
-**415 passed** in a clean clone with `GEMINI_API_KEY` unset.
+**424 passed** in a clean clone with `GEMINI_API_KEY` unset.
 
 Re-run on 1 September 2026, because the original figure predated four test
 files (`test_run_pipeline.py`, `test_architecture_boundary.py`,
@@ -2344,7 +2345,8 @@ first of them. Each number belongs to the tree that produced it:
 |---|---|---|
 | section 62 — runtime faithfulness | 399 | 399 collected, 399 passed |
 | section 63 — three hostile-review fixes, eleven tests | 410 | 410 collected, 410 passed |
-| section 64 — five concurrency tests | **415** | **415 collected, 415 passed** |
+| section 64 — five concurrency tests | 415 | 415 collected, 415 passed |
+| section 65 — the refund guard, nine tests | **424** | **424 collected, 424 passed** |
 
 Both scripts exit 0 and the data invariant holds 6/6 in all three, on
 `pytest 9.1.1`. The overlay caveat above applies to each identically —
@@ -3007,3 +3009,150 @@ enforcement. This one is narrower and worth separating: the enforcement
 existed, was well built, and simply did not cover as much of the claim as
 the claim's phrasing implied. Not an absent guard -- a guard with a
 smaller domain than the sentence describing it.
+
+---
+
+# 65. A refund was absorbed in complete silence
+
+Found by red-teaming the repository against a transaction type it does
+not model -- not by any test, and not by any of the six external reviews
+that preceded it. Every one of those reviews recorded refunds as
+"disclosed, not built". That description was wrong, and the difference
+between *not built* and *silently absorbed* is the whole of this entry.
+
+## 65.1 What the injection showed
+
+A refund was appended to the bank feed: a negative credit carrying a
+`bank_ref` for `TXN_00001`, a transaction that was cleanly MATCHED. The
+full pipeline was then run against both batches.
+
+```
+                          without       with
+bank rows ingested             64         65
+ingestion errors                2          2
+decisions                      61         61
+exceptions (non-MATCHED)       37         37
+AMBIGUOUS                       6          6
+DUPLICATE_DETECTED              3          3
+TXN_00001              MATCHED/NONE   MATCHED/NONE
+```
+
+**Nothing moved.** The row ingested cleanly, produced no decision, no
+exception, and no error. It did not raise `total_errors`. It was not
+flagged ambiguous or duplicate. An operator running the pipeline would
+have seen an identical report with a refund sitting in the input.
+
+And no contract forbade it: `PGSettlementRecord(gross_amount="-1000.00")`
+constructed without complaint. There was no positive-value constraint
+anywhere in `src/`.
+
+## 65.2 The mechanism, which is the part worth keeping
+
+This was not a hole in the guards. It was a **consequence** of one.
+
+Tier 3 gates candidates on amount before similarity is computed -- the
+rule that stops "TXN-123" matching "TXN-1234". A credit of -1204.78
+cannot match an expected net of +1204.78, so the refund was **correctly**
+rejected as a candidate. Having been rejected, it was then forgotten,
+because nothing downstream is responsible for bank rows that matched
+nothing.
+
+> The amount gate that makes fuzzy matching safe is exactly what made
+> the refund invisible.
+
+Stated as a property: the system was **fail-closed against a wrong
+match** and **silent about an unmodelled transaction type**. Those are
+different guarantees. Only one of them had ever been written down, and
+the other was assumed to follow from it.
+
+This is the fifth instance of the pattern sections 4, 20, 62, 63 and 64
+have already named, and it is the first one that is a *silence* rather
+than a wrong claim. Sections 62-64 were all "a claim enforced by
+something that could not enforce it". This is narrower and worse: **a
+guarantee nobody had thought to claim, and therefore nobody had thought
+to test.**
+
+## 65.3 Why this mattered more than it looks
+
+No number in this repository was ever wrong because of it. The shipped
+batch contains no negative values, so every published figure is
+unaffected -- the decision snapshot is byte-identical at
+`1392ddf1a3c2ea1c` before and after the fix.
+
+The exposure is what the system would do the first time it met real
+data. Refunds and chargebacks are not edge cases in payments; they are
+routine. A reconciliation engine that quietly drops them reports a cash
+position that is confidently and invisibly wrong, which is precisely the
+failure this project's opening paragraph says it exists to prevent:
+
+> "Reconciliation is dangerous when the system is confident and wrong."
+
+## 65.4 The fix, and what it deliberately is not
+
+`src/models.py` gains `SettlementValue` -- `Money` plus a
+`reject_negative` check -- applied to exactly three fields:
+
+```
+PGSettlementRecord.gross_amount
+BankStatementRecord.credited_amount
+InvoiceRecord.invoice_amount
+```
+
+A negative value on any of them raises with the marker
+`UNSUPPORTED_TRANSACTION_TYPE`, and `loader.py` classifies it under that
+code rather than the generic `SCHEMA_VALIDATION_FAILED`. The record is
+then reported and counted exactly like the two corrupted records already
+are -- printed by `run_pipeline.py`, included in `total_errors`, raw
+payload preserved:
+
+```
+[bank#64] UNSUPPORTED_TRANSACTION_TYPE
+   {'bank_ref': 'BANKREF_TXN_00001', 'credited_amount': '-1204.78'}
+```
+
+**This does not implement refunds.** It refuses them, explicitly and
+countably. That distinction is the entire point: implementing refund
+semantics without the settlement lifecycle around them -- reversal
+linkage, adjustment netting, the effect on merchant balance -- would be
+inventing business logic to avoid admitting a gap, which is worse than
+the gap.
+
+**Three fields, not all of them.** `pg_fee`, `gst_on_fee`,
+`tds_withheld`, `net_payout`, `bank_charges`, `claimed_gst` and
+`claimed_tds` are deliberately unguarded. `net_payout` can legitimately
+go negative when fees exceed a small gross, which is an anomaly for the
+decision table to route rather than an unsupported type; a credit-note
+tax line is a different question again. Guarding them would have
+conflated "we do not model refunds" with "this number looks odd", and
+`test_fee_components_are_not_guarded` pins that scope so it stays a
+decision rather than an accident of which fields somebody annotated.
+
+## 65.5 Regression protection
+
+`tests/test_unsupported_transaction_types.py`, nine tests. Three
+contract-level refusals, a zero boundary (zero is unusual, not
+unsupported -- and UPI is zero-rated, so refusing zero would break
+correct records), the deliberately-unguarded scope, and four end-to-end
+tests that rebuild the batch with a refund in it and assert it raises
+the error count, carries its own code, and keeps its raw payload.
+
+The last one is the control: `test_the_real_batch_is_completely_unaffected`
+asserts 61/64/60 valid records, exactly two ingestion errors, and that
+neither existing rejection was reclassified. That is what made this safe
+to change four days before a deadline -- the guard is provably invisible
+on the data being submitted.
+
+Suite 415 -> **424**.
+
+## 65.6 The generalisable version
+
+> Fail-closed is a property of a specific question. This system was
+> fail-closed on "is this the right match?" and had never been asked
+> "is this a transaction I model at all?"
+
+And the process lesson, which is the more useful one:
+
+> Six reviews read this repository and all six recorded refunds as a
+> documented gap. None of them put a refund into the input and ran it.
+> Reading a system tells you what it claims; injecting the thing it does
+> not model tells you what it does.

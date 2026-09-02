@@ -21,6 +21,7 @@ from typing import Any, TypeVar, Type
 from pydantic import BaseModel, ValidationError
 
 from src.models import PGSettlementRecord, BankStatementRecord, InvoiceRecord
+from src.models import UNSUPPORTED_TRANSACTION_TYPE
 
 T = TypeVar("T", bound=BaseModel)
 
@@ -95,12 +96,27 @@ def load_json_records(path: Path, model_cls: Type[T], source_name: str) -> Inges
             validated = model_cls(**raw)
             result.valid_records.append(validated)
         except ValidationError as exc:
+            message = str(exc)
+
+            # A malformed record and an unsupported transaction type are
+            # both rejections, and they are not the same finding. One is
+            # "this row is broken"; the other is "this row is fine and
+            # describes something we have chosen not to model". The
+            # error_code docstring above calls itself a stable,
+            # aggregatable identifier -- so a refund aggregates as a
+            # refund rather than hiding inside the schema-failure count.
+            code = (
+                UNSUPPORTED_TRANSACTION_TYPE
+                if UNSUPPORTED_TRANSACTION_TYPE in message
+                else "SCHEMA_VALIDATION_FAILED"
+            )
+
             result.errors.append(IngestionError(
                 source=source_name,
                 index=idx,
                 raw_record=raw,
-                error_message=str(exc),
-                error_code="SCHEMA_VALIDATION_FAILED",
+                error_message=message,
+                error_code=code,
             ))
 
     return result
