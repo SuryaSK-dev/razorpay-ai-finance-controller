@@ -2354,7 +2354,7 @@ clone checked to contain no file the submitted tree lacks.
 **The overlay caveat is now discharged.** Every run above carried some
 files into the clone by copy, because the fix under test was not yet
 committed -- so each proved the *tree* hermetic without proving the
-*commit* was. On 1 September, with everything committed and pushed, the
+*commit* was. On 2 September, with everything committed and pushed, the
 check was run once more as a plain `git clone` of the pushed commit,
 with no overlay of any kind:
 
