@@ -1,13 +1,23 @@
 # ROADMAP
 
 Post-submission plan for the AI Finance Controller.
-Frozen at `submission-final` → `426d4a0`.
+Written against `426d4a0`, which carried the `submission-final` tag at
+the time. That tag now points at `0c396ef`, so check out the commit
+rather than the tag to read this document against the tree it describes.
 
 **Status update.** V1.0.5, V1.1, V1.3 and V2 have since shipped — recorded
-as `FAILURE_LOG.md` §66, §67 and §68. Suite 424 → **455**; decision
-snapshot `1392ddf1a3c2ea1c` unchanged throughout. Both findings below are
-now closed, and the sections that describe them are kept as written
-because they are the evidence for why the ordering was what it was.
+as `FAILURE_LOG.md` §66, §67 and §68. Suite 424 → **471**; the
+decisions themselves did not move — 61 records, the same statuses,
+exception codes, reason codes and confidence scores throughout, now
+pinned by `tests/test_decision_snapshot.py` as `d8134bab221d1046`.
+The `1392ddf1a3c2ea1c` quoted in `FAILURE_LOG.md` §63, §65, §66, §67
+and §68, and in the V1.0.5 item below, was computed by an ad-hoc probe
+that was never committed and cannot be reproduced; those passages keep
+it as the historical record of runs that happened, and
+the pinned hash above is the value a mechanism now enforces. Both
+findings below are closed, and the sections that describe them are
+kept as written because they are the evidence for why the ordering
+was what it was.
 
 Every claim about current behaviour in this document was checked against
 the code at that commit. The command or `file:line` is given inline.
@@ -22,7 +32,7 @@ GST and TDS, classifies every unresolved record into a typed exception
 with the decision rule that produced it, and reports the batch in rupees.
 It measures itself: 24/61 matched (39.34%), 55/61 agreeing with
 independent ground truth (90.16%), 37 exceptions itemised, throughput
-recorded with its O(n²) ceiling disclosed. 455 tests pass from a cold
+recorded with its O(n²) ceiling disclosed. 471 tests pass from a cold
 clone with no API key. The AI layer selects among five read-only tools
 and phrases results; it holds no financial authority.
 

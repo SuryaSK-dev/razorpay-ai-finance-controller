@@ -43,15 +43,16 @@ Nothing here was found by a tool that was looking for it. Every entry from
 
 ---
 
-## Index — all 69 sections
+## Index — all 70 sections
 
 Grouped as they appear. Sections 45+ are standalone rather than
 phase-scoped, because they postdate Phase 6.
 
-**If you only read three:** the three marked ★ below — six records
+**If you only read four:** the four marked ★ below — six records
 fail-opening while 162 tests passed, throughput published as linear for
-four phases while the engine was quadratic, and a guardrail test that
-asserted nothing.
+four phases while the engine was quadratic, a guardrail test that
+asserted nothing, and the hash cited eight times as proof the money had
+not moved, which nothing in the repository could compute.
 
 **Phase 0–2 — Contracts, data, ingestion**
 
@@ -151,6 +152,7 @@ asserted nothing.
 - [**67.** The triage view ignored a severity ordering that already existed](#67-the-triage-view-ignored-a-severity-ordering-that-already-existed)
 - [**68.** The exception payload carried no money](#68-the-exception-payload-carried-no-money)
 - [**69.** The eval had no throttle, so it measured the rate limit](#69-the-eval-had-no-throttle-so-it-measured-the-rate-limit)
+- ★ [**70.** The most-cited invariant in the project had no mechanism](#70-the-most-cited-invariant-in-the-project-had-no-mechanism)
 
 ---
 # Phase 0–2 — Contracts, data, ingestion
@@ -1170,7 +1172,7 @@ raw (12) == divergent (0) + not_evaluable (6) + known_policy (6)
 # 45. Current state
 
 ```
-455 / 455 tests passing
+471 / 471 tests passing
 
 Gold baseline:            stable
 Baseline divergences:     0
@@ -1179,6 +1181,8 @@ Known policy divergences: 6  (fail-closed, documented)
 Raw mismatches:           12
 Measured accuracy:        55/61 (90.16%)
 Decision policy coverage: 2048/2048
+Decision snapshot:        d8134bab221d1046 (pinned, and the pin has
+                          controls -- tests/test_decision_snapshot.py)
 Fuzzy tier:               6 of 61 records reach it
 Accidental collisions:    0
 Settlement arithmetic:    1 definition (was 4)
@@ -3650,3 +3654,142 @@ And the narrower one, which is really about tooling:
 > A script that cannot run under the constraints its own project
 > declares is not a working script. `AGENT_FREE_ONLY` was in the
 > configuration and the evaluator ignored it.
+
+---
+
+# 70. The most-cited invariant in the project had no mechanism
+
+Found by a pre-submission verification gate whose first instruction was
+"confirm the decision snapshot hash is unchanged." I could not. Not
+because it had moved — because nothing in the repository computed it.
+
+## 70.1 What the claim was
+
+Sections 62 through 68 each close with a sentence of the same shape:
+
+> The decision snapshot over all 61 records is byte-identical before and
+> after -- hash `1392ddf1a3c2ea1c` -- because no record in this batch is
+> missing the field.
+
+That hash is the load-bearing evidence in all four of the biggest
+refactors this project shipped after the freeze. It is what "the money
+did not move" reduced to. It appears eight times: `FAILURE_LOG.md` §63,
+§65, §66, §67, §68, and `ROADMAP.md` three times, once as a hard
+precondition —
+
+> **Decision snapshot `1392ddf1a3c2ea1c` must not move** — unclaimed rows
+> produce no `MatchDecision`, so if the hash changes, the implementation
+> has leaked into the per-record path and is wrong.
+
+That is a specification. It governed the design of §66. And it was
+checkable by nobody.
+
+## 70.2 There was no test, no script, no fixture
+
+`grep -rn 1392ddf1a3c2ea1c` returns markdown and nothing else. No
+`hexdigest`, no `blake2`, no `sha256` anywhere in `src/`, `tests/` or
+`scripts/`. The value came from an ad-hoc probe typed into a scratch
+file, read once, and thrown away.
+
+I tried to recover the recipe rather than replace it, because a recovered
+one keeps every published citation true. **1,720,110 candidate recipes:**
+seven hash functions across every subset of the six decision fields,
+five separators, three join strings, over both the 61-record and
+37-record sets. No hit.
+
+```
+tried 245730 blobs x 7 algos = 1720110
+HITS: NONE
+```
+
+The original is unrecoverable. Its own author cannot reproduce it.
+
+## 70.3 Why this is section 63 again, and worse
+
+§63.7 names four costumes for one defect — a test name, a comment
+applied elsewhere, a README sentence, a convention — and the lesson
+written there was that every guard needs a control proving it can fail.
+
+This is the same defect in a fifth costume, and it is the worst of them,
+because those four were enforced by *something*: a weak something, but a
+something a reader could go and look at. This one was enforced by a
+number in prose. A reader checks it by believing it.
+
+> The strongest-stated invariant in the project was the one with no
+> mechanism. The confidence in the sentence came from how specific the
+> number looked.
+
+Sixteen hex digits read as machine-verified. That is exactly why it was
+never questioned across six review rounds, including three that were
+explicitly adversarial and one that re-derived every other figure in the
+repository from a command.
+
+## 70.4 The fix, and what it cost
+
+`tests/test_decision_snapshot.py`. The recipe is now written down:
+decisions sorted by `txn_id`, one line each, newline-joined, UTF-8,
+`blake2b(digest_size=8)`.
+
+```
+txn_id|status|exception_code|reason_codes|confidence_score|matched_rule
+```
+
+The pin is **`d8134bab221d1046`**. It differs from the published value
+only because the recipe is a new one. **The decisions did not move** —
+24/61 matched, 37 exceptions, 55/61 on both accuracy measures, and all
+four cash buckets are unchanged and separately asserted.
+
+`matched_rule` is in the recipe deliberately, and mutation-testing is
+what earned it. In a throwaway clone I renamed one decision rule,
+`fully_clean_match` → `fully_clean_match_v2`, leaving status, exception
+code and confidence untouched:
+
+```
+Match rate: 24/61 (39.34%)      settled  292,353.70    STATUS      55/61
+37 exceptions                   blocked  601,761.49    EXCEPTION   55/61
+```
+
+Every published number identical. The pin fired anyway. A snapshot
+without the rule would have been quietly narrower than the sentence it is
+asked to support — it would have called a change to *how* this batch is
+decided no change at all.
+
+**The controls**, because a pin that cannot fail is decoration:
+`test_every_field_of_the_recipe_is_load_bearing` mutates each of the six
+fields in turn and requires the hash to move for every one, refusing to
+run vacuously if a field already holds the mutation value. Three more
+cover a dropped record, an added record, and reason codes in a different
+order — they are a sequence, not a set, and the primary violation comes
+first (§4). Two real engine mutations were run against a clean clone and
+both failed the pin.
+
+Suite 455 → **471**. Cold clone re-verified: fresh `git clone`, new
+virtualenv from `requirements.txt` alone, `GEMINI_API_KEY` unset, **471
+passed**, all three scripts exit 0.
+
+## 70.5 What was left alone, and why
+
+`1392ddf1a3c2ea1c` stays in §63, §65, §66, §67 and §68, and in the V1.0.5
+item in `ROADMAP.md`. Those sentences describe runs that happened. §61.1
+records what a blanket sweep does to a dated figure, and the lesson there
+was that **a published number has a tense**. Rewriting them to the new
+hash would claim those runs verified something they did not.
+
+One line did have to change: `ROADMAP.md`'s status update asserted the
+hash was "unchanged throughout" in the present tense, which would have
+put the tree in contradiction with the test being added. It now names the
+pin, and says plainly that the old value came from a probe nobody kept.
+
+## 70.6 The generalisable version
+
+> A number specific enough to look machine-generated will be trusted as
+> machine-generated. Sixteen hex digits are not a mechanism; they are a
+> claim wearing a mechanism's clothes.
+
+And the operational one, which is the whole of §63 restated in a form
+that would have caught this:
+
+> If a document cites a value as evidence, a command in the repository
+> must reproduce it. Not "should" — the citation is worth exactly as much
+> as the command that backs it, and where there is no command the
+> citation is worth nothing, however precise it looks.
