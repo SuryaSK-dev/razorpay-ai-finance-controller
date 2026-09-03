@@ -1,9 +1,10 @@
 # ROADMAP
 
 Post-submission plan for the AI Finance Controller.
-Written against `426d4a0`, which carried the `submission-final` tag at
-the time. That tag now points at `0c396ef`, so check out the commit
-rather than the tag to read this document against the tree it describes.
+Written against `426d4a0`. The `submission-final` tag has moved since,
+so read this document against that commit rather than against the tag
+(`git show 426d4a0:ROADMAP.md`); `git rev-parse submission-final^{commit}`
+says where the tag currently points.
 
 **Status update.** V1.0.5, V1.1, V1.3 and V2 have since shipped — recorded
 as `FAILURE_LOG.md` §66, §67 and §68. Suite 424 → **471**; the
