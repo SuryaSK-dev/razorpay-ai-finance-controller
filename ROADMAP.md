@@ -3,6 +3,12 @@
 Post-submission plan for the AI Finance Controller.
 Frozen at `submission-final` → `426d4a0`.
 
+**Status update.** V1.0.5, V1.1, V1.3 and V2 have since shipped — recorded
+as `FAILURE_LOG.md` §66, §67 and §68. Suite 424 → **455**; decision
+snapshot `1392ddf1a3c2ea1c` unchanged throughout. Both findings below are
+now closed, and the sections that describe them are kept as written
+because they are the evidence for why the ordering was what it was.
+
 Every claim about current behaviour in this document was checked against
 the code at that commit. The command or `file:line` is given inline.
 Anything not verifiable is marked **UNVERIFIED**.
@@ -16,7 +22,7 @@ GST and TDS, classifies every unresolved record into a typed exception
 with the decision rule that produced it, and reports the batch in rupees.
 It measures itself: 24/61 matched (39.34%), 55/61 agreeing with
 independent ground truth (90.16%), 37 exceptions itemised, throughput
-recorded with its O(n²) ceiling disclosed. 424 tests pass from a cold
+recorded with its O(n²) ceiling disclosed. 455 tests pass from a cold
 clone with no API key. The AI layer selects among five read-only tools
 and phrases results; it holds no financial authority.
 
@@ -117,7 +123,7 @@ guessing.
 
 ## 3. The items
 
-## V1.0.5 — Reconciliation completeness assertion
+## V1.0.5 — Reconciliation completeness assertion  ✅ SHIPPED (§66)
 
 **PROBLEM**
 Reconciliation is PG-anchored. A well-formed bank credit that no PG
@@ -185,7 +191,7 @@ Unclaimed rows are a **separate report**, not a 62nd decision.
 
 ---
 
-## V1.1 — Severity-ranked exceptions
+## V1.1 — Severity-ranked exceptions  ✅ SHIPPED (§67)
 
 **PROBLEM**
 `get_exceptions()` sorts by `txn_id` (`query_tools.py:275`). An operator
@@ -293,7 +299,7 @@ what stops that shipping silently.
 
 ---
 
-## V1.3 — Documentation-sweep hardening
+## V1.3 — Documentation-sweep hardening  ✅ SHIPPED (§67)
 
 **PROBLEM**
 `scripts/report_accuracy.py:305` prints *"exhaustively tested over all
@@ -307,6 +313,10 @@ figure.
 `grep -rn "512" scripts/` → one hit, `report_accuracy.py:305`.
 `FAILURE_LOG.md` §9 records the 512 sweep as historical; the coverage
 claim is 2048/2048.
+
+**Fixed.** `report_accuracy.py:305` now prints 2048, and the
+number-consistency sweep was widened to cover `scripts/` — the directory
+it had never included, which is how the stale string survived.
 
 **BLOCKED BY**
 Nothing.
@@ -405,7 +415,7 @@ two ratios so the reader can see the sensitivity.
 
 ---
 
-## V2 — The case dossier
+## V2 — The case dossier  ✅ SHIPPED (§68)
 
 **PROBLEM**
 Finding B. The exception payload carries no money, no dates, no

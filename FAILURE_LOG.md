@@ -43,7 +43,7 @@ Nothing here was found by a tool that was looking for it. Every entry from
 
 ---
 
-## Index — all 65 sections
+## Index — all 68 sections
 
 Grouped as they appear. Sections 45+ are standalone rather than
 phase-scoped, because they postdate Phase 6.
@@ -147,6 +147,9 @@ asserted nothing.
 - ★ [**63.** A hostile review found the fourth instance, in the guardrail test file](#63-a-hostile-review-found-the-fourth-instance-in-the-guardrail-test-file)
 - [**64.** The timeout was proven for one caller and assumed for the rest](#64-the-timeout-was-proven-for-one-caller-and-assumed-for-the-rest)
 - [**65.** A refund was absorbed in complete silence](#65-a-refund-was-absorbed-in-complete-silence)
+- [**66.** Reconciliation is PG-anchored, so unclaimed bank rows were invisible](#66-reconciliation-is-pg-anchored-so-unclaimed-bank-rows-were-invisible)
+- [**67.** The triage view ignored a severity ordering that already existed](#67-the-triage-view-ignored-a-severity-ordering-that-already-existed)
+- [**68.** The exception payload carried no money](#68-the-exception-payload-carried-no-money)
 
 ---
 # Phase 0–2 — Contracts, data, ingestion
@@ -1166,7 +1169,7 @@ raw (12) == divergent (0) + not_evaluable (6) + known_policy (6)
 # 45. Current state
 
 ```
-424 / 424 tests passing
+455 / 455 tests passing
 
 Gold baseline:            stable
 Baseline divergences:     0
@@ -3156,3 +3159,361 @@ And the process lesson, which is the more useful one:
 > documented gap. None of them put a refund into the input and ran it.
 > Reading a system tells you what it claims; injecting the thing it does
 > not model tells you what it does.
+
+---
+
+# 66. Reconciliation is PG-anchored, so unclaimed bank rows were invisible
+
+Section 65 closed the silence for negatives: a refund is refused at
+ingestion before it reaches matching. This closes the general case, which
+is bigger and was still open — a perfectly well-formed **positive** bank
+credit that no settlement claims.
+
+## 66.1 The shape of it
+
+`run_matching()` emits one MatchResult per PG record — its own docstring
+says so — and `decide_batch()` iterates those results. Bank rows are
+therefore only ever visited as **candidates for a PG anchor**. Nothing
+scanned the bank pool for rows that no anchor selected.
+
+The batch has 64 bank rows against 61 PG records. Measured:
+
+```
+bank rows          64
+selected            59
+never selected       5   -> in no decision, no exception, no error count
+```
+
+Five rows of real bank activity, absent from every output the system
+produces.
+
+## 66.2 What the five turned out to be
+
+Naming them is the difference between a number and a finding, and they
+split cleanly in two:
+
+**Three are duplicate credits.** `TXN_00051`, `TXN_00052`, `TXN_00053`
+are the `duplicate` generation category. Each has two bank credits; one
+is selected, and the second is the duplicate leg. These are **already
+reported** — the decision table flags all three records
+`DUPLICATE_DETECTED` at priority 1. Counting them as unclaimed would
+report one finding twice.
+
+**Two are genuinely orphaned, and they are the interesting ones.**
+`BANKREF_TXN_00060` and `BANKREF_TXN_00061` resolve to the two `corrupted`
+PG records rejected at ingestion for an unparseable gross. No PG record
+survives, so no MatchResult exists to claim their credits.
+
+> The cash position reports those two records as carrying an **unknown**
+> amount, because their gross cannot be parsed. This says the thing the
+> cash position cannot: **the bank moved INR 517.48 against them anyway.**
+
+That is money the batch cannot explain, and before this it appeared
+nowhere at all.
+
+## 66.3 What was built, and what was deliberately not
+
+`src/matching/completeness.py` partitions the bank pool:
+
+```
+SELECTED           the chosen bank_record of some MatchResult      59
+DUPLICATE_CREDIT   not selected, but another row for the same
+                   txn_id was — the second leg of a duplicate       3
+ORPHANED           not selected, and nothing claims its txn_id      2
+```
+
+Disjoint and exhaustive. The assertion is the **partition**; the counts
+are a consequence of it, and both are tested separately so a drift in
+either is legible on its own.
+
+**Classification is structural, and deliberately does not read the
+decisions.** A duplicate leg is identified by the fact that another row
+resolving to the same `txn_id` was selected — not by looking up
+`DUPLICATE_DETECTED`. Completeness stays independent of decision policy,
+so a change to the decision table cannot silently change what counts as
+accounted for.
+
+**No new `DecisionStatus`, and no new decision.** An unclaimed bank row is
+not a decision *about* a PG transaction; it has no `txn_id` of its own to
+anchor to. Synthesising a 62nd decision for one would change the
+61-record denominator that every published percentage rests on.
+`test_completeness_creates_no_decisions_and_no_statuses` asserts that
+directly: still 61 decisions, and no orphaned row appears among them.
+
+**Orphaned value is reported separately from the cash position.** The
+four cash buckets measure the 61-record settlement *expectation*;
+INR 517.48 the bank moved against records that were never parsed is not
+part of that expectation, and folding it in would change figures that
+mean something else.
+
+`run_pipeline.py` prints the accounting in a new stage 3b, the way it
+already prints ingestion rejections — counted, itemised, never dropped.
+
+## 66.4 Two controls, because one is not enough
+
+Section 63 records that a guard shipped without a test proving it can
+fail is indistinguishable from a guard with a typo in its condition.
+There are two here, because there are two ways this can be decorative:
+
+**`test_an_added_orphan_is_reported`** — injects a bank row nothing can
+claim and asserts the orphan count rises. Without it, a classifier that
+returned `SELECTED` for everything would pass every count assertion above
+on this batch.
+
+**`test_the_partition_breaks_if_a_row_goes_missing`** — constructs a
+report with a row dropped and asserts `is_complete` returns False. Without
+it, `is_complete` could be a property that returns True unconditionally,
+and every count would still look plausible.
+
+## 66.5 The generalisable version
+
+> A guarantee is a property of a specific question. This system was
+> complete over "did every PG record get a decision?" and had never been
+> asked "did every bank row get an answer?"
+
+Section 65 was the same defect in the negative direction, found by
+injecting a refund. This one was found by counting — and the reason it
+survived §65 is that §65's fix was scoped to the thing that had been
+injected, not to the class the injection belonged to.
+
+Suite 424 → **434**. Decision snapshot `1392ddf1a3c2ea1c` unchanged;
+match rate, accuracy, exception count and every cash bucket unchanged.
+The completeness report is a new output, not a change to an existing one.
+
+---
+
+# 67. The triage view ignored a severity ordering that already existed
+
+`get_exceptions()` sorted by `txn_id`. Alphabetical — the least useful
+order an operator can be handed, and the one that makes a finance analyst
+with 37 exceptions at 9am start at whichever transaction happens to sort
+first.
+
+Meanwhile `DECISION_TABLE` already carried an explicit `priority=0..11`
+per rule, authored deliberately, swept over all 2048 context combinations
+and tested. The severity ordering existed, was correct, and was thrown
+away at the point it would have been useful.
+
+## 67.1 The obvious derivation is lossy, and quietly so
+
+The natural mapping is the one that looks right:
+
+```python
+PRIORITY_BY_CODE = {rule.exception_code: rule.priority for rule in DECISION_TABLE}
+```
+
+`ExceptionCode.HUMAN_REVIEW_REQUIRED` is emitted by **three** rules:
+
+```
+p0    no_candidates_at_all            nothing matched at all
+p9    tax_unverifiable_but_matched    matched, tax could not be checked
+p11   catch_all_unresolved_state      the backstop
+```
+
+A dict comprehension keeps the **last** binding. So the single most
+severe state in the entire table — no candidates found, priority 0 —
+would inherit the catch-all's priority of 11 and sort **last**. The
+mapping would look derived, be derived, and still be wrong.
+
+Rule names are unique (12 of 12), and every decision records the rule
+that fired in `evidence["matched_rule"]` — verified, 61 of 61. That key is
+exact:
+
+```python
+_PRIORITY_BY_RULE = {rule.name: rule.priority for rule in DECISION_TABLE}
+```
+
+A fallback exists for a decision with no recorded rule, and it takes the
+**minimum** priority among rules emitting that code, not the last.
+Under-stating severity is the direction that hides work.
+
+`test_the_code_keyed_mapping_would_have_been_wrong` pins this reasoning
+so it cannot be "simplified" back into a bug — and it is written to fail
+if `DECISION_TABLE` ever changes so that each code maps to one rule, at
+which point the note is stale and the simpler key is fine.
+
+## 67.2 The order, and why confidence breaks the tie
+
+```
+policy priority  →  confidence ascending  →  txn_id
+```
+
+Confidence ascending is deliberate. Two records at the same priority are
+not equally urgent, and the one the engine was **least** sure about is
+the one a human should see first. `txn_id` last makes the order total and
+stable, so the list is reproducible across calls.
+
+`triage_rank` is dense 1..N, assigned after the sort so the rank *is* the
+position rather than a parallel claim about it. `triage_basis` states why
+each record sits where it does — an ordering an operator cannot interrogate
+is an ordering they will not trust.
+
+## 67.3 The metric did not move, and that is the interesting part
+
+The exception payload changed shape, so the tool-selection eval was
+re-run on the expectation that 31/32 might move.
+
+**It is byte-identical.** `git diff` on
+`agent_tool_selection_report.json` reports no change: baseline 27/32,
+model 31/32, all 32 model cases preserved.
+
+That is not luck. The eval scores **routing** — question in, tool name
+and arguments out — and at selection time the model sees the tool
+catalogue, never the data. A change to what a tool *returns* cannot
+influence which tool gets *chosen*. The boundary that makes the AI claim
+defensible is the same property that makes this class of change safe to
+make.
+
+The §57 protection also held: a baseline-only run preserved the recorded
+model half rather than overwriting it with `null`.
+
+## 67.4 One existing test was migrated, not deleted
+
+`test_exception_list_is_deterministically_ordered` asserted two things:
+
+```python
+assert first == second          # determinism
+assert first == sorted(first)   # alphabetical by txn_id
+```
+
+The second is exactly the property this section changes. The test was
+**updated, not removed**: determinism is still asserted, and the order
+assertion now checks the new total key `(policy_priority,
+confidence_score, txn_id)`. The docstring records what it used to say and
+why it changed.
+
+Deleting it would have been the §63 mistake — the risk it guards, a
+non-reproducible exception list, did not go away just because the sort
+key did.
+
+## 67.5 What this does not do
+
+It ranks by **policy severity only**. A ₹200 timing difference and a
+₹90,000 amount mismatch at the same priority still sort by confidence and
+then alphabetically, because the exception payload carries no money.
+
+That is the next section. Ranking by exposure needs exposure to exist
+first, and it does not yet.
+
+Suite 434 → **443**. Decision snapshot `1392ddf1a3c2ea1c` unchanged; same
+37 records returned, reordered; no field's value altered.
+
+---
+
+# 68. The exception payload carried no money
+
+`get_exceptions()` returned `txn_id`, `status`, `exception_code`,
+`reason_codes`, `confidence_score`, `confidence_tier`, `matched_sources`
+and `tax_verified`. Eight fields, and not one of them was money. No
+amount, no variance, no dates.
+
+`"amount"` appeared exactly once as a payload key in the whole of
+`query_tools.py` — a bucket total inside `get_cash_position()`.
+
+So the system could say **INR 601,761.49 is blocked across 32 records**
+and could not say which record held how much.
+
+## 68.1 Why this was the blocking item
+
+This is the reason every multi-step agent proposal was rejected before
+submission, and the reason the roadmap orders the information model ahead
+of the agent.
+
+An agent asked *"what should I work first?"* had eight fields to reason
+over, none of which was money, a date, or a variance. Multi-step
+orchestration on top of that produces something that sounds analytical
+and is guessing — and, from the outside, is indistinguishable from
+something that works.
+
+> The information model precedes the agent. Not as a principle stated
+> once, but as an ordering that can be checked: run
+> `get_exceptions()["exceptions"][0]` and count the fields.
+
+Refusing to build the agent was the correct call. Building the fields is
+what makes the refusal temporary rather than permanent.
+
+## 68.2 What was added, and what was carefully not
+
+Per exception row:
+
+```
+expected_net      what should have been credited
+observed_amount   what the bank actually credited, or null
+variance          expected_net - observed_amount, or null
+pg_date           the settlement date
+bank_date         the credit date, or null
+identifiers       txn_id, utr, bank_ref, invoice_id — as present
+provenance        which source each field came from
+```
+
+**No new financial computation.** `expected_net` comes from
+`settlement_expected_net()` in `financial.py` — the single definition
+section 52 collapsed four copies into, and which
+`test_no_module_re_derives_expected_net_inline` exists to protect. Every
+other value is read off the `MatchResult` that produced the decision. The
+change surfaces data; it does not create any.
+
+**Absent is null, never zero.** A settlement with no bank counterpart has
+an UNKNOWN observed amount. Reporting `0.00` would make a missing credit
+indistinguishable from a zero credit — the exact conflation
+`financial.py` carries a comment about, the fail-open section 63.2
+closed, and the same rule the cash position already applies to the two
+unparseable records.
+
+That rule needs a control, because zero is also a *legitimate* value —
+UPI is zero-rated, so a zero fee is correct.
+`test_no_dossier_amount_is_ever_the_string_zero_by_default` asserts every
+`0.00` is backed by a real source record. Without it, "never zero for
+absent" and "never zero at all" would be indistinguishable, and the
+second is wrong.
+
+**Amounts are quantised strings**, matching the existing
+`get_cash_position()` convention. A float in a payload is a precision
+loss waiting to be serialised.
+
+## 68.3 The test that would catch a re-derivation
+
+Exceptions are every non-MATCHED record, and MATCHED is the only status
+mapping to `settled_and_verified`. So this identity must hold exactly:
+
+```
+sum(expected_net over exception rows)  ==  every cash bucket except settled
+                            707546.40  ==  707546.40
+```
+
+In `Decimal`, not to a tolerance. A tolerance is where a re-derivation
+would hide — two formulas that agree to the paise on this batch and
+diverge on the next one. `test_the_bucket_mapping_makes_that_identity_true`
+pins *why* the identity holds, so a change to `CASH_BUCKET_BY_STATUS`
+fails with an explanation rather than as an unexplained number.
+
+## 68.4 The metric did not move, again
+
+The payload changed shape a second time, so the tool-selection eval was
+re-run again. Byte-identical again: baseline 27/32, model 31/32, all 32
+model cases preserved, `git diff` empty.
+
+Same reason as section 67. The eval scores **routing**, and at selection
+the model sees the tool catalogue, never the data. Changing what a tool
+*returns* cannot influence which tool is *chosen*.
+
+That is worth stating plainly, because it is the boundary paying rent:
+the property that makes the AI claim defensible is the same property that
+made two payload changes safe to ship without re-rolling a published
+figure.
+
+## 68.5 What is now possible, and what still is not
+
+**Possible:** value-weighted prioritisation. Policy severity from section
+67 plus rupee exposure from this section is enough to rank a work queue
+deterministically. That is the next item, and the model must explain the
+ranking, never invent it.
+
+**Still not:** multi-step investigation. It requires redesigning
+`answer.data == getattr(context, tool)(**args)` into a per-step form, and
+that is its own design with its own failure modes. Having the fields does
+not make the agent safe; it removes the reason it could not be built.
+
+Suite 443 → **455**. Decision snapshot `1392ddf1a3c2ea1c` unchanged
+through all three changes; match rate, accuracy, exception count and
+every cash bucket unchanged.
