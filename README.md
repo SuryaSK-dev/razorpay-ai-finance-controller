@@ -295,7 +295,7 @@ Reproduce with `python scripts/run_pipeline.py`, or ask the agent
 | Throughput | **1,348.5 records/sec** at batch 60. Matching is **O(n²)** — 179.2 rec/sec at 5,000. See below |
 | Explanation faithfulness — safety | 8/8 status preserved · 8/8 amounts preserved · 8/8 tax preserved · **0 unsupported claims** · **0 safety-critical failures** |
 | Explanation faithfulness — quality | Semantic faithfulness **6/8** · reason codes **7/8** · evidence **6/8**. Quality gaps, not safety failures — see below |
-| Tool selection (32 held-out questions) | Model **31/32 (96.88%)** vs keyword baseline 27/32 (84.38%) — **+12.5 points** |
+| Tool selection (32 held-out questions) | Model **29/32 (90.62%)** vs keyword baseline 27/32 (84.38%) — **+6.2 points**. Three calls returned HTTP 503; **every case that reached the model routed correctly, 29/29** |
 | Real-model agent verification | **6/6** data invariant held on the demo questions |
 
 ### Explanation faithfulness: the safety line and the quality line are different
@@ -341,7 +341,7 @@ Known Limitations.
 
 | | Baseline | Model | |
 |---|---|---|---|
-| Tool correct | 27/32 (84.38%) | **31/32 (96.88%)** | **+12.5 points** |
+| Tool correct | 27/32 (84.38%) | **29/32 (90.62%)** | **+6.2 points** |
 | `match_rate` | 4/5 | 5/5 | |
 | `exceptions` | 4/6 | 5/6 | |
 | `cash_position` | 5/5 | 5/5 | |
@@ -361,11 +361,19 @@ change something and silently got a read.
 The model declines all four out-of-scope requests, including both that
 ask the system to recompute or mutate.
 
-**The model's one miss was not a routing error.** It was a provider
-disconnect, counted as `provider_failures: 1` and excluded from model
-quality — the distinction `CaseResult.outcome` was built to draw
+**None of the model's three misses was a routing error.** All three were
+provider failures — one disconnect and two HTTP 503 "high demand" —
+counted as `provider_failures: 3` and excluded from model quality. That
+is the distinction `CaseResult.outcome` was built to draw
 ([`FAILURE_LOG.md`](FAILURE_LOG.md) §25), demonstrating itself on a live
 run.
+
+**Stated precisely:** 29 of 32 questions reached the model, and **29 of
+those 29 routed correctly**. The headline is 90.62% because a call that
+never arrives is counted as a failure, which is the conservative choice
+and the right one — an operator whose question errors out is not served
+by a footnote. An earlier recorded run scored 31/32 on the same dataset
+with one provider failure and the same 100% routing rate.
 
 **The two halves of that table come from different runs, and the artifact
 says so.** `agent_tool_selection_report.json` carries

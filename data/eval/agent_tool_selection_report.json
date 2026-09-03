@@ -90,12 +90,12 @@
     "provider": "gemini-3.1-flash-lite",
     "metrics": {
       "total_cases": 32,
-      "tool_correct": 31,
-      "tool_accuracy_pct": 96.88,
-      "arguments_correct": 31,
-      "arguments_accuracy_pct": 96.88,
-      "invalid_selections": 1,
-      "provider_failures": 1,
+      "tool_correct": 29,
+      "tool_accuracy_pct": 90.62,
+      "arguments_correct": 29,
+      "arguments_accuracy_pct": 90.62,
+      "invalid_selections": 3,
+      "provider_failures": 3,
       "parse_failures": 0,
       "by_category": {
         "cash_position": {
@@ -105,8 +105,8 @@
         },
         "evidence": {
           "total": 6,
-          "tool_ok": 6,
-          "args_ok": 6
+          "tool_ok": 4,
+          "args_ok": 4
         },
         "exceptions": {
           "total": 6,
@@ -144,7 +144,8 @@
         "<none returned>": 1
       },
       "get_evidence": {
-        "get_evidence": 6
+        "get_evidence": 4,
+        "<none returned>": 2
       },
       "get_cash_position": {
         "get_cash_position": 5
@@ -259,7 +260,7 @@
         "selected": null,
         "tool_correct": false,
         "arguments_correct": false,
-        "error": "provider_failure: Server disconnected without sending a response."
+        "error": "provider_failure: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}"
       },
       {
         "case_id": "Q011",
@@ -306,20 +307,20 @@
         "category": "evidence",
         "question": "I need the full audit trail for TXN_00042 for the auditors.",
         "expected": "get_evidence",
-        "selected": "get_evidence",
-        "tool_correct": true,
-        "arguments_correct": true,
-        "error": null
+        "selected": null,
+        "tool_correct": false,
+        "arguments_correct": false,
+        "error": "provider_failure: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}"
       },
       {
         "case_id": "Q016",
         "category": "evidence",
         "question": "TXN_00033 -- what happened there?",
         "expected": "get_evidence",
-        "selected": "get_evidence",
-        "tool_correct": true,
-        "arguments_correct": true,
-        "error": null
+        "selected": null,
+        "tool_correct": false,
+        "arguments_correct": false,
+        "error": "provider_failure: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}"
       },
       {
         "case_id": "Q017",

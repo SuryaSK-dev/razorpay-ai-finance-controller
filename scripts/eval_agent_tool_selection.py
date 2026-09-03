@@ -59,6 +59,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import time
 import sys
 from collections import Counter, defaultdict
 from dataclasses import dataclass, field
@@ -227,12 +228,36 @@ def baseline_router(question: str):
     return tool, baseline_arguments(question, tool), None, None
 
 
-def build_model_router(llm_call_fn):
+# Free-tier gemini-3.1-flash-lite allows 15 requests per minute. This
+# script fires 32 back to back, so without a pause 17 of them return 429
+# and the report records 15/32 -- a measurement of the rate limit wearing
+# the costume of a routing score. A provider failure is correctly counted
+# separately (section 25), but the headline percentage still moves, and a
+# plausible wrong number is worse than an obvious one.
+#
+# 4.5s spacing keeps 32 calls under the limit with margin. The delay is a
+# property of the free tier this project targets (AGENT_FREE_ONLY), not a
+# workaround.
+FREE_TIER_REQUESTS_PER_MINUTE = 15
+SECONDS_BETWEEN_MODEL_CALLS = 60.0 / FREE_TIER_REQUESTS_PER_MINUTE + 0.5
+
+
+def build_model_router(llm_call_fn, delay_seconds: float = SECONDS_BETWEEN_MODEL_CALLS):
     """
     Route through the real selection path -- the same prompt, parser and
     validator the agent uses in production. Not a reimplementation.
+
+    `delay_seconds` paces calls under the free-tier quota. Set it to 0
+    only if you know the account is not rate limited.
     """
+    state = {"last_call": 0.0}
+
     def route(question: str):
+        elapsed = time.monotonic() - state["last_call"]
+        if state["last_call"] and elapsed < delay_seconds:
+            time.sleep(delay_seconds - elapsed)
+        state["last_call"] = time.monotonic()
+
         prompt = build_selection_prompt(question)
         try:
             raw = llm_call_fn(prompt)

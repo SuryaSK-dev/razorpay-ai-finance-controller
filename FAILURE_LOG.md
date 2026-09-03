@@ -43,7 +43,7 @@ Nothing here was found by a tool that was looking for it. Every entry from
 
 ---
 
-## Index — all 68 sections
+## Index — all 69 sections
 
 Grouped as they appear. Sections 45+ are standalone rather than
 phase-scoped, because they postdate Phase 6.
@@ -150,6 +150,7 @@ asserted nothing.
 - [**66.** Reconciliation is PG-anchored, so unclaimed bank rows were invisible](#66-reconciliation-is-pg-anchored-so-unclaimed-bank-rows-were-invisible)
 - [**67.** The triage view ignored a severity ordering that already existed](#67-the-triage-view-ignored-a-severity-ordering-that-already-existed)
 - [**68.** The exception payload carried no money](#68-the-exception-payload-carried-no-money)
+- [**69.** The eval had no throttle, so it measured the rate limit](#69-the-eval-had-no-throttle-so-it-measured-the-rate-limit)
 
 ---
 # Phase 0–2 — Contracts, data, ingestion
@@ -1183,7 +1184,9 @@ Accidental collisions:    0
 Settlement arithmetic:    1 definition (was 4)
 Throughput:               1,348.5 rec/s @ 60; O(n^2) -- 179.2 @ 5000
 MDR:                      method-aware (UPI zero-rated); 17 zero-fee records
-Tool selection:           model 31/32 (96.88%) vs baseline 27/32 (84.38%)
+Tool selection:           model 29/32 (90.62%) vs baseline 27/32 (84.38%)
+                          3 provider failures; 29/29 of the calls that
+                          reached the model routed correctly
 ```
 
 **Deterministic core (0–4).** Decimal firewall, per-record fault
@@ -1219,7 +1222,9 @@ Listing these explicitly so nothing above is read as a completed claim.
 - ~~**Agent tool-selection accuracy is six questions.**~~ **CLOSED.**
   Measured on 32 held-out questions against a deterministic keyword
   baseline: model 31/32 (96.88%) vs baseline 27/32 (84.38%). See section
-  56.
+    56. That was the figure when it was closed; the current artifact
+    reads 29/32 after the section 69 re-run — three provider failures,
+    and 29/29 routing on the calls that arrived.
 - **The fuzzy tier is reachable but not stress-tested.** Six records
   reach it and it recovers all six, but the amount guard is doing the
   discriminating work (section 43).
@@ -3517,3 +3522,131 @@ not make the agent safe; it removes the reason it could not be built.
 Suite 443 → **455**. Decision snapshot `1392ddf1a3c2ea1c` unchanged
 through all three changes; match rate, accuracy, exception count and
 every cash bucket unchanged.
+
+---
+
+# 69. The eval had no throttle, so it measured the rate limit
+
+Sections 67 and 68 changed the exception payload twice and re-ran the
+tool-selection eval both times. Both re-runs were byte-identical, and the
+reasoning given was correct: the model never sees the payload at
+selection, so changing what a tool *returns* cannot change which tool is
+*chosen*.
+
+Then the tool **descriptions** changed — and those are different. They go
+into the selection prompt verbatim, via `ToolSpec.to_prompt_block()`. So
+the recorded 31/32 no longer described the prompt in the repository, and
+a genuine re-run was required rather than a formality.
+
+That re-run produced a number, and the number was garbage.
+
+## 69.1 What happened
+
+`scripts/eval_agent_tool_selection.py` fires 32 selection calls back to
+back with no pacing. Free-tier `gemini-3.1-flash-lite` allows **15
+requests per minute**.
+
+Seventeen of the thirty-two returned `429 RESOURCE_EXHAUSTED`. The
+artifact was overwritten with:
+
+```
+BASELINE   27/32   84.38%
+MODEL      15/32   46.88%      -37.50 points
+```
+
+and the script printed, correctly and uselessly:
+
+> The model did NOT beat a keyword router on this set.
+> That is a result, not a bug to tune away. Report it.
+
+It was not a result. **It was a measurement of the rate limit wearing a
+routing score's costume.** Seventeen of those cases never reached the
+model at all.
+
+## 69.2 Why section 57's protection did not fire
+
+Section 57 records a documented command destroying a recorded
+measurement: a baseline-only run wrote `"model": null` and deleted 399
+lines. The fix was to preserve the previous model half when a run
+produces nothing.
+
+That protection is conditioned on producing *nothing*. Here the run
+produced *something* — 32 completed cases, 15 of them correct, a valid
+report shape, a printed headline. Every guard saw a successful run.
+
+> A null is obviously missing. A plausible wrong number is not, and the
+> preservation logic was written for the first case only.
+
+This is the third time this project's own tooling has damaged its own
+measurement — section 54 (an artifact that went stale), section 57 (one
+that was deleted), and now one that was **overwritten with a false
+value**. The progression is worth noticing: each instance is harder to
+see than the last.
+
+Recovery was possible only because the artifact is committed. It was
+restored with `git checkout` before anything cited it.
+
+## 69.3 The fix, in the script rather than the procedure
+
+The tempting fix is a note in the README saying "run this when you have
+quota." That is a procedure, and procedures are what section 63 is about.
+
+`build_model_router()` now paces calls:
+
+```python
+FREE_TIER_REQUESTS_PER_MINUTE = 15
+SECONDS_BETWEEN_MODEL_CALLS = 60.0 / FREE_TIER_REQUESTS_PER_MINUTE + 0.5
+```
+
+Thirty-two calls take about two and a half minutes instead of failing.
+The delay is derived from the quota rather than hardcoded, and the
+comment says why.
+
+**This was a real defect, not just my mishap.** `.env` sets
+`AGENT_FREE_ONLY`, and `src/agent/config.py` enforces a free-tier
+constraint — the project explicitly targets the tier its own evaluation
+script could not complete on. That gap had been there since the eval was
+written, and nothing had exercised it because the earlier runs happened
+to be spaced by hand.
+
+## 69.4 The honest figure
+
+The throttled re-run:
+
+```
+BASELINE   27/32   84.38%
+MODEL      29/32   90.62%      +6.24 points
+```
+
+Three provider failures, all `503 UNAVAILABLE` — transient model
+overload, not rate limiting, and not routing.
+
+**Of the 29 calls that reached the model, 29 routed correctly.** The same
+was true of the earlier 31/32: 31 of 31. The headline moved because two
+more calls failed in transport, not because the new tool descriptions
+caused a single misroute — and the category breakdown confirms it, with
+`cash_position` holding at 5/5 and `out_of_scope` at 4/4, which were the
+two the description change most risked disturbing.
+
+**29/32 is published as produced.** A re-run to clear the 503s would be
+defensible on transport grounds and was not done, because "re-run until
+the transport cooperates" and "re-run until the number improves" are
+difficult to tell apart from the outside, and section 57 already records
+choosing the unflattering figure over the clean one for exactly this
+reason.
+
+The conservative counting is also the right one: a call that never
+arrives is a failure for the operator who asked the question, whatever
+its cause. The 29/29 routing rate is stated alongside, not instead.
+
+## 69.5 The generalisable version
+
+> A guard against a measurement being destroyed must also cover the
+> measurement being *replaced*. Absence is loud; a wrong value that
+> looks right is not.
+
+And the narrower one, which is really about tooling:
+
+> A script that cannot run under the constraints its own project
+> declares is not a working script. `AGENT_FREE_ONLY` was in the
+> configuration and the evaluator ignored it.
