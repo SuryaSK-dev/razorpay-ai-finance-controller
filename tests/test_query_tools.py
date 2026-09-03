@@ -252,13 +252,32 @@ def test_unknown_status_raises_rather_than_returning_empty():
 
 
 def test_exception_list_is_deterministically_ordered():
+    """
+    Determinism is the property this test guards, and it is unchanged.
+
+    The second assertion USED to be `first == sorted(first)` -- ordering
+    by txn_id. Section 67 replaced that with policy-severity ordering
+    derived from DECISION_TABLE, because alphabetical is the least useful
+    order an operator can be handed. The determinism claim is kept and the
+    order assertion is updated to the new total key, rather than the test
+    being deleted: what it exists to prevent is a non-reproducible list,
+    and that risk did not go away.
+    """
     context = build_context()
 
-    first = [e["txn_id"] for e in context.get_exceptions()["exceptions"]]
-    second = [e["txn_id"] for e in context.get_exceptions()["exceptions"]]
+    first = context.get_exceptions()["exceptions"]
+    second = context.get_exceptions()["exceptions"]
 
-    assert first == second
-    assert first == sorted(first)
+    assert [e["txn_id"] for e in first] == [e["txn_id"] for e in second]
+
+    keys = [
+        (e["policy_priority"], e["confidence_score"], e["txn_id"])
+        for e in first
+    ]
+    assert keys == sorted(keys), (
+        "the exception list is no longer in (policy priority, confidence, "
+        "txn_id) order -- see tests/test_exception_triage_order.py"
+    )
 
 
 # ======================================================================

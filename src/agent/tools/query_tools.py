@@ -78,6 +78,7 @@ from src.ingestion.loader import load_batch
 from src.normalization.engine import normalize_batch
 from src.matching.engine import run_matching
 from src.exceptions.manager import decide_batch
+from src.exceptions.decision_table import DECISION_TABLE
 
 
 ROOT = Path(__file__).resolve().parent.parent.parent.parent
@@ -151,6 +152,7 @@ class BatchQueryContext:
         self.decisions: list[MatchDecision] = []
         self.match_results: list[Any] = []
         self._by_txn: dict[str, MatchDecision] = {}
+        self._match_by_txn: dict[str, Any] = {}
 
         self.refresh()
 
@@ -180,6 +182,10 @@ class BatchQueryContext:
         self.decisions = decide_batch(self.match_results)
 
         self._by_txn = {d.txn_id: d for d in self.decisions}
+        # Indexed for the case dossier: every financial value it
+        # surfaces is read off the MatchResult that produced the
+        # decision, never recomputed.
+        self._match_by_txn = {m.txn_id: m for m in self.match_results}
 
         # Confidence tier per transaction, taken from the matching
         # layer rather than re-derived from confidence_score. Deriving
@@ -230,6 +236,145 @@ class BatchQueryContext:
     # TOOL 2 -- EXCEPTIONS
     # ------------------------------------------------------------------
 
+    # ------------------------------------------------------------------
+    # TRIAGE ORDERING
+    # ------------------------------------------------------------------
+    #
+    # DECISION_TABLE already encodes severity as an explicit priority per
+    # rule, authored deliberately and swept over all 2048 context
+    # combinations. get_exceptions() used to sort by txn_id -- alphabetical,
+    # and the least useful ordering an operator could be handed.
+    #
+    # The ranking is DERIVED from the table so it cannot drift. Adding a
+    # rule reorders triage with no edit here.
+    #
+    # KEYED ON RULE NAME, NOT EXCEPTION CODE. The obvious mapping,
+    #
+    #     {rule.exception_code: rule.priority for rule in DECISION_TABLE}
+    #
+    # is lossy: HUMAN_REVIEW_REQUIRED is produced by three different rules
+    # at priorities 0, 9 and 11, and a dict keyed on the code keeps only
+    # the last one -- so "no candidates at all", the single most severe
+    # state in the table, would inherit the catch-all's priority of 11 and
+    # sort last. Rule names are unique, every decision records the rule
+    # that fired in evidence["matched_rule"], and 61 of 61 carry it. That
+    # key is exact.
+    _PRIORITY_BY_RULE = {rule.name: rule.priority for rule in DECISION_TABLE}
+
+    # Fallback only, for a decision with no recorded rule: the MOST severe
+    # priority any rule emitting that code can carry. Minimum, not last --
+    # under-stating severity is the direction that hides work.
+    _MIN_PRIORITY_BY_CODE: dict = {}
+    for _rule in DECISION_TABLE:
+        _code = _rule.exception_code
+        if _code not in _MIN_PRIORITY_BY_CODE:
+            _MIN_PRIORITY_BY_CODE[_code] = _rule.priority
+        else:
+            _MIN_PRIORITY_BY_CODE[_code] = min(
+                _MIN_PRIORITY_BY_CODE[_code], _rule.priority
+            )
+
+    def _policy_priority(self, decision: MatchDecision) -> int:
+        rule = (decision.evidence or {}).get("matched_rule")
+        if rule in self._PRIORITY_BY_RULE:
+            return self._PRIORITY_BY_RULE[rule]
+        return self._MIN_PRIORITY_BY_CODE.get(decision.exception_code, 99)
+
+    # ------------------------------------------------------------------
+    # THE CASE DOSSIER
+    # ------------------------------------------------------------------
+    #
+    # Before this, an exception row carried eight fields and not one of
+    # them was money. The system could say INR 601,761.49 was blocked
+    # across 32 records and could not say which record held how much.
+    #
+    # That is why every multi-step agent proposal was rejected before
+    # submission: an agent asked "what should I work first?" had nothing
+    # to reason over. The information model precedes the agent, and this
+    # is the field set it was waiting on (FAILURE_LOG.md section 68).
+    #
+    # Every value here ALREADY EXISTS on the decision or the match
+    # result. Nothing is computed. `expected_net` comes from
+    # settlement_expected_net() in financial.py -- the one definition
+    # test_no_module_re_derives_expected_net_inline exists to protect.
+    #
+    # Absent is None, never zero. A settlement with no bank counterpart
+    # has an UNKNOWN observed amount, and reporting that as 0.00 would
+    # make a missing credit look like a zero credit -- section 63.2's
+    # lesson, and the same rule the cash position already applies to the
+    # two unparseable records.
+
+    @staticmethod
+    def _amount(value) -> Optional[str]:
+        """Quantised string, or None. Matches get_cash_position()."""
+        return None if value is None else str(money(value))
+
+    @staticmethod
+    def _day(record) -> Optional[str]:
+        if record is None or record.date_utc is None:
+            return None
+        return record.date_utc.date().isoformat()
+
+    def _dossier(self, decision: MatchDecision) -> dict[str, Any]:
+        """
+        Per-record financial evidence, read from what already exists.
+
+        Returns None for every field whose source record is absent. The
+        provenance block names which source each value came from, so a
+        reader never has to guess whether a null means "missing record"
+        or "missing field".
+        """
+        result = self._match_by_txn.get(decision.txn_id)
+        if result is None:
+            return {
+                "expected_net": None,
+                "observed_amount": None,
+                "variance": None,
+                "pg_date": None,
+                "bank_date": None,
+                "identifiers": {"txn_id": decision.txn_id},
+                "provenance": {},
+            }
+
+        pg = result.pg_record
+        bank = result.bank_record
+        invoice = result.invoice_record
+
+        expected = settlement_expected_net(pg) if pg is not None else None
+        observed = bank.amount if bank is not None else None
+        variance = (
+            expected - observed
+            if expected is not None and observed is not None
+            else None
+        )
+
+        raw_bank = (bank.raw_ref or {}) if bank is not None else {}
+        raw_invoice = (invoice.raw_ref or {}) if invoice is not None else {}
+
+        return {
+            "expected_net": self._amount(expected),
+            "observed_amount": self._amount(observed),
+            "variance": self._amount(variance),
+            "pg_date": self._day(pg),
+            "bank_date": self._day(bank),
+            "identifiers": {
+                "txn_id": decision.txn_id,
+                "utr": pg.utr if pg is not None else None,
+                "bank_ref": raw_bank.get("bank_ref"),
+                "invoice_id": raw_invoice.get("invoice_id"),
+            },
+            "provenance": {
+                "expected_net": "pg" if expected is not None else None,
+                "observed_amount": "bank" if observed is not None else None,
+                "variance": (
+                    "derived: expected_net - observed_amount"
+                    if variance is not None else None
+                ),
+                "pg_date": "pg" if pg is not None else None,
+                "bank_date": "bank" if bank is not None else None,
+            },
+        }
+
     def get_exceptions(
         self,
         status: Optional[str] = None,
@@ -261,6 +406,9 @@ class BatchQueryContext:
             if status is not None and decision.status.value != status:
                 continue
 
+            priority = self._policy_priority(decision)
+            rule = (decision.evidence or {}).get("matched_rule")
+
             items.append({
                 "txn_id": decision.txn_id,
                 "status": decision.status.value,
@@ -270,9 +418,31 @@ class BatchQueryContext:
                 "confidence_tier": self._tier_by_txn.get(decision.txn_id),
                 "matched_sources": list(decision.matched_sources),
                 "tax_verified": decision.tax_verified,
+                "policy_priority": priority,
+                "matched_rule": rule,
+                "triage_basis": (
+                    f"policy priority {priority} ({rule}), "
+                    f"confidence {decision.confidence_score}"
+                ),
+                **self._dossier(decision),
             })
 
-        items.sort(key=lambda item: item["txn_id"])
+        # Policy severity first, then weakest evidence first within a
+        # severity band, then txn_id so the order is total and stable.
+        # Confidence ascending is deliberate: two records at the same
+        # priority are not equally urgent, and the one the engine was
+        # least sure about is the one a human should see first.
+        items.sort(
+            key=lambda item: (
+                item["policy_priority"],
+                item["confidence_score"],
+                item["txn_id"],
+            )
+        )
+
+        # Dense 1..N, assigned after the sort so the rank IS the position.
+        for position, item in enumerate(items, start=1):
+            item["triage_rank"] = position
 
         return {
             "filter_status": status,
