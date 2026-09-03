@@ -169,15 +169,24 @@ TOOL_REGISTRY: dict[str, ToolSpec] = {
         name="get_exceptions",
         description=(
             "Returns every record that did NOT fully match, itemised "
-            "with its status, exception code, all reason codes, and "
-            "confidence. Optionally filtered to one status. This is "
-            "the complete list, never a sample. Use for any question "
-            "about what failed, what needs review, or what could not "
-            "be resolved."
+            "with its status, exception code, all reason codes, "
+            "confidence, and PER-RECORD MONEY: expected_net, the "
+            "amount the bank actually credited, and the variance "
+            "between them, plus dates and identifiers. Rows come back "
+            "in triage order -- highest policy severity first, then "
+            "weakest evidence -- each carrying triage_rank and the "
+            "reason for its position. Optionally filtered to one "
+            "status. This is the complete list, never a sample. Use "
+            "for what failed, what needs review, what to work first, "
+            "or how much a SPECIFIC exception is worth."
         ),
         when_not_to_use=(
             "the operator names one transaction and wants the reason "
-            "for it specifically -- use get_evidence for that"
+            "for it specifically -- use get_evidence for that; or "
+            "wants a batch-level total such as how much is blocked "
+            "overall -- use get_cash_position, which aggregates. This "
+            "tool answers 'which record holds how much', not 'how much "
+            "in total'"
         ),
         parameters={
             "status": ParamSpec(
@@ -233,7 +242,11 @@ TOOL_REGISTRY: dict[str, ToolSpec] = {
         ),
         when_not_to_use=(
             "the operator wants counts of records rather than amounts of "
-            "money -- use get_match_rate for that"
+            "money -- use get_match_rate for that; or wants the amount "
+            "on a PARTICULAR exception, or which exceptions are worth "
+            "the most -- use get_exceptions, which carries per-record "
+            "money. This tool answers 'how much in total', not 'which "
+            "record holds how much'"
         ),
     ),
 

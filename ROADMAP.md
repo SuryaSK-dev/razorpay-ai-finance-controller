@@ -114,10 +114,18 @@ from src.agent.tools.query_tools import BatchQueryContext;\
 print(list(BatchQueryContext().get_exceptions()['exceptions'][0]))"
 ```
 
-An agent asked *"what should I work first?"* has eight fields to reason
-over, none of which is money, a date, or a variance. Multi-step
-orchestration over that produces something that sounds analytical and is
+At the time this was written that returned **eight** fields, none of
+which was money, a date, or a variance. An agent asked *"what should I
+work first?"* had nothing to reason over, and multi-step orchestration on
+top of it would have produced something that sounded analytical and was
 guessing.
+
+**Run it now and it returns nineteen**, including `expected_net`,
+`variance`, `pg_date`, `bank_date` and `triage_rank`. V2 shipped as §68,
+so the command no longer demonstrates the block — it demonstrates that
+the block was removed. The paragraph is kept as written because the
+ordering it justified is the point: the fields came first, deliberately,
+and V3 became buildable only after they existed.
 
 ---
 
@@ -919,9 +927,15 @@ print(list(BatchQueryContext().get_exceptions()['exceptions'][0]))"
 ```
 
 ```
+# when this roadmap was written:
 ['txn_id', 'status', 'exception_code', 'reason_codes',
  'confidence_score', 'confidence_tier', 'matched_sources',
  'tax_verified']
+
+# after §67 and §68:
+[... 'policy_priority', 'matched_rule', 'triage_basis', 'expected_net',
+ 'observed_amount', 'variance', 'pg_date', 'bank_date', 'identifiers',
+ 'provenance', 'triage_rank']
 ```
 
 An agent given multi-step orchestration over that payload would produce
@@ -937,3 +951,8 @@ features is complete over an incomplete set, which is a subtler version
 of the same error.
 
 Build the fields. Then build the agent that reads them.
+
+The first half is done. V3 is now blocked by one thing only — redesigning
+`answer.data == getattr(context, tool)(**args)` into a per-step form —
+and that is a design problem rather than a missing-data problem. Which is
+exactly the state this ordering was meant to reach.

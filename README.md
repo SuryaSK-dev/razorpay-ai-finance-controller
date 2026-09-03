@@ -90,6 +90,7 @@ razorpay-ai-finance-controller/
 │   ├── matching/
 │   │   ├── candidates.py             Three-tier search + ambiguity detection
 │   │   ├── scoring.py                Confidence tiers from three-source signals
+│   │   ├── completeness.py           Every bank row accounted for, not just the claimed ones
 │   │   └── engine.py                 Deterministic tie-breaking, rejected candidates kept
 │   │
 │   ├── tax/
@@ -133,6 +134,7 @@ razorpay-ai-finance-controller/
 | `financial.py` | `expected_net = gross − fee − GST − TDS` in **one** place. It previously existed as four inline copies that agreed by coincidence, not by construction; a structural test now fails if a fifth appears |
 | `models.py` | Money as `Decimal` only — `float` and `bool` are rejected at the ingestion boundary, before any business logic runs |
 | `matching/candidates.py` | Strongest-evidence-first: exact UTR, then resolved txn_id, then amount+date-guarded fuzzy. Similarity alone can never authorise a match. |
+| `matching/completeness.py` | Reconciliation is PG-anchored, so a bank row nothing claims was invisible. Partitions all 64 rows into selected / duplicate credit / orphaned — and the orphans are ₹517.48 the bank moved against records rejected at ingestion. |
 | `tax/validator.py` | Verifies the GST *relationship* against MDR rather than trusting the claimed value. GST and TDS evaluated independently so neither can suppress the other. |
 | `exceptions/decision_table.py` | Priority-ordered rules, exhaustively tested over all 2¹¹ = 2048 context combinations |
 | `exceptions/manager.py` | Builds the decision context; preserves *every* violation in `reason_codes` while `status` stays single-valued |

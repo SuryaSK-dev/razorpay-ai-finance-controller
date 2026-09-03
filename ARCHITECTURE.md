@@ -127,6 +127,48 @@ phrasing is always checkable against the numbers it describes.
 
 ---
 
+## 2b. What the deterministic core outputs
+
+Two kinds of finding, and conflating them would corrupt a denominator.
+
+**Decisions** — one `MatchDecision` per PG record, 61 of them. Every
+published percentage is measured over this set.
+
+**Bank-side completeness** — a batch-level accounting over all 64 bank
+rows, produced by `matching/completeness.py`. Reconciliation is
+PG-anchored: `run_matching()` emits one result per PG record and bank
+rows are only ever visited as candidates, so nothing scanned the pool for
+rows no anchor claimed.
+
+```
+SELECTED           chosen as some MatchResult's bank_record        59
+DUPLICATE_CREDIT   a second credit for a txn already claimed        3
+ORPHANED           nothing in the batch claims it                   2
+```
+
+Disjoint and exhaustive; the partition is the assertion and the counts
+follow from it. The two orphans are the bank credits against the records
+rejected at ingestion — **INR 517.48 the bank moved that this batch
+cannot explain**, and which appeared in no output before.
+
+**An orphaned row is deliberately not a decision.** It has no `txn_id` of
+its own to anchor to, and synthesising a 62nd decision would change the
+denominator every published figure rests on. It is reported alongside the
+ingestion rejections instead: counted, itemised, never dropped. Its value
+is likewise reported separately from the cash buckets, which measure the
+61-record settlement expectation and mean something else.
+
+**The exception payload now carries per-record money.** `get_exceptions()`
+returns `expected_net`, `observed_amount`, `variance`, dates, identifiers
+and provenance per row, ordered by policy severity derived from
+`DECISION_TABLE` rather than by `txn_id`. Absent is `null`, never zero.
+The sum of `expected_net` across exception rows reconciles exactly, in
+`Decimal`, against every cash bucket but `settled_and_verified`.
+
+`FAILURE_LOG.md` §66, §67, §68.
+
+---
+
 ## 3. What happens when the AI is wrong?
 
 | Failure mode | Behaviour |
