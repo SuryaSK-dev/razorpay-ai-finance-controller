@@ -302,7 +302,7 @@ def main() -> None:
         print()
 
     print("  The decision table is the specification. It was written")
-    print("  first and is exhaustively tested over all 512 boolean")
+    print("  first and is exhaustively tested over all 2048 boolean")
     print("  combinations. Both labels described statuses no rule in")
     print("  that table produces, so the labels were wrong about the")
     print("  spec -- not the engine wrong about reality.")

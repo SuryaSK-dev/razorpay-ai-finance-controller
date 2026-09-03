@@ -46,6 +46,7 @@ sys.path.append(str(ROOT))
 from src.exceptions.manager import decide_batch
 from src.financial import settlement_expected_net
 from src.ingestion.loader import load_batch
+from src.matching.completeness import account_for_bank_rows
 from src.matching.engine import run_matching, summarize
 from src.models import DecisionStatus
 from src.normalization.engine import normalize_batch
@@ -156,6 +157,49 @@ def stage_matching(match_results) -> None:
     print("  Similarity alone can never authorise a match.")
     print()
     print(f"  {summary.report()}".replace("\n", "\n  "))
+    print()
+
+
+def stage_completeness(report) -> None:
+    """
+    Every ingested bank row, accounted for.
+
+    Printed the way ingestion rejections are printed, and for the same
+    reason: a row nothing claims must be reported rather than dropped.
+    Reconciliation is PG-anchored, so before this existed a bank credit
+    that no settlement claimed appeared in no decision and no exception.
+    """
+    print(RULE)
+    print("3b. BANK-SIDE COMPLETENESS")
+    print(RULE)
+    print()
+    print(f"  {report.total_bank_rows} bank rows ingested. Every one is")
+    print("  accounted for:")
+    print()
+    print(f"    selected into a match     {len(report.selected):>3}")
+    print(f"    duplicate credit          {len(report.duplicate_credits):>3}"
+          "   already reported as DUPLICATE_DETECTED")
+    print(f"    claimed by nothing        {len(report.orphaned):>3}")
+    print()
+
+    if not report.orphaned:
+        print("  Nothing unclaimed. Reconciliation is PG-anchored, so this")
+        print("  is a property worth asserting rather than assuming.")
+        print()
+        return
+
+    print(f"  {len(report.orphaned)} bank row(s) that no settlement claims —")
+    print(f"  INR {report.orphaned_value:,.2f} the bank moved and this batch")
+    print("  cannot explain. Reported here, not folded into the cash")
+    print("  position, because it is not part of the 61-record settlement")
+    print("  expectation those buckets measure.")
+    print()
+
+    for account in report.orphaned:
+        print(f"    [{account.bank_ref}] {account.amount:>10}")
+        print(f"       resolves to {account.resolved_txn_id}, which has no")
+        print("       PG record in this batch")
+
     print()
 
 
@@ -368,6 +412,7 @@ def main() -> None:
     stage_ingestion(batch)
     stage_normalization(normalized)
     stage_matching(match_results)
+    stage_completeness(account_for_bank_rows(normalized.records, match_results))
     stage_decisions(decisions)
     stage_exceptions(decisions)
     stage_cash(match_results, decisions, batch.total_errors)
