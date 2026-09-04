@@ -175,6 +175,68 @@ def test_per_category_correct_counts_sum_to_the_headline():
     assert code_sum == report["exception_code_accuracy"]["correct"]
 
 
+def test_non_evaluable_records_are_named_not_scored_zero():
+    """
+    A record rejected at ingestion produces no decision. Scoring it
+    zero-correct made the category table sum to 55/63 (87.30%) while the
+    headline above it divided by 61 (90.16%) -- two different accuracies
+    from one artifact (FAILURE_LOG.md section 71).
+
+    Zero-correct and not-evaluable are different facts and the artifact
+    must say which it means.
+    """
+    report = load_report()
+
+    for category, stats in report["by_category"].items():
+        assert "not_evaluable" in stats, (
+            f"{category}: by_category entries must declare not_evaluable, "
+            f"even when it is zero"
+        )
+        assert stats["not_evaluable"] <= stats["total"]
+
+        if stats["not_evaluable"]:
+            assert "reason" in stats and len(stats["reason"]) > 20, (
+                f"{category}: {stats['not_evaluable']} non-evaluable "
+                f"records with no reason attached"
+            )
+            assert stats["evaluable"] == (
+                stats["total"] - stats["not_evaluable"]
+            )
+
+
+def test_evaluable_totals_sum_to_the_accuracy_denominator():
+    """
+    THE ONE THAT WOULD HAVE CAUGHT IT.
+
+    Summing the category table must reproduce the headline's denominator.
+    `test_per_category_totals_sum_to_the_ground_truth_set` checks the
+    table against 63; nothing checked it against the 61 the percentage is
+    actually divided by, so the two could drift apart silently.
+    """
+    report = load_report()
+
+    evaluable = sum(
+        stats["total"] - stats["not_evaluable"]
+        for stats in report["by_category"].values()
+    )
+
+    assert evaluable == report["decisions_evaluated"]
+    assert evaluable == report["status_accuracy"]["total"]
+    assert evaluable == report["exception_code_accuracy"]["total"]
+
+
+def test_no_category_scores_more_correct_than_it_could_evaluate():
+    report = load_report()
+
+    for category, stats in report["by_category"].items():
+        evaluable = stats["total"] - stats["not_evaluable"]
+        assert stats["status_ok"] <= evaluable, (
+            f"{category}: {stats['status_ok']} correct out of "
+            f"{evaluable} evaluable"
+        )
+        assert stats["code_ok"] <= evaluable
+
+
 # ======================================================================
 # DIVERGENCES ARE COMPLETE AND USABLE
 # ======================================================================

@@ -145,7 +145,22 @@ def offline_model(context: BatchQueryContext):
                 "tool_name": "get_throughput_report", "arguments": {},
             })
 
-        return json.dumps({"tool_name": "get_match_rate", "arguments": {}})
+        if any(w in question for w in ("match rate", "matched", "reconcil")):
+            return json.dumps({
+                "tool_name": "get_match_rate", "arguments": {},
+            })
+
+        # NO CATCH-ALL. A keyword router that guesses when it recognises
+        # nothing is exactly the failure the README describes: asked to
+        # CHANGE a transaction's status it sees "txn_", routes to a read,
+        # and the operator who asked to mutate something gets a lookup
+        # with no sign anything was declined.
+        #
+        # Surrendering here is not a refusal branch -- it does not detect
+        # mutation, because a keyword router cannot. It declines to guess,
+        # which is the honest floor, and it makes the gap the model closes
+        # visible in the demo rather than asserted in the README.
+        return json.dumps({"tool_name": "none", "arguments": {}})
 
     return call
 
@@ -217,6 +232,13 @@ def ask_and_verify(
     # ------------------------------------------------------------------
     if answer.data is None:
         print("  [no data returned -- refusal or error path]")
+        if offline and answer.tool_used is None:
+            print()
+            print("  offline stub: no keyword matched, so no tool was")
+            print("  selected. A keyword router cannot tell a read from a")
+            print("  mutation -- that is the gap the model closes. See")
+            print("  data/eval/agent_tool_selection_report.json:")
+            print("  out_of_scope, baseline 2/4 -> model 4/4.")
         print()
         return True
 

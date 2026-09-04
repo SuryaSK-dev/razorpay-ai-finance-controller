@@ -7,7 +7,7 @@
 ![Python](https://img.shields.io/badge/python-3.11-blue)
 ![Pydantic](https://img.shields.io/badge/contracts-Pydantic%20v2-e92063)
 ![Gemini](https://img.shields.io/badge/model-Gemini%203.1%20Flash--Lite-4285F4)
-![Tests](https://img.shields.io/badge/tests-471%20passing-brightgreen)
+![Tests](https://img.shields.io/badge/tests-484%20passing-brightgreen)
 ![Status](https://img.shields.io/badge/status-phase%206%20complete-brightgreen)
 ![Track](https://img.shields.io/badge/Razorpay%20Buildathon-Track%2004-002970)
 
@@ -18,6 +18,35 @@ independent sources, verifies GST and TDS against Indian tax law, classifies eve
 unresolved case into an explicit exception state with evidence, and lets a finance
 operator ask about the result in plain English — through an agent that chooses which
 question to answer and **cannot alter a single number in the data behind that answer**.
+
+This is a deterministic financial control plane with a bounded AI controller interface.
+It verifies and explains; it does not mutate. That boundary is the design, not a limitation
+of the build — `MATCHED` requires all ten deterministic controls to pass simultaneously
+(`fully_clean` in [`src/exceptions/manager.py`](src/exceptions/manager.py) is the conjunction
+of the negation of all ten context dimensions, and `fully_clean_match` at priority 10 is the
+only rule in the table that produces `MATCHED`), and no model output can reach that
+conjunction. A false auto-match is structurally impossible for the ten modelled defect
+classes rather than merely unobserved at 24/24 — with the boundary stated honestly: an
+*unmodelled* class (N:1 settlement, an in-batch refund, FX) has no dimension, and therefore
+nothing for the conjunction to catch.
+
+---
+
+## Verify every number in this README
+
+```bash
+./verify.sh
+```
+
+Twenty-two checks, one line each, expected values hard-coded so drift is
+visible rather than silent. Runs from a cold clone with **no API key** —
+the deterministic core has no model in it. Exits non-zero if any published
+figure fails to reproduce.
+
+This exists because of [`FAILURE_LOG.md`](FAILURE_LOG.md) §70 and §71:
+a value cited as evidence needs a command in the repository that
+reproduces it, and the document a judge actually reads was the one nothing
+was checking.
 
 ---
 
@@ -116,7 +145,7 @@ razorpay-ai-finance-controller/
 ├── scripts/                          Generation, verification, evaluation, demo
 │   ├── run_pipeline.py               The deterministic core alone — no model, no key
 │   └── demo_agent.py                 The agent on top of it
-├── tests/                            471 tests across 37 files
+├── tests/                            484 tests across 37 files
 ├── data/
 │   ├── raw/                          Generated PG / bank / invoice sources
 │   ├── ground_truth.json             Never read by the pipeline — evaluation only
@@ -211,7 +240,7 @@ happened, it was the harness. See below.
 | `TAX_MISMATCH` | 7 | GST or TDS variance against statutory expectation |
 | `AMBIGUOUS` | 6 | A competing record exists; no safe automatic choice |
 | `PARTIAL_MATCH` | 3 | Invoice missing — tax could not be verified |
-| `UNMATCHED` | 2 | Bank row absent, or malformed record rejected at ingestion |
+| `UNMATCHED` | 2 | Bank row absent |
 | **Total** | **61** | Every record, unfiltered |
 
 **Match rate: 39.34%** — and that number needs its context. The dataset is deliberately
@@ -228,8 +257,13 @@ fail-closed behaviour became visible for the first time. See Measured Accuracy b
 |---|---|
 | Status accuracy | **55/61 (90.16%)** |
 | Exception-code accuracy | **55/61 (90.16%)** |
-| Records rejected at ingestion | 2 (corrupted — counted, not dropped) |
+| Records rejected at ingestion | 2 (corrupted — reported and counted in the batch; excluded from the decision-accuracy denominator because they produce no decision) |
 | Divergences | 6, all in one category, all fail-closed |
+
+On the full 63-record denominator including the two records rejected at ingestion, the
+figure is **55/63 (87.30%)**. We report 61 because a record that never reaches the decision
+table has no decision to be accurate about. Both denominators are in
+[`data/eval/accuracy_report.json`](data/eval/accuracy_report.json).
 
 Eight of ten categories score 100%, including the six ambiguous cases the per-case harness
 cannot evaluate. Ground truth is generated alongside the data and never read by the pipeline.
@@ -288,7 +322,7 @@ Reproduce with `python scripts/run_pipeline.py`, or ask the agent
 
 | Measure | Result |
 |---|---|
-| Test suite | **471 passing** across 37 files |
+| Test suite | **484 passing** across 37 files |
 | Decision policy coverage | **2048/2048** context combinations resolve deterministically |
 | Gold baseline (per-case E2E) | **0 unexplained divergences** · 51 exact · 6 not-evaluable · 6 known-policy |
 | Fuzzy tier | **6 of 61 records reach it** (was 0). Precision 1.00, recall 1.00 through threshold 90, 0.50 at 95 |
@@ -345,7 +379,7 @@ Known Limitations.
 | `match_rate` | 4/5 | 5/5 | |
 | `exceptions` | 4/6 | 5/6 | |
 | `cash_position` | 5/5 | 5/5 | |
-| `evidence` | 6/6 | 6/6 | |
+| `evidence` | 6/6 | 4/6 | two of the three provider failures landed here |
 | `throughput` | 3/3 | 3/3 | |
 | **out of scope** | **2/4** | **4/4** | the difference that matters |
 | prompt injection | 3/3 | 3/3 | |
@@ -362,8 +396,8 @@ The model declines all four out-of-scope requests, including both that
 ask the system to recompute or mutate.
 
 **None of the model's three misses was a routing error.** All three were
-provider failures — one disconnect and two HTTP 503 "high demand" —
-counted as `provider_failures: 3` and excluded from model quality. That
+provider failures — three HTTP 503 "high demand", cases Q010, Q015 and
+Q016 — counted as `provider_failures: 3` and excluded from model quality. That
 is the distinction `CaseResult.outcome` was built to draw
 ([`FAILURE_LOG.md`](FAILURE_LOG.md) §25), demonstrating itself on a live
 run.

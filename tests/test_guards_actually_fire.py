@@ -143,6 +143,78 @@ def test_to_decimal_rejects_something_that_is_not_a_number_at_all():
     assert "cannot convert" in str(excinfo.value).lower()
 
 
+@pytest.mark.parametrize("value", ["NaN", "nan", "Infinity", "-Infinity", "inf"])
+def test_to_decimal_rejects_a_non_finite_string(value):
+    """
+    The harder sibling of NOT_A_NUMBER.
+
+    "NOT_A_NUMBER" fails to parse, so it was always caught. "NaN" parses
+    -- into something that is not a number. Before this guard it went
+    straight through the firewall, and every downstream defence then
+    failed differently:
+
+        reject_negative(NaN)      InvalidOperation, not ValueError
+        money(NaN)                returns NaN, silently
+        sum([..., NaN])           poisons the batch total
+        abs(NaN - x) <= tolerance InvalidOperation inside matching
+    """
+    with pytest.raises(ValueError) as excinfo:
+        to_decimal(value)
+
+    message = str(excinfo.value)
+    assert "non-finite" in message.lower()
+    assert repr(value) in message, "the message must name the value it refused"
+
+
+@pytest.mark.parametrize("value", [Decimal("NaN"), Decimal("Infinity"), Decimal("-Infinity")])
+def test_to_decimal_rejects_a_pre_constructed_non_finite_decimal(value):
+    """
+    THE HOLE THIS CLOSES.
+
+    `to_decimal` returns early for anything already a Decimal, so a
+    caller holding `Decimal("NaN")` bypassed every string check. Guarding
+    only the parse path would have left the early return open, and the
+    early return is the one a caller inside the codebase actually takes.
+    """
+    with pytest.raises(ValueError) as excinfo:
+        to_decimal(value)
+
+    assert "non-finite" in str(excinfo.value).lower()
+
+
+def test_the_non_finite_guard_does_not_reject_ordinary_amounts():
+    """
+    THE CONTROL.
+
+    `is_finite()` is False for NaN and Infinity and True for everything
+    else a settlement can hold -- including zero, which a UPI fee legally
+    is. A guard that also refused 0.00 would fail closed on real data.
+    """
+    for safe in ("0.00", "0", "100.50", "-100.50", "1E+400"):
+        assert to_decimal(safe) == Decimal(safe)
+
+
+def test_a_non_finite_amount_cannot_reach_a_settlement_record():
+    """
+    End to end, not just at the helper. The firewall is only worth what
+    the models enforce, and a NaN in gross_amount would poison
+    total_expected_settlement without raising anywhere.
+    """
+    with pytest.raises(ValidationError):
+        PGSettlementRecord(
+            settlement_id="SET_X",
+            txn_id="TXN_00001",
+            gross_amount="NaN",
+            pg_fee="1.00",
+            gst_on_fee="0.18",
+            tds_withheld="0.00",
+            net_payout="98.82",
+            utr="UTR_X",
+            settlement_date="2026-01-01",
+            payment_method="card",
+        )
+
+
 @pytest.mark.parametrize(
     "model, field, base",
     [

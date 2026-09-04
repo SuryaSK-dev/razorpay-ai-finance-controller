@@ -127,6 +127,24 @@ def run_pipeline():
     return decide_batch(run_matching(normalized.records))
 
 
+def _describe_category(stats: dict) -> dict:
+    """
+    Emit a category's counts, naming non-evaluable records as such.
+
+    `status_ok: 0` and "these records produce no decision" are different
+    claims, and collapsing them let the category table sum to a different
+    accuracy than the headline it sits under.
+    """
+    described = dict(stats)
+    if described["not_evaluable"]:
+        described["evaluable"] = described["total"] - described["not_evaluable"]
+        described["reason"] = (
+            "rejected at ingestion; produces no decision, so it is excluded "
+            "from the accuracy denominator rather than scored as incorrect"
+        )
+    return described
+
+
 def main() -> None:
     ground_truth = load_ground_truth()
     decisions = run_pipeline()
@@ -149,7 +167,16 @@ def main() -> None:
     divergences = []
 
     per_category = defaultdict(
-        lambda: {"total": 0, "status_ok": 0, "code_ok": 0}
+        lambda: {
+            "total": 0,
+            "status_ok": 0,
+            "code_ok": 0,
+            # A record rejected at ingestion produces no decision, so it
+            # is not a failed evaluation -- it is an absent one. Scoring
+            # it zero-correct made the category table sum to 63 while the
+            # headline divided by 61 (FAILURE_LOG.md section 71).
+            "not_evaluable": 0,
+        }
     )
 
     for txn_id, expected in sorted(ground_truth.items()):
@@ -161,6 +188,7 @@ def main() -> None:
         if decision is None:
             # Corrupted records never reach decisioning. Counted, not
             # dropped -- dropping would inflate the percentage.
+            per_category[category]["not_evaluable"] += 1
             rejected_at_ingestion.append({
                 "txn_id": txn_id,
                 "category": category,
@@ -236,10 +264,7 @@ def main() -> None:
 
     for category in sorted(per_category):
         stats = per_category[category]
-        decided = stats["total"] - sum(
-            1 for r in rejected_at_ingestion
-            if r["category"] == category
-        )
+        decided = stats["total"] - stats["not_evaluable"]
 
         if decided == 0:
             print(f"  {category:<28}{'n/a':<12}{'n/a':<12}"
@@ -347,7 +372,7 @@ def main() -> None:
             "percent": code_pct,
         },
         "by_category": {
-            category: dict(stats)
+            category: _describe_category(stats)
             for category, stats in sorted(per_category.items())
         },
         "divergences": divergences,

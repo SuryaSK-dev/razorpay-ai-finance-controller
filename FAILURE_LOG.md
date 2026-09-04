@@ -43,7 +43,7 @@ Nothing here was found by a tool that was looking for it. Every entry from
 
 ---
 
-## Index — all 70 sections
+## Index — all 71 sections
 
 Grouped as they appear. Sections 45+ are standalone rather than
 phase-scoped, because they postdate Phase 6.
@@ -153,6 +153,7 @@ not moved, which nothing in the repository could compute.
 - [**68.** The exception payload carried no money](#68-the-exception-payload-carried-no-money)
 - [**69.** The eval had no throttle, so it measured the rate limit](#69-the-eval-had-no-throttle-so-it-measured-the-rate-limit)
 - ★ [**70.** The most-cited invariant in the project had no mechanism](#70-the-most-cited-invariant-in-the-project-had-no-mechanism)
+- [**71.** The artifacts were all guarded; the document quoting them was not](#71-the-artifacts-were-all-guarded-the-document-quoting-them-was-not)
 
 ---
 # Phase 0–2 — Contracts, data, ingestion
@@ -1172,7 +1173,7 @@ raw (12) == divergent (0) + not_evaluable (6) + known_policy (6)
 # 45. Current state
 
 ```
-471 / 471 tests passing
+484 / 484 tests passing
 
 Gold baseline:            stable
 Baseline divergences:     0
@@ -3793,3 +3794,156 @@ that would have caught this:
 > must reproduce it. Not "should" — the citation is worth exactly as much
 > as the command that backs it, and where there is no command the
 > citation is worth nothing, however precise it looks.
+
+---
+
+# 71. The artifacts were all guarded; the document quoting them was not
+
+Found by an external audit, hours before submission, in the one file §70
+did not think to point at.
+
+## 71.1 What happened
+
+README.md's tool-selection table published a per-category breakdown of a
+measured result. Its `evidence` row read **6/6**. The artifact it claims
+to summarise, `data/eval/agent_tool_selection_report.json`, reads:
+
+```json
+"evidence": {"total": 6, "tool_ok": 4, "args_ok": 4}
+```
+
+Two of the three provider failures -- cases Q015 and Q016, both
+`503 UNAVAILABLE` -- are `evidence` cases. The artifact is right. The
+README was wrong, and wrong in the flattering direction.
+
+There is a second, louder symptom nobody noticed across four sections'
+worth of edits. The README's model column summed to
+
+```
+5 + 5 + 5 + 6 + 3 + 4 + 3 = 31
+```
+
+against its own bold headline of **29/32**, printed two rows above it. A
+reader adding up the column got a different number from the one the table
+announced. The artifact's categories sum to 29 correctly.
+
+The same audit found the same shape in a second place.
+`accuracy_report.json` scored the `corrupted` category
+`{"total": 2, "status_ok": 0, "code_ok": 0}` while excluding those two
+records from the headline denominator. Summing the category table gave
+**55/63 = 87.30%**; the headline said **55/61 = 90.16%**. Both were in
+one artifact. A reviewer deriving the figure themselves would have found
+a number the project never published, and could reasonably have
+concluded the higher one was chosen.
+
+## 71.2 How it survived
+
+Not through absence of testing. Through testing that stopped one file
+short.
+
+```
+test_metrics_arithmetic_reconciles              artifact internals      PASS
+test_report_baseline_arithmetic_reconciles      baseline half           PASS
+test_report_matches_the_current_dataset         report vs dataset       PASS
+test_per_category_totals_sum_to_the_ground...   category table vs 63    PASS
+test_per_category_correct_counts_sum_to_the...  category ok vs headline PASS
+```
+
+Five tests guarding the arithmetic, all passing, all correct. And:
+
+```
+$ grep -rn "README" tests/
+(docstring mentions only)
+```
+
+**Nothing in the repository read README.md.** The artifacts were verified
+against themselves and against the dataset. The document that transcribes
+them for a human being was checked by a human being, once, by eye.
+
+The accuracy case is subtler and worth separating. Its two tests were not
+weak -- each was individually true. `sum(total) == 63` held, and
+`sum(status_ok) == 55` held. What no test asserted was that
+`sum(total) - sum(not_evaluable)` equals the denominator the percentage
+is actually divided by, because `not_evaluable` did not exist as a
+concept. Zero-correct and not-evaluable were the same value in the
+schema, so the artifact could not express the distinction it needed to
+make.
+
+## 71.3 Root cause
+
+> §70 required that a cited value be reproducible by a command. It did
+> not ask **which document the citation lived in**. The evaluation
+> artifacts were all guarded; the document that quotes them to a reader
+> was not -- and that document is the only one a judge actually reads.
+
+§70 was written days before this. It fixed the instance -- one hash, one
+mechanism. This is the class, and it recurred immediately, in the log's
+own home document, while the ink was wet.
+
+That is the part worth recording. The lesson had been stated correctly
+and generally, and it still did not generalise on its own, because "cited
+value" was read as "value cited in a technical artifact" rather than
+"value cited anywhere a reader will find it."
+
+## 71.4 Fix
+
+Three changes, none of them to the engine.
+
+**The README rows now match the artifact.** `evidence` reads 4/6 and the
+model column sums to 29, equal to the headline. The baseline column was
+already correct at 27 and was not touched. A related claim -- "one
+disconnect and two HTTP 503" -- was also wrong: all three misses are 503,
+cases Q010, Q015 and Q016.
+
+**`accuracy_report.json` now distinguishes absent from incorrect.**
+`report_accuracy.py` emits `not_evaluable` per category, with the reason
+attached wherever it is non-zero:
+
+```json
+"corrupted": {
+  "total": 2, "status_ok": 0, "code_ok": 0,
+  "not_evaluable": 2, "evaluable": 0,
+  "reason": "rejected at ingestion; produces no decision, so it is
+             excluded from the accuracy denominator rather than
+             scored as incorrect"
+}
+```
+
+The headline is unchanged at 55/61 (90.16%) -- this was never a wrong
+number, only a table that could not explain its own denominator. The
+README now also volunteers **55/63 (87.30%)** on the full denominator,
+because a reviewer who derives it themselves and finds it unmentioned
+will trust everything else less.
+
+**`verify.sh`.** One command, twenty-two checks, expected values
+hard-coded, no API key required, non-zero exit on any failure. Two of its
+lines exist because of this section: one recomputes the category table
+against the headline denominator, and one reads README.md and compares
+every row of the tool-selection table against the artifact, including the
+column sum against the headline. That check fails on the state this
+section describes.
+
+Three new tests in `test_accuracy_report.py` cover the artifact side:
+non-evaluable records must be named and carry a reason, evaluable totals
+must sum to the accuracy denominator, and no category may score more
+correct than it had records to evaluate.
+
+## 71.5 What this does not fix
+
+`verify.sh` checks the tool-selection table because that is where the
+defect was. It does not check every number in the README against every
+artifact. A general README-to-artifact reconciliation test would close
+the class permanently, and is recorded in `ROADMAP.md` as post-submission
+work -- building it properly on deadline day is how the thing it is meant
+to protect gets broken.
+
+## 71.6 The generalisable version
+
+> A repository verifies its artifacts and trusts its prose. The prose is
+> the only part most readers ever see.
+
+And the narrower one, which is §70's rule with the hole closed:
+
+> "A command must reproduce every cited value" has to include the
+> citations in the README, or it protects the files nobody reads and not
+> the file everybody does.

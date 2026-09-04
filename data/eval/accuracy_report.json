@@ -18,52 +18,64 @@
     "ambiguous": {
       "total": 6,
       "status_ok": 6,
-      "code_ok": 6
+      "code_ok": 6,
+      "not_evaluable": 0
     },
     "amount_fee_discrepancy": {
       "total": 8,
       "status_ok": 8,
-      "code_ok": 8
+      "code_ok": 8,
+      "not_evaluable": 0
     },
     "corrupted": {
       "total": 2,
       "status_ok": 0,
-      "code_ok": 0
+      "code_ok": 0,
+      "not_evaluable": 2,
+      "evaluable": 0,
+      "reason": "rejected at ingestion; produces no decision, so it is excluded from the accuracy denominator rather than scored as incorrect"
     },
     "duplicate": {
       "total": 3,
       "status_ok": 3,
-      "code_ok": 3
+      "code_ok": 3,
+      "not_evaluable": 0
     },
     "exact_match": {
       "total": 18,
       "status_ok": 18,
-      "code_ok": 18
+      "code_ok": 18,
+      "not_evaluable": 0
     },
     "missing_in_source": {
       "total": 5,
       "status_ok": 5,
-      "code_ok": 5
+      "code_ok": 5,
+      "not_evaluable": 0
     },
     "reference_mismatch_fuzzy": {
       "total": 6,
       "status_ok": 0,
-      "code_ok": 0
+      "code_ok": 0,
+      "not_evaluable": 0
     },
     "tax_mismatch": {
       "total": 7,
       "status_ok": 7,
-      "code_ok": 7
+      "code_ok": 7,
+      "not_evaluable": 0
     },
     "timing_difference": {
       "total": 6,
       "status_ok": 6,
-      "code_ok": 6
+      "code_ok": 6,
+      "not_evaluable": 0
     },
     "unresolvable": {
       "total": 2,
       "status_ok": 2,
-      "code_ok": 2
+      "code_ok": 2,
+      "not_evaluable": 0
     }
   },
   "divergences": [

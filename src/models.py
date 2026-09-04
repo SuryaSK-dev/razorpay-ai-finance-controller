@@ -27,6 +27,31 @@ from pydantic import BaseModel, Field, BeforeValidator, AfterValidator
 # it here, at the boundary.
 # =======================================================================
 
+def _reject_non_finite(result: Decimal, original: Any) -> Decimal:
+    """
+    NaN and Infinity are not amounts.
+
+    `Decimal("NaN")` and `Decimal("Infinity")` construct without error, so
+    a firewall that only guards float and bool lets them straight through
+    -- and every downstream defence then fails differently and badly:
+
+        reject_negative(NaN)      raises InvalidOperation, not ValueError
+        money(NaN)                returns NaN, silently, no exception
+        sum([..., NaN])           returns NaN, poisoning a batch total
+        abs(NaN - x) <= tolerance raises InvalidOperation inside matching
+
+    The existing "NOT_A_NUMBER" test covers a string that cannot be
+    parsed. This covers a string that parses into something that is not a
+    number, which is the harder case and had no guard at all.
+    """
+    if not result.is_finite():
+        raise ValueError(
+            f"Non-finite monetary value {original!r} rejected. "
+            f"NaN and Infinity are not amounts."
+        )
+    return result
+
+
 def to_decimal(value: Any) -> Decimal:
     if isinstance(value, bool):
         # bool is a subclass of int in Python -- without this explicit
@@ -44,11 +69,12 @@ def to_decimal(value: Any) -> Decimal:
             f"unacceptable in financial computation."
         )
     if isinstance(value, Decimal):
-        return value
+        return _reject_non_finite(value, value)
     try:
-        return Decimal(str(value))
+        converted = Decimal(str(value))
     except (InvalidOperation, ValueError) as e:
         raise ValueError(f"Cannot convert {value!r} to Decimal: {e}")
+    return _reject_non_finite(converted, value)
 
 Money = Annotated[Decimal, BeforeValidator(to_decimal)]
 
