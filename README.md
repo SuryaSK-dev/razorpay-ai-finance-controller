@@ -7,7 +7,7 @@
 ![Python](https://img.shields.io/badge/python-3.11-blue)
 ![Pydantic](https://img.shields.io/badge/contracts-Pydantic%20v2-e92063)
 ![Gemini](https://img.shields.io/badge/model-Gemini%203.1%20Flash--Lite-4285F4)
-![Tests](https://img.shields.io/badge/tests-484%20passing-brightgreen)
+![Tests](https://img.shields.io/badge/tests-486%20passing-brightgreen)
 ![Status](https://img.shields.io/badge/status-phase%206%20complete-brightgreen)
 ![Track](https://img.shields.io/badge/Razorpay%20Buildathon-Track%2004-002970)
 
@@ -35,13 +35,22 @@ nothing for the conjunction to catch.
 ## Verify every number in this README
 
 ```bash
-./verify.sh
+bash verify.sh
 ```
 
-Twenty-two checks, one line each, expected values hard-coded so drift is
+Twenty-three checks, one line each, expected values hard-coded so drift is
 visible rather than silent. Runs from a cold clone with **no API key** —
-the deterministic core has no model in it. Exits non-zero if any published
+the deterministic core has no model in it. Exits non-zero if any covered
 figure fails to reproduce.
+
+**It verifies the headline metrics, not every number.** Covered:
+reconciliation, cash position, accuracy, the decision snapshot, tool
+selection, the throughput artifact, README-to-artifact consistency, and
+ground-truth isolation. **Not covered:** fuzzy-tier precision, explanation
+quality, and anything needing a live model. Saying so is worth more than
+the coverage — the first draft of this script called itself *"verifying
+every published number"*, which was a claim stronger than its mechanism,
+inside the script written to catch exactly that.
 
 This exists because of [`FAILURE_LOG.md`](FAILURE_LOG.md) §70 and §71:
 a value cited as evidence needs a command in the repository that
@@ -145,7 +154,7 @@ razorpay-ai-finance-controller/
 ├── scripts/                          Generation, verification, evaluation, demo
 │   ├── run_pipeline.py               The deterministic core alone — no model, no key
 │   └── demo_agent.py                 The agent on top of it
-├── tests/                            484 tests across 37 files
+├── tests/                            486 tests across 37 files
 ├── data/
 │   ├── raw/                          Generated PG / bank / invoice sources
 │   ├── ground_truth.json             Never read by the pipeline — evaluation only
@@ -322,7 +331,8 @@ Reproduce with `python scripts/run_pipeline.py`, or ask the agent
 
 | Measure | Result |
 |---|---|
-| Test suite | **484 passing** across 37 files |
+| Test suite | **486 passing** across 37 files |
+| AI numeric authority | **Zero.** Every numeral in model prose must appear in the tool payload; an ungrounded figure forces deterministic fallback and is logged |
 | Decision policy coverage | **2048/2048** context combinations resolve deterministically |
 | Gold baseline (per-case E2E) | **0 unexplained divergences** · 51 exact · 6 not-evaluable · 6 known-policy |
 | Fuzzy tier | **6 of 61 records reach it** (was 0). Precision 1.00, recall 1.00 through threshold 90, 0.50 at 95 |
@@ -444,11 +454,18 @@ scans the full bank pool for every PG record to answer *"does a competing
 record exist?"* — an O(n²) sweep, and the price of detecting ambiguity
 at all.
 
-**The previously published sweep was measured before that scan existed.**
-`data/throughput_benchmark.json` was last written at `phase-4-final`;
-the ambiguity scan arrived in Phase 5B. Every figure quoted since
-described an engine that no longer ran. The number was not wrong when
-recorded — it was never re-recorded.
+**The sweep published before that scan existed had described a different
+engine.** The pre-fix artifact reported **6,568.6 rec/sec at 5,000** with a
+matching time of 0.14s — near-linear, because the ambiguity scan that
+arrived in Phase 5B was not in it. Every figure quoted in between described
+an engine that no longer ran. The number was not wrong when recorded; it
+had simply never been re-recorded.
+
+It has been since. `data/throughput_benchmark.json` was re-measured in
+`72ebfe0` against the post-scan engine, and the 179.2 rec/sec above **is**
+that measurement — matching time 27.3s at 5,000 records, up from 0.14s.
+The quadratic is visible in the published artifact precisely because the
+artifact was refreshed.
 
 `benchmark_throughput.py` had predicted it in its own output the whole
 time: *"if match_time grows faster than linearly, that's real evidence of
@@ -479,14 +496,25 @@ honest statement is **checkable, not incapable** — an operator or a
 reviewer can always hold the sentence against the numbers it claims to
 describe, because both travel in the same object.
 
-`ask()` is deliberately left that way. A substring check over an arbitrary
-tool result rejects correct paraphrases and admits wrong numbers, which is
-worse than not checking — the reasoning is in `_phrase_answer`. Where the
-fact set *is* closed and enumerable, the check is enforced instead of
-described: `explain()` runs every model explanation through
-`validate_explanation()` and falls back to a deterministic template when a
-figure, status or reason code is missing
-([`FAILURE_LOG.md`](FAILURE_LOG.md) §62).
+**The numbers, however, are now enforced.** Every numeric literal in the
+model's prose is extracted and required to appear in the authoritative tool
+payload. An ungrounded figure does not reach the operator: the answer falls
+back to deterministic phrasing and the offending literal is recorded in
+`agent_metadata.grounding_violations`. **The model cannot state a number
+the tools did not produce.**
+
+This is set membership over parsed `Decimal` values, not the substring check
+an earlier review rejected — a correct paraphrase survives it, and
+`999999999.99` does not. What it does *not* do is bound meaning: a
+transposition such as *"61 of 24 records matched"* uses only grounded
+numbers and passes, and a sentence carrying no numerals is not examined at
+all. Those limits are stated in Known Limitations rather than left for a
+reviewer to find. Written up in [`FAILURE_LOG.md`](FAILURE_LOG.md) §72.
+
+Where the fact set is closed and enumerable the check is stricter still:
+`explain()` runs every model explanation through `validate_explanation()`
+and falls back to a deterministic template when a figure, status or reason
+code is missing ([`FAILURE_LOG.md`](FAILURE_LOG.md) §62).
 
 ---
 
@@ -558,7 +586,19 @@ Stated plainly so none of the above is read as more than it is.
 - **Tool selection is measured on 32 questions**, against a deterministic keyword
   baseline. Real, but still a small set — and every question is one I wrote, so it
   measures routing against my own idea of how an operator phrases things.
-- **Throughput is a recorded benchmark on one machine**, not a production capacity guarantee.
+- **Throughput is a recorded benchmark on one machine, on one day**, not a production
+  capacity guarantee. Repeated runs of the same code on a *loaded* machine vary by more
+  than 2× between consecutive measurements, so treat the absolute figures as an order of
+  magnitude and the O(n²) *shape* as the finding. `benchmark_throughput.py` writes to
+  `throughput_benchmark_latest.json` by default and only replaces the published artifact
+  under `--record`, so a casual run cannot silently move a published number.
+- **Numeric grounding constrains numerals, not meaning.** `ask()` rejects any figure in
+  the model's prose that is absent from the tool payload, but it is set membership: a
+  transposition (*"61 of 24"*) uses only grounded numbers and passes; a correct number
+  the model *derived* rather than read (*"that leaves 37"*) is rejected even though it is
+  true; a claim with no numerals in it is not examined. Indian lakh grouping
+  (`5,00,000`) is not parsed as one token. The guard is deliberately narrow and the
+  direction of every failure is toward the deterministic fallback.
 - **The dataset is synthetic and self-generated.** Results characterise this dataset.
 
 ---

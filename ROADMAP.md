@@ -7,7 +7,8 @@ so read this document against that commit rather than against the tag
 says where the tag currently points.
 
 **Status update.** V1.0.5, V1.1, V1.3 and V2 have since shipped — recorded
-as `FAILURE_LOG.md` §66, §67 and §68. Suite 424 → **484**; the
+as `FAILURE_LOG.md` §66, §67 and §68, with §70–§72 recording the review
+passes since. Suite 424 → **486**; the
 decisions themselves did not move — 61 records, the same statuses,
 exception codes, reason codes and confidence scores throughout, now
 pinned by `tests/test_decision_snapshot.py` as `d8134bab221d1046`.
@@ -33,7 +34,7 @@ GST and TDS, classifies every unresolved record into a typed exception
 with the decision rule that produced it, and reports the batch in rupees.
 It measures itself: 24/61 matched (39.34%), 55/61 agreeing with
 independent ground truth (90.16%), 37 exceptions itemised, throughput
-recorded with its O(n²) ceiling disclosed. 484 tests pass from a cold
+recorded with its O(n²) ceiling disclosed. 486 tests pass from a cold
 clone with no API key. The AI layer selects among five read-only tools
 and phrases results; it holds no financial authority.
 
@@ -895,6 +896,51 @@ same class as §4, where six records fail-opened while 162 tests passed.
 The identical-results test is what makes this safe.
 
 **EFFORT** 30–40h
+
+---
+
+## 3b. Known, small, and deliberately deferred
+
+Found during review, verified against the tree, and left alone because a
+freeze is the wrong moment to fix something whose failure mode is already
+safe. Each is recorded so it is not rediscovered as news.
+
+**Magnitude cap on `Decimal`.** `to_decimal` rejects NaN and Infinity via
+`is_finite()` (§71), but `Decimal("1E+400")` *is* finite and still passes.
+No published number depends on it and no real settlement reaches it. Any
+threshold would be arbitrary without a stated business bound, and inventing
+one at a deadline is how a firewall acquires a magic number. Needs a
+justified cap — probably tied to a per-batch total — not a guess.
+
+**Total tie-break ordering in `matching/engine.py`.** Candidates are sorted
+on `(date_delta, amount_delta, utr or "")`. Two candidates with equal deltas
+and no UTR tie, and the winner falls out of file order. Adding `bank_ref` as
+a fourth element makes the order total and aligns the engine with
+`completeness.py`, which already uses `bank_ref` as its identity key. It
+moves no metric on this dataset — the tie does not occur — which is exactly
+why it is not worth a suite run at a freeze.
+
+**Throughput artifact provenance.** `throughput_benchmark.json` carries no
+`recorded_at`, machine, Python version or `git describe`. §54 is the entry
+about a benchmark describing an engine that no longer existed, and nothing
+stamps the artifact to prevent a recurrence — the protection today is
+`--record` plus a README sentence. Stamping it means re-running the
+benchmark, which produces new numbers and fresh README drift; §72.5 shows
+consecutive runs on one machine varying by 2.08×, so the stamp needs a
+variance estimate beside it to mean anything.
+
+**`ToolSpec` docstrings say "four tools".** `registry.py:11` and `:91`, and
+`test_tool_registry.py:110`, all predate the fifth tool. Comment-only, in a
+frozen file, with no functional effect (§72.3).
+
+**`config.TOTAL_RECORDS = 60`** is dead and wrong — the generator emits 63,
+because `ambiguous` produces two rows per case. Nothing imports it.
+
+**A general README-to-artifact reconciliation test.** `verify.sh` checks the
+tool-selection table and the throughput table because those are where
+defects were found (§71, §72). It does not check every number in the README
+against every artifact. Building that properly closes the class; building it
+at a freeze is how the thing it protects gets broken.
 
 ---
 

@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 #
-# verify.sh -- reproduce every number this repository publishes.
+# verify.sh -- reproduce the headline metrics this repository publishes.
+#
+# NOT every number. The banner says what is and is not covered. That
+# distinction matters: an earlier draft called itself "verifying every
+# published number", which was a claim stronger than its mechanism --
+# inside the script written to catch claims stronger than their
+# mechanisms. FAILURE_LOG.md section 72.
 #
 # FAILURE_LOG.md section 70 ends with a rule this script exists to obey:
 #
@@ -42,16 +48,21 @@ cd "$(dirname "$0")" || exit 2
 export PYTHONIOENCODING=utf-8
 
 echo "======================================================================"
-echo "  AI Finance Controller -- verifying every published number"
+echo "  AI Finance Controller -- verifying the headline metrics"
 echo "  $(git rev-parse --short HEAD 2>/dev/null || echo 'not a git checkout')"
 echo "======================================================================"
+echo "  23 checks: reconciliation, cash position, accuracy, decision"
+echo "  snapshot, tool selection, throughput artifact, README/artifact"
+echo "  consistency, ground-truth isolation."
+echo "  NOT covered: fuzzy-tier precision, explanation quality, and any"
+echo "  measurement that needs a live model."
 echo
 
 # ---------------------------------------------------------------------
 # 1. The suite
 # ---------------------------------------------------------------------
 SUITE=$($PY -m pytest tests/ -q 2>&1 | tail -20 | grep -oE '[0-9]+ passed' | head -1)
-check "test suite" "484 passed" "${SUITE:-no result}"
+check "test suite" "486 passed" "${SUITE:-no result}"
 
 # ---------------------------------------------------------------------
 # 2. The deterministic pipeline -- decisions and money
@@ -164,21 +175,41 @@ PYEOF
 )"
 
 # ---------------------------------------------------------------------
+# 5b. The published throughput artifact against the README table that
+#     quotes it. Reads the committed artifact; runs no benchmark.
+# ---------------------------------------------------------------------
+check "throughput vs README" "ok" "$($PY - <<'PYEOF'
+import json
+rows = json.load(open("data/throughput_benchmark.json"))
+by_n = {r["n_records"]: r["records_per_second"] for r in rows}
+readme = open("README.md", encoding="utf-8").read()
+bad = []
+for n, quoted in ((60, "1,348.5"), (5000, "179.2")):
+    actual = f"{by_n[n]:,}"
+    if actual != quoted:
+        bad.append(f"n={n}: artifact says {actual}, README quotes {quoted}")
+    elif quoted not in readme:
+        bad.append(f"n={n}: README no longer quotes {quoted}")
+print("ok" if not bad else "; ".join(bad))
+PYEOF
+)"
+
+# ---------------------------------------------------------------------
 # 6. Boundaries that no number would show
 # ---------------------------------------------------------------------
 check "ground truth isolation" "0" \
     "$(grep -rn 'ground_truth' src/ --include='*.py' 2>/dev/null | wc -l | tr -d ' ')"
-check "failure log sections" "71" \
+check "failure log sections" "72" \
     "$(grep -cE '^#{1,3} [0-9]+[.:] ' FAILURE_LOG.md)"
 
 echo
 echo "----------------------------------------------------------------------"
 if [ "$FAILURES" -eq 0 ]; then
-    echo "  ALL CHECKS PASSED -- every published number reproduced."
+    echo "  ALL CHECKS PASSED -- every headline metric reproduced."
     echo "----------------------------------------------------------------------"
     exit 0
 fi
-echo "  $FAILURES CHECK(S) FAILED -- a published number no longer reproduces."
+echo "  $FAILURES CHECK(S) FAILED -- a headline metric no longer reproduces."
 echo "  This is a defect in the change, not a new result to document."
 echo "----------------------------------------------------------------------"
 exit 1

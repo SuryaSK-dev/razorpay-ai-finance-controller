@@ -18,7 +18,8 @@ reasons about and narrates truth that Phase 0-4 already established.
 
 HOW ask() IS BOUNDED
 --------------------
-Two model calls, neither of which can produce a number:
+Two model calls, neither of which can authoritatively produce financial
+truth:
 
     1. SELECTION -- the model reads the question and the tool
        catalogue, and returns a tool name plus arguments. It has no
@@ -34,8 +35,15 @@ in the final answer come from `decide_batch()` output via
 
 The raw tool result is returned alongside the phrased answer in
 `AgentAnswer.data`, so an operator -- or a reviewer -- can always check
-the prose against the numbers it claims to describe. If the model
-misstates something, the evidence to catch it is in the same object.
+the prose against the authoritative result.
+
+Additionally, the phrasing path performs a narrow numeric-grounding
+check. Numeric literals introduced by the model that do not occur in the
+authoritative tool result cause the model prose to be rejected and the
+controller falls back to deterministic rendering.
+
+This prevents fabricated financial figures without pretending that a
+simple lexical check proves every possible semantic statement.
 
 FAILURE BEHAVIOUR
 -----------------
@@ -45,8 +53,9 @@ timeout, parse validation, and failure isolation apply unchanged.
     Selection fails  -> honest "could not determine which tool"
     Tool fails       -> the tool's own error, unembellished
     Phrasing fails   -> deterministic template over the real result
+    Grounding fails  -> deterministic template over the real result
 
-The last one matters most: a phrasing failure must not lose the answer.
+The last two matter most: a phrasing failure must not lose the answer.
 The numbers are already computed at that point, so the fallback renders
 them directly rather than returning nothing.
 """
@@ -54,7 +63,9 @@ them directly rather than returning nothing.
 from __future__ import annotations
 
 import json
+import re
 from dataclasses import dataclass, field
+from decimal import Decimal, InvalidOperation
 from typing import Any, Callable, Optional
 
 from src.models import MatchDecision
@@ -80,12 +91,15 @@ from src.agent.tool_selection import (
 # RESPONSE TYPES
 # ======================================================================
 
+
 @dataclass
 class ControllerResponse:
     """What the agent returns for one decision -- explicitly
     separates financial facts (untouched, copied straight from the
     input MatchDecision) from agent-generated narration (the only
-    thing this layer is allowed to produce)."""
+    thing this layer is allowed to produce).
+    """
+
     txn_id: str
     status: str                 # copied verbatim from MatchDecision
     exception_code: str         # copied verbatim from MatchDecision
@@ -108,11 +122,12 @@ class AgentAnswer:
 
     `answer_source` distinguishes:
         "llm"                     -- model phrased the real result
-        "deterministic_fallback"  -- model failed; result rendered
-                                     directly from the data
+        "deterministic_fallback"  -- model failed or failed grounding;
+                                     result rendered directly from data
         "no_tool"                 -- no tool fits the question
         "error"                   -- selection or tool failed
     """
+
     question: str
     answer: str
     answer_source: str
@@ -125,6 +140,7 @@ class AgentAnswer:
 # ======================================================================
 # PHRASING PROMPT
 # ======================================================================
+
 
 _PHRASING_INSTRUCTIONS = """\
 You are answering a finance operator's question about a batch of
@@ -155,7 +171,10 @@ Write the answer now. Plain prose, no markdown, no preamble.
 """
 
 
-def build_phrasing_prompt(question: str, data: dict[str, Any]) -> str:
+def build_phrasing_prompt(
+    question: str,
+    data: dict[str, Any],
+) -> str:
     return _PHRASING_INSTRUCTIONS.format(
         question=question.strip(),
         data=json.dumps(data, indent=2, sort_keys=True),
@@ -163,8 +182,173 @@ def build_phrasing_prompt(question: str, data: dict[str, Any]) -> str:
 
 
 # ======================================================================
+# NUMERIC GROUNDING
+# ======================================================================
+
+
+# Matches standalone numeric literals while avoiding digits embedded
+# inside identifiers such as txn_001 or ABC123.
+#
+# Examples matched:
+#     24
+#     61
+#     39.34
+#     292353.70
+#     292,353.70
+#     -517.48
+#     ₹292,353.70
+#     90.16%
+#
+# Examples intentionally not treated as standalone numbers:
+#     txn_001
+#     ABC123
+#
+# Currency symbols are deliberately ignored by the validator; only the
+# numeric value itself is compared.
+_NUMERIC_TOKEN_RE = re.compile(
+    r"""
+    (?<![A-Za-z0-9_])
+    [₹$€£]?\s*
+    -?
+    (?:
+        \d{1,3}(?:,\d{3})+(?:\.\d+)?
+        |
+        \d+(?:\.\d+)?
+        |
+        \.\d+
+    )
+    %?
+    (?![A-Za-z0-9_])
+    """,
+    re.VERBOSE,
+)
+
+
+def _numeric_tokens(value: Any) -> set[Decimal]:
+    """
+    Extract normalized numeric literals from an arbitrary JSON-like value.
+
+    The comparison deliberately uses Decimal rather than float so that
+    financial values such as 292353.70 are compared exactly.
+
+    Strings are scanned for standalone numeric literals. This means the
+    validator can recognize values embedded in tool-generated text while
+    avoiding accidental extraction of digits from identifiers.
+    """
+
+    if value is None:
+        return set()
+
+    if isinstance(value, bool):
+        # bool is a subclass of int in Python, but it is not a financial
+        # numeric value for grounding purposes.
+        return set()
+
+    if isinstance(value, (int, float, Decimal)):
+        try:
+            return {Decimal(str(value))}
+        except (InvalidOperation, ValueError):
+            return set()
+
+    if isinstance(value, str):
+        tokens: set[Decimal] = set()
+
+        for match in _NUMERIC_TOKEN_RE.finditer(value):
+            raw = match.group(0)
+
+            # Remove currency symbols, whitespace, percent signs and
+            # thousands separators before Decimal conversion.
+            normalized = (
+                raw.replace("₹", "")
+                .replace("$", "")
+                .replace("€", "")
+                .replace("£", "")
+                .replace("%", "")
+                .replace(",", "")
+                .strip()
+            )
+
+            try:
+                tokens.add(Decimal(normalized))
+            except InvalidOperation:
+                continue
+
+        return tokens
+
+    if isinstance(value, dict):
+        tokens: set[Decimal] = set()
+
+        for key, item in value.items():
+            # Include keys as well because some authoritative result
+            # structures can contain numeric-looking identifiers or
+            # codes. The standalone-token regex prevents ordinary
+            # alphanumeric IDs from being interpreted as numbers.
+            tokens.update(_numeric_tokens(str(key)))
+            tokens.update(_numeric_tokens(item))
+
+        return tokens
+
+    if isinstance(value, (list, tuple, set)):
+        tokens: set[Decimal] = set()
+
+        for item in value:
+            tokens.update(_numeric_tokens(item))
+
+        return tokens
+
+    return set()
+
+
+def _validate_answer_prose(
+    answer: str,
+    authoritative_data: dict[str, Any],
+) -> tuple[bool, list[str]]:
+    """
+    Validate that every numeric literal in model-generated prose is
+    grounded in the authoritative deterministic tool result.
+
+    This is intentionally a narrow guardrail.
+
+    It DOES:
+        - prevent the model from introducing unsupported numeric figures;
+        - force deterministic fallback when it does.
+
+    It DOES NOT claim to:
+        - prove arbitrary semantic faithfulness;
+        - prove that a sentence is logically correct;
+        - replace the explanation evaluation suite.
+
+    Returns:
+        (is_valid, unsupported_numeric_literals)
+    """
+
+    answer_numbers = _numeric_tokens(answer)
+    authoritative_numbers = _numeric_tokens(authoritative_data)
+
+    unsupported = sorted(
+        answer_numbers - authoritative_numbers,
+        key=lambda value: str(value),
+    )
+
+    return len(unsupported) == 0, [
+        _format_decimal(value)
+        for value in unsupported
+    ]
+
+
+def _format_decimal(value: Decimal) -> str:
+    """Return a stable human-readable representation for metadata."""
+
+    if value == value.to_integral():
+        return str(value.quantize(Decimal("1")))
+
+    return format(value.normalize(), "f")
+
+
+# ======================================================================
 # AGENT
 # ======================================================================
+
 
 class FinanceControllerAgent:
     """
@@ -196,7 +380,8 @@ class FinanceControllerAgent:
 
     def explain(self, decision: MatchDecision) -> ControllerResponse:
         result: AgentCallResult[Explanation] = explain_decision_via_llm(
-            decision, self.llm_call_fn
+            decision,
+            self.llm_call_fn,
         )
 
         if result.succeeded:
@@ -221,7 +406,8 @@ class FinanceControllerAgent:
         )
 
     def explain_batch(
-        self, decisions: list[MatchDecision]
+        self,
+        decisions: list[MatchDecision],
     ) -> list[ControllerResponse]:
         return [self.explain(d) for d in decisions]
 
@@ -233,8 +419,21 @@ class FinanceControllerAgent:
         """
         Answer one natural-language question about the batch.
 
-        select tool -> run tool deterministically -> phrase the result
+        Flow:
+
+            select tool
+                ↓
+            run tool deterministically
+                ↓
+            authoritative result
+                ↓
+            phrase result with LLM
+                ↓
+            numeric grounding validation
+                ↓
+            accepted LLM prose OR deterministic fallback
         """
+
         if self.query_context is None:
             return AgentAnswer(
                 question=question,
@@ -243,7 +442,9 @@ class FinanceControllerAgent:
                     "questions about reconciliation results."
                 ),
                 answer_source="error",
-                agent_metadata={"error": "no query_context supplied"},
+                agent_metadata={
+                    "error": "no query_context supplied",
+                },
             )
 
         if not question or not question.strip():
@@ -251,7 +452,9 @@ class FinanceControllerAgent:
                 question=question,
                 answer="I did not receive a question.",
                 answer_source="error",
-                agent_metadata={"error": "empty question"},
+                agent_metadata={
+                    "error": "empty question",
+                },
             )
 
         # --- 1. SELECTION ------------------------------------------------
@@ -270,7 +473,9 @@ class FinanceControllerAgent:
                 agent_metadata={
                     "stage": "selection",
                     "error": selection_result.error,
-                    "llm_latency_seconds": selection_result.latency_seconds,
+                    "llm_latency_seconds": (
+                        selection_result.latency_seconds
+                    ),
                     "raw_response": selection_result.raw_response,
                 },
             )
@@ -289,13 +494,16 @@ class FinanceControllerAgent:
                 answer_source="no_tool",
                 agent_metadata={
                     "stage": "selection",
-                    "llm_latency_seconds": selection_result.latency_seconds,
+                    "llm_latency_seconds": (
+                        selection_result.latency_seconds
+                    ),
                 },
             )
 
         # --- 2. DETERMINISTIC EXECUTION ----------------------------------
-        # Everything from here is real. The model has had its say about
-        # WHICH question to ask; it has no influence on the answer.
+        # Everything from here is authoritative. The model has had its
+        # say about WHICH question to ask; it has no authority over the
+        # financial result.
 
         envelope = dispatch(
             self.query_context,
@@ -313,7 +521,9 @@ class FinanceControllerAgent:
                 agent_metadata={
                     "stage": "dispatch",
                     "error_type": envelope["error_type"],
-                    "llm_latency_seconds": selection_result.latency_seconds,
+                    "llm_latency_seconds": (
+                        selection_result.latency_seconds
+                    ),
                 },
             )
 
@@ -322,13 +532,40 @@ class FinanceControllerAgent:
         # --- 3. PHRASING -------------------------------------------------
         phrasing_result = self._phrase_answer(question, data)
 
+        grounding_valid = False
+        grounding_violations: list[str] = []
+
         if phrasing_result.succeeded:
             answer_text = phrasing_result.value
-            source = "llm"
+
+            # --- 4. NUMERIC GROUNDING -----------------------------------
+            #
+            # The deterministic tool result remains authoritative.
+            # If the model introduces a number that is absent from that
+            # result, reject the prose rather than returning potentially
+            # fabricated financial information.
+            grounding_valid, grounding_violations = (
+                _validate_answer_prose(
+                    answer_text,
+                    data,
+                )
+            )
+
+            if grounding_valid:
+                source = "llm"
+            else:
+                answer_text = _render_fallback(
+                    selection.tool_name,
+                    data,
+                )
+                source = "deterministic_fallback"
         else:
             # The numbers already exist. A phrasing failure must not
             # lose them.
-            answer_text = _render_fallback(selection.tool_name, data)
+            answer_text = _render_fallback(
+                selection.tool_name,
+                data,
+            )
             source = "deterministic_fallback"
 
         return AgentAnswer(
@@ -339,9 +576,15 @@ class FinanceControllerAgent:
             tool_arguments=selection.arguments,
             data=data,
             agent_metadata={
-                "selection_latency_seconds": selection_result.latency_seconds,
-                "phrasing_latency_seconds": phrasing_result.latency_seconds,
+                "selection_latency_seconds": (
+                    selection_result.latency_seconds
+                ),
+                "phrasing_latency_seconds": (
+                    phrasing_result.latency_seconds
+                ),
                 "phrasing_error": phrasing_result.error,
+                "grounding_valid": grounding_valid,
+                "grounding_violations": grounding_violations,
             },
         )
 
@@ -349,7 +592,10 @@ class FinanceControllerAgent:
     # INTERNALS
     # ------------------------------------------------------------------
 
-    def _select_tool(self, question: str) -> AgentCallResult[ToolSelection]:
+    def _select_tool(
+        self,
+        question: str,
+    ) -> AgentCallResult[ToolSelection]:
         """
         Ask the model which tool answers this question.
 
@@ -357,6 +603,7 @@ class FinanceControllerAgent:
         the guardrail's validate_fn -- an invalid selection is rejected
         there and never reaches dispatch.
         """
+
         prompt = build_selection_prompt(question)
 
         return call_llm_bounded(
@@ -366,19 +613,29 @@ class FinanceControllerAgent:
         )
 
     def _phrase_answer(
-        self, question: str, data: dict[str, Any]
+        self,
+        question: str,
+        data: dict[str, Any],
     ) -> AgentCallResult[str]:
         """
         Ask the model to phrase the real result.
 
-        Validation here is deliberately thin -- non-empty, not absurdly
-        long. Verifying that the prose faithfully reflects the data is
-        the job of the explanation validator and the faithfulness
-        evaluation, not of a boolean in the call path. Attempting a
-        substring check here would reject correct paraphrases and admit
-        wrong ones, which is worse than not checking.
+        The call-path validator here remains intentionally basic:
+        non-empty and bounded length.
+
+        Numeric faithfulness is checked AFTER the LLM returns because
+        that validation needs both:
+            1. the generated prose; and
+            2. the authoritative tool result.
+
+        If numeric grounding fails, `ask()` uses the deterministic
+        fallback rather than returning the untrusted prose.
         """
-        prompt = build_phrasing_prompt(question, data)
+
+        prompt = build_phrasing_prompt(
+            question,
+            data,
+        )
 
         return call_llm_bounded(
             call_fn=lambda: self.llm_call_fn(prompt),
@@ -391,17 +648,25 @@ class FinanceControllerAgent:
 # DETERMINISTIC FALLBACK RENDERING
 # ======================================================================
 
-def _render_fallback(tool_name: str, data: dict[str, Any]) -> str:
+
+def _render_fallback(
+    tool_name: str,
+    data: dict[str, Any],
+) -> str:
     """
     Render a tool result without the model.
 
-    Used when phrasing fails. The result is already computed at that
-    point, so returning nothing would discard a correct answer because
-    a cosmetic step failed.
+    Used when:
+        - phrasing fails; or
+        - phrasing succeeds but fails numeric grounding.
+
+    The result is already computed at that point, so returning nothing
+    would discard a correct answer because a cosmetic AI step failed.
 
     Deliberately plain. This is a fallback, not a second attempt at
     good prose.
     """
+
     if tool_name == "get_match_rate":
         return (
             f"{data['matched']} of {data['total_records']} records "
@@ -413,15 +678,21 @@ def _render_fallback(tool_name: str, data: dict[str, Any]) -> str:
     if tool_name == "get_exceptions":
         scope = (
             f" with status {data['filter_status']}"
-            if data.get("filter_status") else ""
+            if data.get("filter_status")
+            else ""
         )
+
         ids = ", ".join(
-            item["txn_id"] for item in data["exceptions"][:10]
+            item["txn_id"]
+            for item in data["exceptions"][:10]
         )
+
         more = (
             f" (and {data['count'] - 10} more)"
-            if data["count"] > 10 else ""
+            if data["count"] > 10
+            else ""
         )
+
         return (
             f"{data['count']} unresolved record(s){scope} out of "
             f"{data['total_records']}. {ids}{more}."
@@ -439,6 +710,7 @@ def _render_fallback(tool_name: str, data: dict[str, Any]) -> str:
 
     if tool_name == "get_cash_position":
         buckets = data["by_bucket"]
+
         return (
             f"Of {data['total_expected_settlement']} "
             f"{data['currency']} expected across "
@@ -458,7 +730,11 @@ def _render_fallback(tool_name: str, data: dict[str, Any]) -> str:
 
     if tool_name == "get_throughput_report":
         if not data.get("available"):
-            return f"No throughput benchmark available. {data.get('reason', '')}"
+            return (
+                f"No throughput benchmark available. "
+                f"{data.get('reason', '')}"
+            )
+
         return (
             f"At the closest benchmarked batch size "
             f"({data['closest_benchmark_batch_size']} records, current "
@@ -468,7 +744,12 @@ def _render_fallback(tool_name: str, data: dict[str, Any]) -> str:
             f"{data['closest_benchmark_total_seconds']}s total. "
             f"Peak across the sweep: "
             f"{data['peak_records_per_second']} records/second at "
-            f"{data['peak_at_batch_size']} records. {data['caveat']}"
+            f"{data['peak_at_batch_size']} records. "
+            f"{data['caveat']}"
         )
 
-    return json.dumps(data, indent=2, sort_keys=True)
+    return json.dumps(
+        data,
+        indent=2,
+        sort_keys=True,
+    )

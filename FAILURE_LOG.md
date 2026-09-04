@@ -43,7 +43,7 @@ Nothing here was found by a tool that was looking for it. Every entry from
 
 ---
 
-## Index — all 71 sections
+## Index — all 72 sections
 
 Grouped as they appear. Sections 45+ are standalone rather than
 phase-scoped, because they postdate Phase 6.
@@ -154,6 +154,7 @@ not moved, which nothing in the repository could compute.
 - [**69.** The eval had no throttle, so it measured the rate limit](#69-the-eval-had-no-throttle-so-it-measured-the-rate-limit)
 - ★ [**70.** The most-cited invariant in the project had no mechanism](#70-the-most-cited-invariant-in-the-project-had-no-mechanism)
 - [**71.** The artifacts were all guarded; the document quoting them was not](#71-the-artifacts-were-all-guarded-the-document-quoting-them-was-not)
+- [**72.** The prose guard that arrived, and the three claims that did not](#72-the-prose-guard-that-arrived-and-the-three-claims-that-did-not)
 
 ---
 # Phase 0–2 — Contracts, data, ingestion
@@ -1173,7 +1174,7 @@ raw (12) == divergent (0) + not_evaluable (6) + known_policy (6)
 # 45. Current state
 
 ```
-484 / 484 tests passing
+486 / 486 tests passing
 
 Gold baseline:            stable
 Baseline divergences:     0
@@ -3947,3 +3948,174 @@ And the narrower one, which is §70's rule with the hole closed:
 > "A command must reproduce every cited value" has to include the
 > citations in the README, or it protects the files nobody reads and not
 > the file everybody does.
+
+---
+
+# 72. The prose guard that arrived, and the three claims that did not
+
+Post-`submission-final-v2` work, reviewed by someone who did not write it.
+Five changes were reported as landed. **Two had. Three had not.** And the
+two that landed left three documents describing a system that no longer
+matched them.
+
+## 72.1 The guard that arrived: numeric grounding in `ask()`
+
+Section 63.3 rejected substring faithfulness validation on `ask()`, with
+correct reasoning: a substring check rejects correct paraphrases and admits
+wrong numbers, which is worse than not checking. That reasoning closed the
+question for four sections. It answered "is *this* mechanism good enough?"
+and was read as "is *any* mechanism possible?"
+
+A different mechanism is. Extract every numeric literal from the model's
+prose, parse each to `Decimal`, and require it to appear in the
+authoritative tool payload. Set membership, not substring containment:
+
+```python
+answer_numbers = _numeric_tokens(answer)
+authoritative_numbers = _numeric_tokens(authoritative_data)
+unsupported = answer_numbers - authoritative_numbers
+```
+
+A non-empty difference forces the deterministic fallback and the offending
+literals are recorded in `agent_metadata.grounding_violations`. A guard
+with no observability cannot be shown to have worked; this one reports
+itself on every answer.
+
+**The extraction rule is narrower than it looks, deliberately.** The regex
+is bounded by `(?<![A-Za-z0-9_])` and `(?![A-Za-z0-9_])`, so `TXN_00025`,
+`Q010`, `v2` and `24th` yield no tokens at all. Currency symbols,
+thousands separators and percent signs are stripped before conversion, so
+`₹292,353.70` and `39.34%` compare exactly against the payload's
+`292353.70` and `39.34`. `Decimal`, never `float`.
+
+**Mutation-verified.** Disabling the guard in a scratch copy of the tree
+fails exactly two tests:
+
+```
+FAILED test_agent_ask.py::test_a_lying_model_cannot_corrupt_the_data
+FAILED test_agent_ask.py::test_large_fabricated_financial_number_is_rejected
+```
+
+Both are load-bearing. The second asserts not only the fallback but the
+recorded violation, `["999999999.99"]`.
+
+## 72.2 What the guard does not do, measured rather than assumed
+
+Every one of these was executed against the tree, not reasoned about:
+
+```
+"24 of 61 matched, 39.34%."          PASS    grounded
+"Just under forty percent..."        PASS    no numerals -- not examined
+"61 of 24 records matched."          PASS    <-- TRANSPOSITION SURVIVES
+"9999 records matched perfectly."    REJECT  ['9999']
+"That leaves 37 unresolved."         REJECT  ['37']   <-- true, and refused
+"In 2026, 24 of 61 matched."         REJECT  ['2026']
+```
+
+Three limits, and the middle one is the honest cost of the design:
+
+**Transpositions survive.** `61 of 24` draws both numerals from the
+payload, so set membership cannot see the swap. Detecting it needs
+positional or semantic checking, which is the thing §63.3 rejected. The
+guard bounds *which* numbers may appear, never their arrangement.
+
+**Correct derived arithmetic is refused.** `61 - 24 = 37` is true and
+`37` is not in the `get_match_rate` payload, so the prose is discarded
+and the deterministic fallback runs. A false positive — in the safe
+direction, and worth stating rather than discovering.
+
+**Indian lakh grouping does not parse.** `5,00,000` degrades to `{5, 0}`
+because the regex expects `\d{1,3}(,\d{3})+`. The TDS threshold is written
+that way throughout this project's prose. No published number depends on
+it and the failure direction is again the fallback, so it is recorded here
+rather than patched at a freeze.
+
+> A guard that bounds numerals is not a guard that bounds meaning. Saying
+> which one you built is the whole of the claim.
+
+## 72.3 Three changes reported as fixed that were not in the tree
+
+This is the part worth recording, and it is not about the code.
+
+| Reported | In the tree |
+|---|---|
+| Exact TDS threshold tests (499999.99 / 500000.00 / 500000.01) | **Absent.** `grep` over `tests/` returns zero occurrences of either boundary literal |
+| `invalid_selections` / `provider_failures` semantics separated | **Absent.** The artifact is byte-identical to v2 and still reads `invalid_selections: 3, provider_failures: 3` for the same three cases |
+| `ToolSpec` docstring "four tools" → five | **Absent.** `registry.py:11` still reads "the four tools the model may choose from"; `:91` and `test_tool_registry.py:110` repeat it |
+
+None is a defect in the system. All three are defects in the *record* of
+the system, and the record is what a reviewer reads first. A change list
+is a claim like any other, and this log's rule applies to it unchanged:
+
+> A cited value must be reproducible by a command. That includes the
+> claim "this was fixed."
+
+The three were verified by `grep` and `git diff` in under a minute. The
+cost of not checking would have been a freeze signed over a tree that did
+not contain three of the five things the signature covered.
+
+## 72.4 What the landed changes left stale
+
+Both changes that *did* land moved code that documents describe, and
+neither swept for the description. This is §54's shape and §71's shape
+again, one review later.
+
+**`ARCHITECTURE.md` understated its own guarantee.** The AI-authority
+table read:
+
+> Writes wrong prose about right data — `ask()` | **Checkable, not
+> prevented.** ... a wrong figure *can* appear in `answer`.
+
+False after the guard. A wrong *figure* can no longer appear; a wrong
+*sentence* still can. The row is now split in two, because collapsing them
+was what made the sentence wrong in the first place. Note the direction:
+the document was weaker than the code. Staleness is not always flattering,
+and it is not always caught by looking for exaggeration.
+
+**`README.md` still argued for the absence of the guard it now has.**
+*"`ask()` is deliberately left that way. A substring check ... is worse
+than not checking."* Correct about substrings, and now describing a
+decision that was reversed by a better mechanism.
+
+**The throughput provenance sentence named the wrong commit.** README said
+`data/throughput_benchmark.json` "was last written at `phase-4-final`."
+`git log --follow` says it was re-recorded in `72ebfe0`, six days later,
+*after* the ambiguity scan landed. The published 179.2 rec/sec **is** the
+post-scan measurement — matching time 27.3s at 5,000 records against 0.14s
+before. §54's write-up described the artifact as stale after it had been
+refreshed, so the log's own correction had gone stale about its own fix.
+
+## 72.5 The throughput gap that was not a regression
+
+The frozen artifact and a live run differ by 3–5× at every batch size,
+which reads as a regression signal. It is not, and the way to know is
+measurement rather than argument. Five consecutive 60-record runs on the
+same machine, same code, same sitting:
+
+```
+376.7   390.0   389.9   782.8   603.7   rec/sec
+```
+
+**A 2.08× spread within one sitting.** When repeating the same code varies
+by that much, a 4× gap against a run on another machine on another day
+carries no signal, and the O(n²) shape is preserved in both. The frozen
+artifact stands and nothing was republished. `--record` now gates
+replacement, and the README states the variance rather than implying the
+absolute figures are stable.
+
+> Before treating a moved number as a regression, measure the noise floor.
+> A benchmark without a variance estimate cannot tell you which it is.
+
+## 72.6 The generalisable version
+
+> §71 said a repository verifies its artifacts and trusts its prose. This
+> is the next layer out: a repository verifies its code and trusts the
+> *changelog*. Three of five reported fixes were not in the tree, and no
+> mechanism anywhere would have said so.
+
+And the narrower one, which is what actually got fixed here:
+
+> When a guard is added, the claim it invalidates is usually written down
+> somewhere as a limitation. Adding the mechanism without deleting the
+> disclaimer leaves the repository arguing against itself — and in this
+> case arguing that it is weaker than it is.

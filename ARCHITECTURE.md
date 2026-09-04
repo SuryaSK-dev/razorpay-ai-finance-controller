@@ -179,7 +179,8 @@ The sum of `expected_net` across exception rows reconciles exactly, in
 | Supplies a bad value | Rejected against `allowed_values`. Never coerced |
 | Hallucinates a `txn_id` | `TxnNotFoundError` → an honest "no record of that". Never a fabricated record |
 | Returns malformed output | `parse_selection` raises; `call_llm_bounded` contains it |
-| Writes wrong prose about right data — `ask()` | **Checkable, not prevented.** `AgentAnswer.data` is attached, so the prose can always be held against the numbers it claims to describe — but a wrong figure *can* appear in `answer`. A substring check over an arbitrary tool result would reject correct paraphrases and admit wrong numbers (`FAILURE_LOG.md` §63.3) |
+| Writes wrong *numbers* about right data — `ask()` | **Rejected at runtime.** Every numeric literal in the prose is extracted and required to appear in the authoritative tool payload; an ungrounded figure forces the deterministic fallback and is recorded in `agent_metadata.grounding_violations`. Set-membership, not substring matching — so a correct paraphrase survives (`FAILURE_LOG.md` §72) |
+| Writes wrong *prose* about right data — `ask()` | **Checkable, not prevented.** Grounding constrains numerals, not meaning: a transposition ("61 of 24") uses only grounded numbers and passes, and a claim with no numerals in it is not examined at all. `AgentAnswer.data` is attached so the sentence can always be held against the numbers |
 | Writes wrong prose about right data — `explain()` | **Rejected at runtime.** `validate_explanation()` sits in the guardrail's `validate_fn`; an explanation that drops the status, a reason code, or a settlement figure never reaches the operator (`FAILURE_LOG.md` §62) |
 | Fails entirely | Deterministic fallback renders the real numbers |
 

@@ -21,6 +21,7 @@ __pycache__/
 test_output.txt
 *.log
 data/_benchmark_tmp/
+data/throughput_benchmark_latest.json
 
 # Coverage output (pytest-cov is a local dev tool, deliberately
 # not in requirements.txt -- the suite needs no coverage plugin)
