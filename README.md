@@ -15,7 +15,7 @@
 
 </div>
 
-![Measured results](docs/images/metrics_slide.png)
+![Measured results](docs/images/metrics.png)
 
 A finance-operations control system that reconciles settlement data across three
 independent sources, verifies GST and TDS against Indian tax law, classifies every
@@ -34,7 +34,7 @@ classes rather than merely unobserved at 24/24 — with the boundary stated hone
 *unmodelled* class (N:1 settlement, an in-batch refund, FX) has no dimension, and therefore
 nothing for the conjunction to catch.
 
-![System architecture](docs/images/architecture_slide.png)
+![System architecture](docs/images/architecture.png)
 
 ---
 
