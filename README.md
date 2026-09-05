@@ -11,7 +11,11 @@
 ![Status](https://img.shields.io/badge/status-phase%206%20complete-brightgreen)
 ![Track](https://img.shields.io/badge/Razorpay%20Buildathon-Track%2004-002970)
 
+**[▶ 5-minute demo](https://youtu.be/PZWCGe4cSDo)** · 4:37
+
 </div>
+
+![Measured results](docs/images/metrics_slide.png)
 
 A finance-operations control system that reconciles settlement data across three
 independent sources, verifies GST and TDS against Indian tax law, classifies every
@@ -29,6 +33,8 @@ conjunction. A false auto-match is structurally impossible for the ten modelled 
 classes rather than merely unobserved at 24/24 — with the boundary stated honestly: an
 *unmodelled* class (N:1 settlement, an in-batch refund, FX) has no dimension, and therefore
 nothing for the conjunction to catch.
+
+![System architecture](docs/images/architecture_slide.png)
 
 ---
 
